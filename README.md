@@ -81,7 +81,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
     <tr>
         <th>Identificador</th>
         <th>Como</th>
-        <th>Épico</th>
+        <th>User Storie</th>
         <th>Sprint</th>
         <th>Prioridade</th>
         <th>Dependência</th>
