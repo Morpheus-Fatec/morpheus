@@ -1,7 +1,6 @@
-package com.morpheus.demo.entitys;
+package fatec.morpheus.entity;
 
 import java.sql.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +16,6 @@ public class NewsPortal {
     private String name;
     private String link;
     private Date registrationDate;
-    private List<Tag> tags;
+    // private List<Tag> tags;
 }
+
