@@ -11,14 +11,14 @@ create table Source(
 	src_name char(30) unique,
     src_type enum('1','2'),
 	src_address char(100) unique,
-	src_registry_date datetime
+	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
 create table News(
 	new_cod int auto_increment,
 	new_title char(70),
 	new_source int,
-	new_registry_date datetime,
+	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     primary key (new_cod),
 	foreign key (new_source) REFERENCES Source(src_cod)
 );
