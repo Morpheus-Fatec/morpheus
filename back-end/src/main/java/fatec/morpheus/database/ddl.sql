@@ -1,11 +1,6 @@
 create database morpheus;
 use morpheus;
 
-create table Tag(
-	tag_cod int auto_increment primary key,
-    tag_name char(20) unique
-);
-
 create table Source(
 	src_cod int auto_increment primary key,
 	src_name char(30) unique,
@@ -14,32 +9,38 @@ create table Source(
 	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
-create table News(
-	new_cod int auto_increment,
-	new_title char(70),
-	new_source int,
-	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    primary key (new_cod),
-	foreign key (new_source) REFERENCES Source(src_cod)
+create table Tag(
+	tag_cod int auto_increment primary key,
+    tag_name char(20) unique
 );
 
-create table News_tag(
-	new_cod int auto_increment,
+create table Source_tag(
+	src_tag_cod int auto_increment,
+	src_cod int,
 	tag_cod int,
-    primary key (new_cod,tag_cod),
-	foreign key (new_cod) REFERENCES News(new_cod),
+    primary key (src_tag_cod),
+	foreign key (src_cod) REFERENCES Source(src_cod),
 	foreign key (tag_cod) REFERENCES Tag(tag_cod)
 );
 
-create table Synonymous(
-	syn_tag_cod int,
-	syn_group int,
-    primary key (syn_tag_cod,syn_group),
-	foreign key (syn_tag_cod) REFERENCES Tag(tag_cod)
+create table News(
+	new_cod int auto_increment,
+	new_title char(70),
+    new_content text,
+	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    primary key (new_cod)
 );
 
+create table Synonymous(
+	tag_cod int,
+	syn_group int,
+    primary key (tag_cod,syn_group),
+	foreign key (tag_cod) REFERENCES Tag(tag_cod)
+);
 
-
-
-
-
+create table News_tag(
+	new_cod int,
+	src_tag_cod int,
+	foreign key (new_cod) REFERENCES News(new_cod),
+	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
+);
