@@ -9,11 +9,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fatec.morpheus.entity.NewsPortal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @CrossOrigin(origins = "*")
 @RestController
 public class NewsPortalController {
 
+    @Operation(summary= "Listar", description = "Obter todos os portais de notícias")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Portais de notícias retornados com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Portais de notícias não encontrados"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping
     List<NewsPortal> getNewsPortal(){
         NewsPortal portal1 = new NewsPortal();
