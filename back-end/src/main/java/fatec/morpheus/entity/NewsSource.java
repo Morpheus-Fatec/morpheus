@@ -4,6 +4,8 @@ import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,13 +27,13 @@ public class NewsSource {
     @Column(name = "src_cod")
     private int code;
 
-    @Column(name = "src_name")
+    @Column(name = "src_name", length = 30, unique = true)
     private String srcName;
 
     @Column(name = "src_type")
     private String type;
 
-    @Column(name = "src_address")
+    @Column(name = "src_address", length = 100 ,unique = true)
     private String address;
 
     @Column(name = "src_registry_date", insertable = false)
