@@ -7,13 +7,30 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="app">
-        <h1 class="h1 py-5 text-center text-secondary">
-            {{message}}
-        </h1>    
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark bg-gradient py-4">
+        <div class="container-fluid">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-3" href="#">
+                <img src="../assets/logo.png" alt="" width="70" class="d-inline-block align-text-top ">
+                <h1 class="text-light">Morpheus</h1>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse w-25 d-flex justify-content-center" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active px-5 text-white fs-5 fw-bold" aria-current="page" href="#">Portal de notícias</a>
+                </li>
+                <li class="nav-item d-flex align-items-center justify-content-center">
+                    <a class="nav-link active text-white fs-5 fw-bold" aria-current="page" href="#">Tags</a>
+                </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="app"></div>
     <script src="../library/axios.js"></script>
     <script src="../library/vue.js"></script>
-    <script src="../js/app.js"></script>
+    <script src="../library/bootstrap.bundle.min.js"></script>
+    <script src="../js/tagScreen.js"></script>
 </body>
 </html>
