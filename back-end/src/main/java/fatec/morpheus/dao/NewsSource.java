@@ -1,4 +1,4 @@
-package fatec.morpheus.entity;
+package fatec.morpheus.dao;
 
 import java.sql.Date;
 
