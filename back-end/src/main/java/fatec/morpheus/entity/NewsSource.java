@@ -1,6 +1,8 @@
-package fatec.morpheus.dao;
+package fatec.morpheus.entity;
 
 import java.sql.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +36,8 @@ public class NewsSource {
     @Column(name = "src_address", length = 100 ,unique = true)
     private String address;
 
-    @Column(name = "src_registry_date", insertable = false)
+    @Column(name = "src_registry_date", updatable = false)
+    @CreationTimestamp
     private Date registrationDate;
 
 }

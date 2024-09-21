@@ -3,14 +3,11 @@ package fatec.morpheus.service;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
-import org.hibernate.boot.model.source.spi.PluralAttributeIndexNature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.dao.TagRepository;
 import fatec.morpheus.entity.Tag;
+import fatec.morpheus.repository.TagRepository;
 
 @Service
 public class TagService {

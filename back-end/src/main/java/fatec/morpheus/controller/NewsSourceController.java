@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.dao.NewsSource;
-import fatec.morpheus.repository.NewsSourceRepository;
-import main.java.fatec.morpheus.service.NewsSourceService;
+import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.service.NewsSourceService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,38 +25,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/morpheus/source")
 public class NewsSourceController {
- 
 
     @Autowired
     private NewsSourceService newsSourceService;
 
-    @PostMapping("/createNewsPortal")
-    public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSourceToCreate) {
-        NewsSource savedNewsSource =  newsSourceService.saveNewsSource(newsSourceToCreate);
-
+    @PostMapping("/create")
+    public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
+        NewsSource savedNewsSource = newsSourceService.saveNewsSource(newsSource);
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
     }
-    
 
     @GetMapping("/")
-    ResponseEntity<List<NewsSource>> getNewsSource(){
-        List<NewsSource> sources = newsSourceService.findAllNewsSource();
-        return new ResponseEntity<>(sources, HttpStatus.OK);
+    public ResponseEntity<List<NewsSource>> getAllNewsSources() {
+        List<NewsSource> sources = newsSourceService.findAllNewsSources();
+        return ResponseEntity.ok(sources);
     }
 
-    @GetMapping("getNewsSourceById/{id}")
-    ResponseEntity<NewsSource> getNewsSourceById(@PathVariable int id){
-        return newsSourceService.findNewsSourceById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<NewsSource> getNewsSourceById(@PathVariable int id) {
+        return newsSourceService.findNewsSourceById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("editNewsSource/{id}")
-    public ResponseEntity<NewsSource> editNewsSource(@PathVariable int id, @RequestBody NewsSource NewsSourceToEdit) {
-        return newsSourceService.editNewsSourceById(id, NewsSourceToEdit);
+    @PutMapping("/{id}")
+    public ResponseEntity<NewsSource> updateNewsSource(@PathVariable int id, @RequestBody NewsSource newsSource) {
+        return newsSourceService.updateNewsSourceById(id, newsSource);
     }
-    
-    @DeleteMapping("deleteNewsSource/{id}")
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<NewsSource> deleteNewsSource(@PathVariable int id) {
-       return newsSourceService.deleteNewsSourceById(id);
+        return newsSourceService.deleteNewsSourceById(id);
     }
-
 }

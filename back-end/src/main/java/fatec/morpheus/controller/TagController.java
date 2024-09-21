@@ -2,12 +2,7 @@ package fatec.morpheus.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
-import javax.swing.text.html.Option;
-
-import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.dao.TagRepository;
 import fatec.morpheus.entity.Tag;
 import fatec.morpheus.service.TagService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @CrossOrigin("*")
@@ -31,12 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/morpheus/tag")
 public class TagController {
 
-    private final TagService tagService;
-
     @Autowired
-    public TagController(TagService tagService){
-        this.tagService = tagService;
-    }
+    private TagService tagService;
 
     @PostMapping
     public ResponseEntity<Tag> createTag(@RequestBody Tag tag){

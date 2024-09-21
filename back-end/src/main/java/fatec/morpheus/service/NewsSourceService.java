@@ -1,56 +1,52 @@
-package main.java.fatec.morpheus.service;
+package fatec.morpheus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.dao.NewsSource;
+import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.repository.NewsSourceRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NewsSourceService {
 
     @Autowired
-    NewsSourceRepository newsSourceRepository;
+    private NewsSourceRepository newsSourceRepository;
 
-
-    public void saveNewsSource(NewsSource NewsSourceToCreate){
-        return newsSourceRepository.save(NewsSourceToCreate);
+    public NewsSource saveNewsSource(NewsSource newsSource) {
+        return newsSourceRepository.save(newsSource);
     }
 
-    public List<NewsSource> findAllNewsSource(){
-        List<NewsSource> sources = newsSourceRepository.findAll();
-        return sources;
+    public List<NewsSource> findAllNewsSources() {
+        return newsSourceRepository.findAll();
     }
 
-    public List<NewsSource> findNewsSourceById(int id){
+    public Optional<NewsSource> findNewsSourceById(int id) {
         return newsSourceRepository.findById(id);
-        
     }
 
-    public ResponseEntity<NewsSource> editNewsSourceById(int id, NewsSource NewsSourceToEdit) {
+    public ResponseEntity<NewsSource> updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
         return newsSourceRepository.findById(id)
-            .map(newsSource -> {
-                newsSource.setSrcName(NewsSourceToEdit.getSrcName());
-                newsSource.setType(NewsSourceToEdit.getType());
-                newsSource.setAddress(NewsSourceToEdit.getAddress());
-                newsSourceRepository.save(newsSource);
-                return new ResponseEntity<>(newsSource, HttpStatus.OK);
-            })
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(existingNewsSource -> {
+                    existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
+                    existingNewsSource.setType(newsSourceToUpdate.getType());
+                    existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
+                    newsSourceRepository.save(existingNewsSource);
+                    return new ResponseEntity<>(existingNewsSource, HttpStatus.OK);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     public ResponseEntity<NewsSource> deleteNewsSourceById(int id) {
         return newsSourceRepository.findById(id)
-            .map(newsSource -> {
-                newsSourceRepository.deleteById(id);
-                return new ResponseEntity<>(newsSource, HttpStatus.OK);
-            })
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(newsSource -> {
+                    newsSourceRepository.deleteById(id);
+                    return new ResponseEntity<NewsSource>(HttpStatus.OK);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
-
 }
