@@ -3,12 +3,7 @@ const bootstrap = window.bootstrap;
 new Vue({
   el: '#app',
   data: {
-    tags: [
-      { id: 1, name: 'HTML', actions: ['Editar', 'Deletar'] },
-      { id: 2, name: 'CSS', actions: ['Editar', 'Deletar'] },
-      { id: 3, name: 'JavaScript', actions: ['Editar', 'Deletar'] },
-      { id: 4, name: 'Vue.js', actions: ['Editar', 'Deletar'] }
-    ],
+    tags: [],
     searchQuery: '',
     newTagName: '',
     tagToDelete: null,
@@ -33,42 +28,89 @@ new Vue({
       const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
       myModal.show();
     },
-    saveTag() {
+
+    handleGetTags() {
+      axios
+        .get('https://morpheus-api.free.beeceptor.com/')
+        .then(response => {
+          this.tags = response.data.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+
+    handlePostTag() {
       if (this.newTagName.trim()) {
-        if (this.tagBeingEdited) {
-          this.tagBeingEdited.name = this.newTagName;
-          this.tagBeingEdited = null;
-        } else {
-          const newId = this.tags.length ? Math.max(...this.tags.map(tag => tag.id)) + 1 : 1;
-          this.tags.push({ id: newId, name: this.newTagName, actions: ['Editar', 'Deletar'] });
-        }
-        this.newTagName = '';
-        const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-        if (myModal) myModal.hide();
+        axios
+          .post('https://morpheus-api.free.beeceptor.com/', {
+            name: this.newTagName
+          })
+          .then(response => {
+            console.log(response.data);
+            this.newTagName = '';
+            this.handleGetTags();
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            if (myModal) myModal.hide();
+          })
+          .catch(error => {
+            console.error(error);
+          });
       } else {
         alert('O nome da tag não pode estar vazio.');
       }
     },
-    editTag(tag) {
-      this.newTagName = tag.name;
-      this.tagBeingEdited = tag;
-      const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-      myModal.show();
+
+    handlePutTag() {
+      if (this.tagBeingEdited && this.newTagName.trim()) {
+        axios
+          .put(`https://morpheus-api.free.beeceptor.com/`, {
+            name: this.newTagName
+          })
+          .then(response => {
+            console.log(response.data);
+            this.tagBeingEdited = null;
+            this.newTagName = '';
+            this.handleGetTags();
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            if (myModal) myModal.hide();
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        alert('O nome da tag não pode estar vazio.');
+      }
     },
+
     confirmDelete(tag) {
       this.tagToDelete = tag;
       const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
       myModal.show();
     },
-    deleteTag() {
+
+    handleDeleteTag() {
       if (this.tagToDelete) {
-        this.tags = this.tags.filter(tag => tag.id !== this.tagToDelete.id);
-        this.tagToDelete = null;
-        const myModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
-        if (myModal) myModal.hide();
+        axios
+          .delete(`https://morpheus-api.free.beeceptor.com/`)
+          .then(response => {
+            console.log(response.data);
+            this.handleGetTags();
+            this.tagToDelete = null;
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+            if (myModal) myModal.hide();
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
-    },
+    }
   },
+  
+  mounted() {
+    this.handleGetTags();
+  },
+  
   template: `
   <div>
     <div class="container py-5">
@@ -91,12 +133,11 @@ new Vue({
           </tr>
         </thead>
         <tbody>
-          <!-- Iterando sobre as tags filtradas -->
           <tr v-for="tag in filteredTags" :key="tag.id">
             <th scope="row">{{ tag.id }}</th>
             <td>{{ tag.name }}</td>
             <td>
-              <button class="btn btn-sm btn-outline-dark mx-1" @click="editTag(tag)">
+              <button class="btn btn-sm btn-outline-dark mx-1" @click="tagBeingEdited = tag; newTagName = tag.name; openModal()">
                 Editar
               </button>
               <button class="btn btn-sm btn-outline-danger mx-1" @click="confirmDelete(tag)">
@@ -110,7 +151,7 @@ new Vue({
         <p>Nenhuma tag encontrada.</p>
       </div>
       
-      <!-- Modal de cadastro de tags -->
+      <!-- Modal de cadastro/edição de tags -->
       <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -128,7 +169,7 @@ new Vue({
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              <button type="button" class="btn btn-primary" @click="saveTag">Salvar</button>
+              <button type="button" class="btn btn-primary" @click="tagBeingEdited ? handlePutTag() : handlePostTag()">Salvar</button>
             </div>
           </div>
         </div>
@@ -152,7 +193,7 @@ new Vue({
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="button" class="btn btn-danger" @click="deleteTag">Excluir</button>
+              <button type="button" class="btn btn-danger" @click="handleDeleteTag">Excluir</button>
             </div>
           </div>
         </div>
@@ -160,4 +201,4 @@ new Vue({
     </div>
   </div>
   `
-})
+});
