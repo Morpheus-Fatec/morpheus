@@ -1,9 +1,5 @@
 package fatec.morpheus.entity;
 
-import java.util.Optional;
-
-import org.springframework.http.ResponseEntity.BodyBuilder;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
