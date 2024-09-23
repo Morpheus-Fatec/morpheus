@@ -2,6 +2,7 @@ const bootstrap = window.bootstrap;
 
 new Vue({
   el: '#app',
+  template: '#tag-screen-template',
   data: {
     tags: [],
     searchQuery: '',
@@ -109,96 +110,5 @@ new Vue({
   
   mounted() {
     this.handleGetTags();
-  },
-  
-  template: `
-  <div>
-    <div class="container py-5">
-      <div class="d-flex align-items-center gap-4">
-        <img src="../assets/tag.png" width="80"/>
-        <h1>Tags</h1>
-      </div>
-      <div class="mt-4 mb-3">
-        <button class="btn btn-dark bg-gradient w-25" @click="openModal">Cadastrar tags</button>
-      </div>
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" v-model="searchQuery" aria-label="Text input with dropdown button" placeholder="Pesquisar tags...">
-      </div>
-      <table class="table" v-if="filteredTags.length">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Tag</th>
-            <th scope="col">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="tag in filteredTags" :key="tag.id">
-            <th scope="row">{{ tag.id }}</th>
-            <td>{{ tag.name }}</td>
-            <td>
-              <button class="btn btn-sm btn-outline-dark mx-1" @click="tagBeingEdited = tag; newTagName = tag.name; openModal()">
-                Editar
-              </button>
-              <button class="btn btn-sm btn-outline-danger mx-1" @click="confirmDelete(tag)">
-                Deletar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else class="alert alert-danger" role="alert">
-        <p>Nenhuma tag encontrada.</p>
-      </div>
-      
-      <!-- Modal de cadastro/edição de tags -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" :id="modalTitleId">{{ modalTitle }}</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="mb-3">
-                  <label for="recipient-name" class="col-form-label">Nome da Tag:</label>
-                  <input type="text" class="form-control" v-model="newTagName" id="recipient-name">
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              <button type="button" class="btn btn-primary" @click="tagBeingEdited ? handlePutTag() : handlePostTag()">Salvar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal de confirmação de exclusão -->
-      <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div v-if="tagToDelete">
-                Deseja realmente excluir a tag "<strong>{{ tagToDelete.name }}</strong>"?
-              </div>
-              <div v-else>
-                <p>Tag não encontrada.</p>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="button" class="btn btn-danger" @click="handleDeleteTag">Excluir</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  `
+  }
 });
