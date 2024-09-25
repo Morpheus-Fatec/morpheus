@@ -10,11 +10,11 @@ new Vue({
     tagToDelete: null,
     tagBeingEdited: null,
   },
-  
+
   computed: {
     filteredTags() {
       return this.tags.filter(tag => 
-        tag.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        tag.tagName.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
     modalTitle() {
@@ -32,9 +32,10 @@ new Vue({
 
     handleGetTags() {
       axios
-        .get('https://morpheus-api.free.beeceptor.com/')
+        .get('http://localhost:8080/morpheus/tag')
         .then(response => {
-          this.tags = response.data.data;
+          this.tags = response.data;
+          console.log(this.tags);
         })
         .catch(error => {
           console.error(error);
@@ -44,8 +45,8 @@ new Vue({
     handlePostTag() {
       if (this.newTagName.trim()) {
         axios
-          .post('https://morpheus-api.free.beeceptor.com/', {
-            name: this.newTagName
+          .post('http://localhost:8080/morpheus/tag', {
+            tagName: this.newTagName
           })
           .then(response => {
             console.log(response.data);
@@ -65,8 +66,8 @@ new Vue({
     handlePutTag() {
       if (this.tagBeingEdited && this.newTagName.trim()) {
         axios
-          .put(`https://morpheus-api.free.beeceptor.com/`, {
-            name: this.newTagName
+          .put(`http://localhost:8080/morpheus/tag/${Number(this.tagBeingEdited.tagCod)}`, {
+            tagName: this.newTagName
           })
           .then(response => {
             console.log(response.data);
@@ -93,7 +94,7 @@ new Vue({
     handleDeleteTag() {
       if (this.tagToDelete) {
         axios
-          .delete(`https://morpheus-api.free.beeceptor.com/`)
+          .delete(`http://localhost:8080/morpheus/tag/${Number(this.tagToDelete.tagCod)}`)
           .then(response => {
             console.log(response.data);
             this.handleGetTags();
