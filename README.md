@@ -3,18 +3,17 @@
 
 
 <p align="center">
-  <a href ="#mortar_board-integrantes-da-equipe"> Integrantes </a>  •
-  <a href ="#anger-descrição-do-desafio"> Desafio </a>  •
-  <a href ="#dart-objetivo"> Objetivo </a>  •
-  <a href="#page_facing_up-requisitos-funcionais"> Requisitos Funcionais </a> •
-  <a href="#page_with_curl-requisitos-não-funcionais"> Requisitos Não Funcionais </a>
+  <a href="#integrantes-da-equipe">Integrantes</a> •
+  <a href="#descrição-do-desafio">Desafio</a> •
+  <a href="#objetivo">Objetivo</a> •
+  <a href="#requisitos-funcionais">Requisitos Funcionais</a> •
+  <a href="#requisitos-não-funcionais">Requisitos Não Funcionais</a> •
+  <a href="#cronograma">Cronograma</a> •
+  <a href="#product-backlog">Product Backlog</a> •
+  <a href="#documentação">Documentação</a> •
+  <a href="#tecnologias-utilizadas">Tecnologias Utilizadas</a>
 </p>
-<p align="center">
-    <a href ="#calendar-cronograma"> Cronograma </a>  •
-    <a href="#date-product-backlog"> Product Backlog </a> •
-    <a href="#bookmark-tecnologias-utilizadas"> Tecnologias Utilizadas </a>
-</p>
-<p align="center">
+
 
 
 
@@ -169,6 +168,16 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 </div>
 
 Para mais detalhes, [clique aqui](https://docs.google.com/spreadsheets/d/1nS472wif8jxiT-QqrEeOhHWo78G994Crm7ALtZq7TSU/edit?gid=0#gid=0). -->
+
+## :page_with_curl: Documentação
+
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+
+### Estrutura da Documentação:
+- **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
+- **[API](./documentation/api/)**: Contém a especificação da API, exemplos de requisições e respostas, e guias de autenticação.
+- **[Manuais](./documentation/manuals/)**: Contém manuais do usuário, guias de instalação, configuração e resolução de problemas.
+
 
 ## :bookmark: Tecnologias Utilizadas
 > * [Java](https://www.java.com/pt-BR/) - Versão 17
