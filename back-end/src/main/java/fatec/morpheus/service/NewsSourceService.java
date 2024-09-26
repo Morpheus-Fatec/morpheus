@@ -35,6 +35,10 @@ public class NewsSourceService {
                     existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
                     existingNewsSource.setType(newsSourceToUpdate.getType());
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
+
+                    //atualiza tags
+                    existingNewsSource.getTags().clear();
+                    existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
                     newsSourceRepository.save(existingNewsSource);
                     return new ResponseEntity<>(existingNewsSource, HttpStatus.OK);
                 })

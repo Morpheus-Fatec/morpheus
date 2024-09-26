@@ -29,13 +29,13 @@ public class NewsSourceController {
     @Autowired
     private NewsSourceService newsSourceService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
         NewsSource savedNewsSource = newsSourceService.saveNewsSource(newsSource);
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<NewsSource>> getAllNewsSources() {
         List<NewsSource> sources = newsSourceService.findAllNewsSources();
         return ResponseEntity.ok(sources);

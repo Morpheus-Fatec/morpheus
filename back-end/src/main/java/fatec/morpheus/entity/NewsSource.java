@@ -1,14 +1,19 @@
 package fatec.morpheus.entity;
 
 import java.sql.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,4 +45,11 @@ public class NewsSource {
     @CreationTimestamp
     private Date registrationDate;
 
+    @ManyToMany
+    @JoinTable(
+        name = "source_tag",
+        joinColumns = @JoinColumn(name = "src_cod"),
+        inverseJoinColumns = @JoinColumn(name = "tag_cod")
+    )
+    private List<Tag> tags;
 }
