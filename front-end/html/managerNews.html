@@ -18,27 +18,74 @@
                 <div class="collapse navbar-collapse w-25 d-flex justify-content-center" id="navbarSupportedContent">
                     <ul class="navbar-nav mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active px-5 text-white fs-5 fw-bold" aria-current="page" href="#">Portal de notícias</a>
+                        <a class="nav-link active px-5 text-white fs-5 fw-bold" aria-current="page" href="managerNews.html">Portal de notícias</a>
                     </li>
                     <li class="nav-item d-flex align-items-center justify-content-center">
-                        <a class="nav-link active text-white fs-5 fw-bold" aria-current="page" href="#">Tags</a>
+                        <a class="nav-link active text-white fs-5 fw-bold" aria-current="page" href="index.html">Tags</a>
                     </li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <div id="app"></div>
-        <script type="text/x-template" id="tag-screen-template">
+        <div id="news"></div>
+        <script type="text/x-template" id="managerNews">
             <div class="container py-5">
                 <div class="d-flex align-items-center gap-4">
-                    <img src="../assets/tag.png" width="80"/>
+                    <img src="../assets/news.png" width="80"/>
                     <h1>Portais de Notícias</h1>
                 </div>
                 <div class="mt-4 mb-3">
                     <button class="btn btn-dark bg-gradient w-25" @click="openModal">Cadastrar Portal de Notícias</button>
                 </div>
+                <div v-if = "newPortalNews.enabled">
+                <div class="card">
+                    <div class="card-header">
+                        {{formData.title}}
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">Nome</label>
+                                <input type="text" class="form-control" v-model="newPortalNews.name" id="recipient-name">
+                                <label for="recipient-address" class="col-form-label">Endereço</label>
+                                <input type="text" class="form-control" v-model="newPortalNews.address" id="recipient-address">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Tag:</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="tag in newPortalNews.tags" :key="tag.id">
+                                            <td>{{ tag.name }}</td>
+                                            <td>
+                                                <button type="button" @click="removeTag(tag)" class="btn btn-danger">Excluir</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>  
+
+                                <br>
+                                <select class="form-select" v-model="newPortalNews.newTag" aria-label="multiple select example">
+                                    <option value="" selected>Escolha uma tag</option>
+                                    <option v-for="tag in tags" :value="tag.id" :key="tag.id">
+                                        {{ tag.name }} 
+                                    </option>
+                                </select>
+                                <br>
+
+                                <button type="button" class="btn-addtag" @click="addTag">Adicionar</button>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-secondary" @click="newPortalNews.enabled=false">Fechar</button>
+                        <button type="button" class="btn btn-primary" @click="postNews">Salvar</button>
+                    </div>
+                  </div>
+                </div> 
+                <br>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" v-model="searchQuery" aria-label="Text input with dropdown button" placeholder="Pesquisar tags...">
+                    <input type="text" class="form-control" v-model="searchQuery" aria-label="Text input with dropdown button" placeholder="Pesquisar notícias...">
                 </div>
                 
                 <table class="table">
@@ -53,7 +100,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="news in newsSource">
-                            <td>{{ news.id }}</td>
+                            <td>{{ news.code }}</td>
                             <td>{{ news.name }}</td>
                             <td>{{ news.address }}</td>
                             <td>
@@ -68,60 +115,6 @@
                         </tr>
                     </tbody>
                 </table>
-                
-                <!-- Modal de cadastro/edição de tags -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" :id="modalTitleId">{{ modalData.title }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="recipient-name" class="col-form-label">Nome</label>
-                                        <input type="text" class="form-control" v-model="newPortalNews.name" id="recipient-name">
-                                        <label for="recipient-address" class="col-form-label">Endereço</label>
-                                        <input type="text" class="form-control" v-model="newPortalNews.address" id="recipient-address">
-                                         <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Tag:</th>
-                                                    <th scope="col"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="tag in newPortalNews.tags"  :key="tag.id">
-    
-                                                    <td>{{ tag.tagName }}</td>
-                                                    <td>
-                                                        <button type="button" @click="removeTag(tag)" class="btn btn-danger">Excluir</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-    
-                                        <br>
-                                        <select class="form-select" v-model="newPortalNews.newTag" aria-label="multiple select example">
-                                            <option value="" selected>Escolha uma tag</option>
-                                            <option v-for="tag in tags" :value="tag.id">
-                                                {{tag.name}}
-                                            </option>
-                                         </select>
-                                         <br>
-    
-                                        <button type="button" class="btn-addtag" @click="addTag">Adicionar</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="button" class="btn btn-primary" @click="tagBeingEdited ? handlePutTag() : handlePostTag()">Salvar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             
                 <!-- Modal de confirmação de exclusão -->
                 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
@@ -141,7 +134,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-danger" @click="handleDeleteTag">Excluir</button>
+                                <button type="button" class="btn btn-danger" @click="deleteRegister">Excluir</button>
                             </div>
                         </div>
                     </div>

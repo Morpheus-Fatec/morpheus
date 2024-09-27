@@ -1,30 +1,32 @@
 const bootstrap = window.bootstrap;
 
 new Vue({
-  el: '#app',
-  template: '#tag-screen-template',
+  el: '#news',
+  template: '#managerNews',
   data: {
     tags: [],
-    newPortalNews:{
-        name:"",
-        addres:"",
-        newTag:"",
-        tag:[]
+    newPortalNews: {
+      code: "",
+      name: "",
+      address: "",
+      newTag: "",
+      tags: [],
+      enabled: false
     },
-    modalData:{
-        title:"Editar Portal de Noticias",
-        action:"Cadastrar"
+    formData: {
+      title: "Editar Portal de Noticias",
+      action: "Cadastrar"
     },
-    newsSource:[],
+    newsSource: [],
     searchQuery: '',
     newTagName: '',
     tagToDelete: null,
     tagBeingEdited: null,
   },
-  
+
   computed: {
     filteredTags() {
-      return this.tags.filter(tag => 
+      return this.tags.filter(tag =>
         tag.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
@@ -35,147 +37,174 @@ new Vue({
       return this.tagBeingEdited ? 'editTagLabel' : 'exampleModalLabel';
     }
   },
+
+  mounted() {
+    this.getNews();
+    this.getTags();
+
+  },
+
   methods: {
     openModal() {
-      const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-      myModal.show();
-    },
-    addTag() {
-        newTagAdd = this.tags.find(item => item.tagCod === this.newPortalNews.newTag);
-        this.newTag.push(newTagAdd);
+      this.newPortalNews.enabled = true;
+      this.formData.title = "Cadastrar Portal de Notícias";
+      this.formData.action = "Cadastrar";
 
-        const index = this.tags.findIndex(element => element.tagCod === this.newPortalNews.newTag);
-        if (index !== -1) {
-            this.tags.splice(index, 1);
-        }
-
-        this.newPortalNews = [];
     },
 
-    removeTag(tag) {
-        const index = this.newTag.findIndex(element => element.tagCod === tag.tagCod);
-        if (index !== -1) {
-            this.newTag.splice(index, 1);
-        }
 
-        this.tags.push(tag);
-    },
-    getTags() {
-        axios
-            .get('https://apimorpheus1.free.beeceptor.com/tags')
-            .then(response => {
-                this.tags = response.data.data;
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    },
-    getNews(){
-        axios.get('https://m5paloma.free.beeceptor.com/todos')
-            .then(response => {
-                this.newsSource = [];
-                response.data.forEach(portalNoticia => {
-                    if (portalNoticia.type == 1) {
-                        const itemAdd = new Object();
-                        itemAdd.id = portalNoticia.id;
-                        itemAdd.name = portalNoticia.srcName;
-                        itemAdd.address = portalNoticia.address;
-                        itemAdd.tags = portalNoticia.tags;
-                        this.newsSource.push(itemAdd);
-                    }
-                });
+    getNews() {
+      axios.get('https://morpheus-api10.free.beeceptor.com/todos')
+        .then(response => {
+          this.newsSource = [];
+          response.data.forEach(portalNoticia => {
+            if (portalNoticia.type == 1) {
+              const itemAdd = new Object();
+              itemAdd.code = portalNoticia.code;
+              itemAdd.name = portalNoticia.srcName;
+              itemAdd.ss = portalNoticia.ss;
+              itemAdd.tags = portalNoticia.tags;
+              this.newsSource.push(itemAdd);
+            }
+          });
 
-            })
-            .catch(error => {
-                console.error("Erro ao carregar dados:", error);
-                alert("Erro ao carregar os dados. Verifique o console para mais detalhes.");
-                throw error;
+        })
+        .catch(error => {
+          console.error("Erro ao carregar dados:", error);
+          alert("Erro ao carregar os dados. Verifique o console para mais detalhes.");
+          throw error;
 
-            });
+        });
+
     },
 
     editRegister(news) {
-        console.log(news);
-        this.newPortalNews.name = news.name;
-        this.newPortalNews.address = news.address;
-        this.newPortalNews.tags = news.tags;
-        this.openModal();
-        this.modalData.title = "Editar Portal de Noticias";
-        this.modalData.action = "Editar";
+      this.newPortalNews.name = news.name;
+      this.newPortalNews.ss = news.ss;
+      this.newPortalNews.tags = news.tags;
+      this.newPortalNews.enabled = true;
+      this.formData.title = "Editar Portal de Noticias";
+      this.formData.action = "Editar";
+
     },
 
+    postNews() {
 
-    handlePostTag() {
-        erro = this.newPortalNews.addres == "" || this.newPortalNews.name == "";
-        if (erro) {
-            axios
-            .post('https://morpheus-api.free.beeceptor.com/', {
-                name: this.newPortalNews.name,
-                addres: this.newPortalNews.addres,
-                tags: this.newPortalNews.tags,
-            })
-            .then(response => {
-                this.newPortalNews.name = "";
-                this.newPortalNews.addres = "";
-                this.newPortalNews.tags = [];
-                const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-                if (myModal) myModal.hide();
-            })
-            .catch(error => {
-                console.error(error);
-            });
-        } else {
-            alert('Preencha todos os campos.');
-        }
-    },
+      if (this.formData.action === "Cadastrar") {
+        axios.post('https://morpheus-api10.free.beeceptor.com/todos', {
+          srcName: this.newPortalNews.name,
+          address: this.newPortalNews.address,
+          type: 1,
+          tags: this.newPortalNews.tags
 
-    handlePutTag() {
-      if (this.tagBeingEdited && this.newTagName.trim()) {
-        axios
-          .put(`https://morpheus-api.free.beeceptor.com/`, {
-            name: this.newTagName
-          })
+        })
           .then(response => {
-            console.log(response.data);
-            this.tagBeingEdited = null;
-            this.newTagName = '';
             this.getNews();
-            const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-            if (myModal) myModal.hide();
+            this.resetForm();
+            this.newPortalNews.enabled = false;
           })
           .catch(error => {
-            console.error(error);
+            console.error("Erro ao cadastrar notícia:", error);
           });
+        console.log("caralho")
       } else {
-        alert('O nome da tag não pode estar vazio.');
-      }
-    },
-
-    confirmDelete(tag) {
-      this.tagToDelete = tag;
-      const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-      myModal.show();
-    },
-
-    handleDeleteTag() {
-      if (this.tagToDelete) {
-        axios
-          .delete(`https://morpheus-api.free.beeceptor.com/`)
+        axios.put(`https://morpheus-api10.free.beeceptor.com/todos/${this.newPortalNews.code}`, {
+          srcName: this.newPortalNews.name,
+          address: this.newPortalNews.address,
+          type: 1,
+          tags: this.newPortalNews.tags
+        })
           .then(response => {
-            console.log(response.data);
-            this.getNews();
-            this.tagToDelete = null;
-            const myModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
-            if (myModal) myModal.hide();
+          this.getNews(); // Atualiza a lista de notícias
+          this.resetForm(); 
+            this.newPortalNews.enabled = false;
           })
           .catch(error => {
-            console.error(error);
+            console.error("Erro ao editar notícia:", error);
           });
       }
+    },
+
+
+
+  confirmDelete(news) {
+    this.newsToDelete = news;
+    const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    myModal.show();
+  },
+
+
+  deleteRegister() {
+    if (this.newsToDelete) {
+      axios.delete(`https://morpheus-api10.free.beeceptor.com/todos/${this.newPortal.id}`)
+        .then(response => {
+          this.getNews(); // Atualiza a lista de notícias
+          this.newsToDelete = null; // Reseta a variável
+          const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+          myModal.hide(); // Fecha o modal
+        })
+        .catch(error => {
+          console.error(error);
+          alert("Erro ao excluir a notícia. Tente novamente."); // Feedback para o usuário
+        });
     }
   },
-  
-  mounted() {
-    this.getNews();
-  }
+
+
+  filterNews() {
+    const searchLower = this.searchNews.toLowerCase();
+    this.filteredNewsList = this.newsList.filter(news =>
+      news.name.toLowerCase().includes(searchLower) ||
+      news.id.toString().includes(searchLower) // Busca pelo ID
+    );
+  },
+
+
+
+  addTag() {
+    let newTagAdd = this.tags.find(item => item.id === this.newPortalNews.newTag);
+    console.log(this.newPortalNews.tags)
+    let tagObj = new Object();
+    tagObj.name = newTagAdd.name;
+    tagObj.id = newTagAdd.id;
+
+    this.newPortalNews.tags.push(tagObj);
+
+    const index = this.tags.findIndex(element => element.id === this.newPortalNews.newTag);
+    if (index !== -1) {
+      this.tags.splice(index, 1);
+    }
+
+    this.newPortalNews.newTag = "";
+  },
+
+
+
+  removeTag(tag) {
+    const index = this.newPortalNews.tags.findIndex(t => t.id === tag.id);
+    if (index !== -1) {
+      this.newPortalNews.tags.splice(index, 1);
+      this.tags.push(tag);
+    }
+  },
+
+  getTags() {
+    axios
+      .get('https://morpheus-api10.free.beeceptor.com/tags')
+      .then(response => {
+        this.tags = response.data.map(tag => ({
+          id: tag.tagCod,
+          name: tag.tagName
+        }));
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  },
+
+
+  resetForm() {
+    
+  },
+},
 });

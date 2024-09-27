@@ -38,33 +38,7 @@
             <div class="input-group mb-3">
                 <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Pesquisar">
             </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nome</th>
-                        <th scope="col">Endereço</th>
-                        <th scope="col">Tags</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="news in filteredNewsList" :key="news.id">
-                        <td>{{ news.id }}</td>
-                        <td>{{ news.name }}</td>
-                        <td>{{ news.url }}</td>
-                        <td>
-                            <ul class="list-group">
-                                <li v-for="tag in news.tags" class="list-group-item">{{tag.name}}</li>
-                              </ul>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-dark mx-1" @click="editRegister(news)">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger mx-1" @click="confirmDelete(news)">Deletar</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            
 
             <!-- Modal de cadastro/edição de notícias -->
             <div class="modal fade" id="modalRegister" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -78,42 +52,7 @@
                            <div v-if="newPortal.erro.status" class="alert alert-danger" role="alert">
                                 {{newPortal.erro.texto}}
                             </div>
-                            <form>
-                                <div class="mb-3">
-                                    <label for="recipient-name" class="col-form-label">Nome</label>
-                                    <input type="text" class="form-control" v-model="newName" id="recipient-name">
-                                    <label for="recipient-address" class="col-form-label">Endereço</label>
-                                    <input type="text" class="form-control" v-model="newAddress" id="recipient-address">
-                                     <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tag:</th>
-                                                <th scope="col"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="tag in newTag"  :key="tag.id">
-
-                                                <td>{{ tag.name }}</td>
-                                                <td>
-                                                    <button type="button" @click="removeTag(tag)" class="btn btn-danger">Excluir</button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <br>
-                                    <select class="form-select" v-model="newsTags" aria-label="multiple select example">
-                                        <option value="" selected>Escolha uma tag</option>
-                                        <option v-for="tag in listTags" :value="tag.id">
-                                            {{tag.name}}
-                                        </option>
-                                     </select>
-                                     <br>
-
-                                    <button type="button" class="btn-addtag" @click="addTag">Adicionar</button>
-                                </div>
-                            </form>
+                            
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

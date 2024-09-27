@@ -61,36 +61,7 @@ new Vue({
             this.newPortal.action = "Editar";
         },
 
-        addTag() {
-            newTagAdd = this.listTags.find(item => item.id === this.newsTags);
-            this.newTag.push(newTagAdd);
 
-            const index = this.listTags.findIndex(element => element.id === this.newsTags);
-            if (index !== -1) {
-                this.listTags.splice(index, 1);
-            }
-
-            this.newsTags = {};
-        },
-
-        removeTag(tag) {
-            const index = this.newTag.findIndex(element => element.id === tag.id);
-            if (index !== -1) {
-                this.newTag.splice(index, 1);
-            }
-
-            this.listTags.push(tag);
-        },
-        getTags() {
-            axios
-                .get('https://apimorpheus1.free.beeceptor.com/tags')
-                .then(response => {
-                    this.listTags = response.data.data;
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        },
         getNews() {
             axios.get('https://m4paloma.free.beeceptor.com/todos')
             
@@ -192,6 +163,37 @@ new Vue({
             this.newsToDelete = news;
             const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
             myModal.show();
+        },
+
+        addTag() {
+            newTagAdd = this.listTags.find(item => item.id === this.newsTags);
+            this.newTag.push(newTagAdd);
+
+            const index = this.listTags.findIndex(element => element.id === this.newsTags);
+            if (index !== -1) {
+                this.listTags.splice(index, 1);
+            }
+
+            this.newsTags = {};
+        },
+
+        removeTag(tag) {
+            const index = this.newTag.findIndex(element => element.id === tag.id);
+            if (index !== -1) {
+                this.newTag.splice(index, 1);
+            }
+
+            this.listTags.push(tag);
+        },
+        getTags() {
+            axios
+                .get('https://apimorpheus1.free.beeceptor.com/tags')
+                .then(response => {
+                    this.listTags = response.data.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         },
 
         resetForm() {
