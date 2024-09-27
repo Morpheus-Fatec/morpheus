@@ -1,5 +1,14 @@
 const bootstrap = window.bootstrap;
 
+const url = "https://m2paloma.free.beeceptor.com/";
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // para uma rolagem suave
+  });
+}
+
 new Vue({
   el: '#news',
   template: '#managerNews',
@@ -20,14 +29,14 @@ new Vue({
     newsSource: [],
     searchQuery: '',
     newTagName: '',
-    tagToDelete: null,
+    newsToDelete: null,
     tagBeingEdited: null,
   },
 
   computed: {
-    filteredTags() {
-      return this.tags.filter(tag =>
-        tag.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    filteredSources() {
+      return this.newsSource.filter(source =>
+        source.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
     modalTitle() {
@@ -54,7 +63,7 @@ new Vue({
 
 
     getNews() {
-      axios.get('https://morpheus-api10.free.beeceptor.com/todos')
+      axios.get(url+'todos')
         .then(response => {
           this.newsSource = [];
           response.data.forEach(portalNoticia => {
@@ -62,7 +71,7 @@ new Vue({
               const itemAdd = new Object();
               itemAdd.code = portalNoticia.code;
               itemAdd.name = portalNoticia.srcName;
-              itemAdd.ss = portalNoticia.ss;
+              itemAdd.address = portalNoticia.address;
               itemAdd.tags = portalNoticia.tags;
               this.newsSource.push(itemAdd);
             }
@@ -70,28 +79,33 @@ new Vue({
 
         })
         .catch(error => {
-          console.error("Erro ao carregar dados:", error);
           alert("Erro ao carregar os dados. Verifique o console para mais detalhes.");
-          throw error;
-
         });
 
     },
 
     editRegister(news) {
       this.newPortalNews.name = news.name;
-      this.newPortalNews.ss = news.ss;
+      this.newPortalNews.address = news.address;
       this.newPortalNews.tags = news.tags;
+      this.tags = this.tags.filter(itemB => 
+        !this.newPortalNews.tags.some(itemA => itemB.tagCod === itemA.tagCod)
+      );
       this.newPortalNews.enabled = true;
       this.formData.title = "Editar Portal de Noticias";
       this.formData.action = "Editar";
 
+      scrollToTop();
     },
 
     postNews() {
+      if(this.newPortalNews.name == "" || this.newPortalNews.address == ""){
+        alert("Preencha todos os campos");
+        return false;
+      }
 
       if (this.formData.action === "Cadastrar") {
-        axios.post('https://morpheus-api10.free.beeceptor.com/todos', {
+        axios.post(url+'todos', {
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
           type: 1,
@@ -104,11 +118,10 @@ new Vue({
             this.newPortalNews.enabled = false;
           })
           .catch(error => {
-            console.error("Erro ao cadastrar notícia:", error);
+            alert("Erro ao cadastrar notícia:", error);
           });
-        console.log("caralho")
       } else {
-        axios.put(`https://morpheus-api10.free.beeceptor.com/todos/${this.newPortalNews.code}`, {
+        axios.put(`${url}todos/${this.newPortalNews.code}`, {
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
           type: 1,
@@ -120,12 +133,10 @@ new Vue({
             this.newPortalNews.enabled = false;
           })
           .catch(error => {
-            console.error("Erro ao editar notícia:", error);
+            alert("Erro ao editar notícia:", error);
           });
       }
     },
-
-
 
   confirmDelete(news) {
     this.newsToDelete = news;
@@ -134,43 +145,31 @@ new Vue({
   },
 
 
-  deleteRegister() {
-    if (this.newsToDelete) {
-      axios.delete(`https://morpheus-api10.free.beeceptor.com/todos/${this.newPortal.id}`)
+  deleteRegister(news) {
+    let result = confirm("Você realmente deseja excluir o portal de noticias " + news.name + "?");
+    if (result) {
+      axios.delete(`${url}todos/${news.code}`)
         .then(response => {
           this.getNews(); // Atualiza a lista de notícias
-          this.newsToDelete = null; // Reseta a variável
-          const myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-          myModal.hide(); // Fecha o modal
+          //this.newsToDelete = null; // Reseta a variável
+           
+          //this.newsToDelete = true;
         })
         .catch(error => {
-          console.error(error);
-          alert("Erro ao excluir a notícia. Tente novamente."); // Feedback para o usuário
+          //this.newsToDelete = false;
         });
     }
   },
 
-
-  filterNews() {
-    const searchLower = this.searchNews.toLowerCase();
-    this.filteredNewsList = this.newsList.filter(news =>
-      news.name.toLowerCase().includes(searchLower) ||
-      news.id.toString().includes(searchLower) // Busca pelo ID
-    );
-  },
-
-
-
   addTag() {
-    let newTagAdd = this.tags.find(item => item.id === this.newPortalNews.newTag);
-    console.log(this.newPortalNews.tags)
+    let newTagAdd = this.tags.find(item => item.tagCod === this.newPortalNews.newTag);
     let tagObj = new Object();
-    tagObj.name = newTagAdd.name;
-    tagObj.id = newTagAdd.id;
+    tagObj.tagName = newTagAdd.tagName;
+    tagObj.tagCod = newTagAdd.tagCod;
 
     this.newPortalNews.tags.push(tagObj);
 
-    const index = this.tags.findIndex(element => element.id === this.newPortalNews.newTag);
+    const index = this.tags.findIndex(element => element.tagCod === this.newPortalNews.newTag);
     if (index !== -1) {
       this.tags.splice(index, 1);
     }
@@ -181,7 +180,7 @@ new Vue({
 
 
   removeTag(tag) {
-    const index = this.newPortalNews.tags.findIndex(t => t.id === tag.id);
+    const index = this.newPortalNews.tags.findIndex(t => t.tagCod === tag.tagCod);
     if (index !== -1) {
       this.newPortalNews.tags.splice(index, 1);
       this.tags.push(tag);
@@ -189,22 +188,25 @@ new Vue({
   },
 
   getTags() {
+    this.tags = [];
     axios
-      .get('https://morpheus-api10.free.beeceptor.com/tags')
+      .get(url+'tags')
       .then(response => {
         this.tags = response.data.map(tag => ({
-          id: tag.tagCod,
-          name: tag.tagName
+          tagCod: tag.tagCod,
+          tagName: tag.tagName
         }));
       })
       .catch(error => {
-        console.error(error);
       });
   },
 
 
   resetForm() {
-    
+    this.newPortalNews.name="";
+    this.newPortalNews.address="";
+    this.newPortalNews.tags=[];
+    this.getTags();
   },
 },
 });
