@@ -49,11 +49,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="tag in filteredTags" :key="tag.id">
-                        <th scope="row">{{ tag.id }}</th>
-                        <td>{{ tag.name }}</td>
+                    <tr v-for="tag in filteredTags" :key="tag.tagCode">
+                        <th scope="row">{{ tag.tagCod }}</th>
+                        <td>{{ tag.tagName }}</td>
                         <td>
-                        <button class="btn btn-sm btn-outline-dark mx-1" @click="tagBeingEdited = tag; newTagName = tag.name; openModal()">
+                        <button class="btn btn-sm btn-outline-dark mx-1" @click="tagBeingEdited = tag; newTagName = tag.tagName; openModal()">
                             Editar
                         </button>
                         <button class="btn btn-sm btn-outline-danger mx-1" @click="confirmDelete(tag)">
