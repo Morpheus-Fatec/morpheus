@@ -37,7 +37,7 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "200", description = "Portal de notícias criado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao criar portal de notícias"),
     })
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
         NewsSource savedNewsSource = newsSourceService.saveNewsSource(newsSource);
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
@@ -48,7 +48,7 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "200", description = "Portais de notícias retornados com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao retornar portais de notícias"),
     })
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<NewsSource>> getAllNewsSources() {
         List<NewsSource> sources = newsSourceService.findAllNewsSources();
         return ResponseEntity.ok(sources);
