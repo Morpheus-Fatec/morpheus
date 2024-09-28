@@ -1,11 +1,11 @@
 const bootstrap = window.bootstrap;
 
-const url = "https://m2paloma.free.beeceptor.com/";
+const url = "http://localhost:8080/morpheus/";
 
 function scrollToTop() {
   window.scrollTo({
     top: 0,
-    behavior: 'smooth' // para uma rolagem suave
+    behavior: 'smooth'
   });
 }
 
@@ -63,7 +63,7 @@ new Vue({
 
 
     getNews() {
-      axios.get(url+'todos')
+      axios.get(url+'source')
         .then(response => {
           this.newsSource = [];
           response.data.forEach(portalNoticia => {
@@ -85,10 +85,11 @@ new Vue({
     },
 
     editRegister(news) {
+      this.newPortalNews.code = news.code;
       this.newPortalNews.name = news.name;
       this.newPortalNews.address = news.address;
       this.newPortalNews.tags = news.tags;
-      this.tags = this.tags.filter(itemB => 
+      this.tags = this.tags.filter(itemB =>
         !this.newPortalNews.tags.some(itemA => itemB.tagCod === itemA.tagCod)
       );
       this.newPortalNews.enabled = true;
@@ -105,7 +106,7 @@ new Vue({
       }
 
       if (this.formData.action === "Cadastrar") {
-        axios.post(url+'todos', {
+        axios.post("http://localhost:8080/morpheus/source", {
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
           type: 1,
@@ -121,7 +122,7 @@ new Vue({
             alert("Erro ao cadastrar notícia:", error);
           });
       } else {
-        axios.put(`${url}todos/${this.newPortalNews.code}`, {
+        axios.put(`http://localhost:8080/morpheus/source/${Number(this.newPortalNews.code)}`, {
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
           type: 1,
@@ -129,7 +130,7 @@ new Vue({
         })
           .then(response => {
           this.getNews(); // Atualiza a lista de notícias
-          this.resetForm(); 
+          this.resetForm();
             this.newPortalNews.enabled = false;
           })
           .catch(error => {
@@ -148,11 +149,11 @@ new Vue({
   deleteRegister(news) {
     let result = confirm("Você realmente deseja excluir o portal de noticias " + news.name + "?");
     if (result) {
-      axios.delete(`${url}todos/${news.code}`)
+      axios.delete(`${url}source/${news.code}`)
         .then(response => {
           this.getNews(); // Atualiza a lista de notícias
           //this.newsToDelete = null; // Reseta a variável
-           
+          
           //this.newsToDelete = true;
         })
         .catch(error => {
@@ -190,7 +191,7 @@ new Vue({
   getTags() {
     this.tags = [];
     axios
-      .get(url+'tags')
+      .get('http://localhost:8080/morpheus/tag')
       .then(response => {
         this.tags = response.data.map(tag => ({
           tagCod: tag.tagCod,
