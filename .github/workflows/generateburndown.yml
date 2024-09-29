@@ -20,4 +20,5 @@ jobs:
           java-version: '21'
     
       - name: Build project
-        run: mvn -f back-end\pom.xml clean package
+        run: mvn -f back-end/pom.xml clean package
+
