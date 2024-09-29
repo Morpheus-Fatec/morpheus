@@ -11,8 +11,8 @@ import fatec.morpheus.exception.NewsSourceException.DatabaseAccessException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NewsSourceException.NotFoundException.class)
-    public ResponseEntity<String> handleNotFound(NewsSourceException.NotFoundException ex) { 
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleNotFound(NewsSourceException.NotFoundException ex) { 
+        return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NewsSourceException.UniqueConstraintViolationException.class)

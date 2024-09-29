@@ -61,9 +61,8 @@ public class NewsSourceController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<NewsSource> getNewsSourceById(@PathVariable int id) {
-        return newsSourceService.findNewsSourceById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        NewsSource newsSource = newsSourceService.findNewsSourceById(id);
+        return new ResponseEntity<>(newsSource, HttpStatus.OK);
     }
 
     @Operation(summary= "", description = "Atualiza um portal de notícias pelo ID")

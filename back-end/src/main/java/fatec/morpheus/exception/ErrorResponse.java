@@ -21,5 +21,10 @@ public class ErrorResponse {
     private String message;
     private List<String> errors;
 
+    public ErrorResponse(HttpStatus status, List<String> errors) {
+        this.status = status;
+        this.errors = errors;
+    }
+
 
 }

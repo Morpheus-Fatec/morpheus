@@ -1,6 +1,7 @@
 package fatec.morpheus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import fatec.morpheus.repository.NewsSourceRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NewsSourceService {
@@ -29,8 +29,7 @@ public class NewsSourceService {
             List<String> duplicateFields = this.verifyUniqueKeys(newsSource);
             
             ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT, 
-                "Duplicate Value: ",  
+                HttpStatus.CONFLICT,   
                 duplicateFields       
             );
 
@@ -53,22 +52,36 @@ public class NewsSourceService {
         return newsSourceRepository.findAll();
     }
 
-    public Optional<NewsSource> findNewsSourceById(int id) {
-        return newsSourceRepository.findById(id);
+    public NewsSource findNewsSourceById(int id) {
+
+        return newsSourceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id));
+       
+  
     }
 
     public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
+        try {
         return newsSourceRepository.findById(id)
                 .map(existingNewsSource -> {
                     existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
                     existingNewsSource.setType(newsSourceToUpdate.getType());
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
-    
                     existingNewsSource.getTags().clear();
                     existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
-                    return newsSourceRepository.save(existingNewsSource); 
+
+                    return newsSourceRepository.save(existingNewsSource);
                 })
                 .orElseThrow(() -> new NotFoundException(id));
+        } catch (DataIntegrityViolationException e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(newsSourceToUpdate);
+
+            ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,  
+                duplicateFields
+            );
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
     }
     
 
