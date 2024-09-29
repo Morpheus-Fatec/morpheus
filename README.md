@@ -162,12 +162,11 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
     </tbody>
 </table>
 
-<!-- ## :chart_with_upwards_trend: Gráfico Burndown
+## :chart_with_upwards_trend: Gráfico Burndown
 <div align="center">
-    <img src="./documentacao/imagens/Gráfico BurnDown Sprint 4.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
-Para mais detalhes, [clique aqui](https://docs.google.com/spreadsheets/d/1nS472wif8jxiT-QqrEeOhHWo78G994Crm7ALtZq7TSU/edit?gid=0#gid=0). -->
 
 ## :page_with_curl: Documentação
 
