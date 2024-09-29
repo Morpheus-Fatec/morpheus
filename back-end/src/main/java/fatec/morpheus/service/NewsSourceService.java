@@ -3,7 +3,6 @@ package fatec.morpheus.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.entity.NewsSource;
@@ -85,12 +84,8 @@ public class NewsSourceService {
     }
     
 
-    public ResponseEntity<NewsSource> deleteNewsSourceById(int id) {
+    public NewsSource deleteNewsSourceById(int id) {
         return newsSourceRepository.findById(id)
-                .map(newsSource -> {
-                    newsSourceRepository.deleteById(id);
-                    return new ResponseEntity<NewsSource>(HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new NotFoundException(id));
     }
 }

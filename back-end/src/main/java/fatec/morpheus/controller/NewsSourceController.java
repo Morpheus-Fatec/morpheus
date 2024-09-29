@@ -83,6 +83,7 @@ public class NewsSourceController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<NewsSource> deleteNewsSource(@PathVariable int id) {
-        return newsSourceService.deleteNewsSourceById(id);
+        NewsSource newsSource = newsSourceService.deleteNewsSourceById(id);
+        return new ResponseEntity<>(newsSource, HttpStatus.OK);
     }
 }
