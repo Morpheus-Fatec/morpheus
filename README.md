@@ -180,13 +180,13 @@ Todo o material relacionado à documentação do projeto pode ser encontrado no 
 
 
 ## :bookmark: Tecnologias Utilizadas
-> * [Java](https://www.java.com/pt-BR/) - Versão 17
+> * [Java](https://www.java.com/pt-BR/) - Versão 21
 > * [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) - Versão ES6+
 > * [MySQL](https://www.mysql.com/) - Versão 8.0
 > * [JDBC MySQL](https://dev.mysql.com/downloads/connector/j/) - Versão 8.0.26
 > * [Maven](https://maven.apache.org/) - Versão 3.8.1
-> * [Spring Boot](https://spring.io/projects/spring-boot) - Versão 2.5.4
-> * [Vue.js](https://vuejs.org/) - Versão 3.2.16
+> * [Spring Boot](https://spring.io/projects/spring-boot) - Versão 3.3.3
+> * [Vue.js](https://vuejs.org/) - Versão 3
 > * [Git](https://git-scm.com/)
 > * [GitHub](https://github.com/)
 > * [Itellij](https://www.jetbrains.com/pt-br/idea/)
