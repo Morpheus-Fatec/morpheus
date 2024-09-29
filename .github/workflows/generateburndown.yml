@@ -1,0 +1,22 @@
+name: Generate Burndown Chart
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Roda diariamente à meia-noite
+  workflow_dispatch:
+
+jobs:
+  generate-burndown:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+    
+      - name: Build project
+        run: mvn clean package
