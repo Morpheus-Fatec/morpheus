@@ -1,6 +1,8 @@
 name: Generate Burndown Chart
 
 on:
+  push:
+    
   schedule:
     - cron: '0 0 * * *'  # Roda diariamente à meia-noite
   workflow_dispatch:
