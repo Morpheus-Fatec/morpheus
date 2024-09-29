@@ -1,8 +1,6 @@
 name: Generate Burndown Chart
 
 on:
-  push:
-    
   schedule:
     - cron: '0 0 * * *'  # Roda diariamente à meia-noite
   workflow_dispatch:
@@ -21,4 +19,4 @@ jobs:
           java-version: '21'
     
       - name: Build project
-        run: mvn clean package
+        run: mvn -f back-end\pom.xml clean package
