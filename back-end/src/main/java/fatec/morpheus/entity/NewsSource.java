@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,5 +51,8 @@ public class NewsSource {
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
     )
-    private List<Tag> tags;
+    
+    private List<Tag> tags; 
+    
+
 }

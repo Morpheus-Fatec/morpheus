@@ -6,8 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.exception.ErrorResponse;
+import fatec.morpheus.exception.NewsSourceException.NotFoundException;
+import fatec.morpheus.exception.NewsSourceException.UniqueConstraintViolationException;
 import fatec.morpheus.repository.NewsSourceRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +21,32 @@ public class NewsSourceService {
     @Autowired
     private NewsSourceRepository newsSourceRepository;
 
-    public NewsSource saveNewsSource(NewsSource newsSource) {
-        return newsSourceRepository.save(newsSource);
+    public NewsSource createNewsSource(NewsSource newsSource) {
+        try {
+            return newsSourceRepository.save(newsSource);
+                
+        } catch (Exception e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(newsSource);
+            
+            ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT, 
+                "Duplicate Value: ",  
+                duplicateFields       
+            );
+
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
+    }
+
+    private List<String> verifyUniqueKeys(NewsSource newsSource) {
+        List<String> duplicateFields = new ArrayList<>();
+        if (newsSourceRepository.existsBySrcName(newsSource.getSrcName())) {
+            duplicateFields.add("srcName");
+        }
+        if (newsSourceRepository.existsByAddress(newsSource.getAddress())) {
+            duplicateFields.add("address");
+        }
+        return duplicateFields;
     }
 
     public List<NewsSource> findAllNewsSources() {
@@ -29,21 +57,20 @@ public class NewsSourceService {
         return newsSourceRepository.findById(id);
     }
 
-    public ResponseEntity<NewsSource> updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
+    public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
         return newsSourceRepository.findById(id)
                 .map(existingNewsSource -> {
                     existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
                     existingNewsSource.setType(newsSourceToUpdate.getType());
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
-
-                    //atualiza tags
+    
                     existingNewsSource.getTags().clear();
                     existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
-                    newsSourceRepository.save(existingNewsSource);
-                    return new ResponseEntity<>(existingNewsSource, HttpStatus.OK);
+                    return newsSourceRepository.save(existingNewsSource); 
                 })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(id));
     }
+    
 
     public ResponseEntity<NewsSource> deleteNewsSourceById(int id) {
         return newsSourceRepository.findById(id)

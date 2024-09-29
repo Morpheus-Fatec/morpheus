@@ -39,7 +39,7 @@ public class NewsSourceController {
     })
     @PostMapping
     public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
-        NewsSource savedNewsSource = newsSourceService.saveNewsSource(newsSource);
+        NewsSource savedNewsSource = newsSourceService.createNewsSource(newsSource);
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
     }
 
@@ -73,7 +73,8 @@ public class NewsSourceController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<NewsSource> updateNewsSource(@PathVariable int id, @RequestBody NewsSource newsSource) {
-        return newsSourceService.updateNewsSourceById(id, newsSource);
+        NewsSource updatedNewsSource = newsSourceService.updateNewsSourceById(id, newsSource);
+        return ResponseEntity.ok(updatedNewsSource);
     }
 
     @Operation(summary= "", description = "Deleta um portal de notícias pelo ID")
