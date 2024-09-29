@@ -5,10 +5,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.NewsSource;
-import fatec.morpheus.exception.ErrorResponse;
-import fatec.morpheus.exception.NewsSourceException.NotFoundException;
-import fatec.morpheus.exception.NewsSourceException.UniqueConstraintViolationException;
+import fatec.morpheus.exception.NotFoundException;
+import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.NewsSourceRepository;
 
 import java.util.ArrayList;
@@ -52,11 +52,8 @@ public class NewsSourceService {
     }
 
     public NewsSource findNewsSourceById(int id) {
-
         return newsSourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
-       
-  
+                .orElseThrow(() -> new NotFoundException(id));  
     }
 
     public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {

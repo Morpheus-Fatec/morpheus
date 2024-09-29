@@ -1,4 +1,4 @@
-package fatec.morpheus.exception;
+package fatec.morpheus.entity;
 
 import java.util.List;
 
