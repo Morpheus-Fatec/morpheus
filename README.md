@@ -1,24 +1,25 @@
 # <p align = "center"> Morpheus - API 3º Semestre - BD 2024
 
-
+<div align="center">
+    <img src="./documentation/images/Logo_Morpheus.png" alt="Logotipo Morpheus"width="75%">
+</div>
 
 <p align="center">
-  <a href ="#mortar_board-integrantes-da-equipe"> Integrantes </a>  •
-  <a href ="#anger-descrição-do-desafio"> Desafio </a>  •
-  <a href ="#dart-objetivo"> Objetivo </a>  •
-  <a href="#page_facing_up-requisitos-funcionais"> Requisitos Funcionais </a> •
-  <a href="#page_with_curl-requisitos-não-funcionais"> Requisitos Não Funcionais </a>
+  <a href="#integrantes-da-equipe">Integrantes da Equipe</a> •
+  <a href="#descrição-do-desafio">Desafio</a> •
+  <a href="#objetivo">Objetivo</a> •
+  <a href="#requisitos-funcionais">Requisitos Funcionais</a> •
+  <a href="#requisitos-não-funcionais">Requisitos Não Funcionais</a> •
+  <a href="#cronograma">Cronograma</a> •
+  <a href="#product-backlog">Product Backlog</a> •
+  <a href="#grafico-burndown">Gráfico Burndown</a> •
+  <a href="#documentação">Documentação</a> •
+  <a href="#tecnologias-utilizadas">Tecnologias Utilizadas</a>
 </p>
-<p align="center">
-    <a href ="#calendar-cronograma"> Cronograma </a>  •
-    <a href="#date-product-backlog"> Product Backlog </a> •
-    <a href="#bookmark-tecnologias-utilizadas"> Tecnologias Utilizadas </a>
-</p>
-<p align="center">
 
+<br>
 
-
-## :mortar_board: Integrantes:
+## :mortar_board: <a id="integrantes-da-equipe"> Integrantes da Equipe: </a>
 
 | **Nome**                   | **Função**            | **LinkedIn**                                                  |
 |:----------------------:|:-----------------:|:----------------------------------------------------------:|
@@ -32,16 +33,22 @@
 | Paloma Soares  | Desenvolvedor     | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?style=flat-square&logo=linkedin&labelColor=blue)](https://www.linkedin.com/in/paloma-soares-rocha/) |
 | Vinícius Monteiro  | Desenvolvedor     | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?style=flat-square&logo=linkedin&labelColor=blue)](https://www.linkedin.com/in/viniciusvasm/) |
 
+<br>
 
-## :anger: Descrição do Desafio
+## :anger: <a id=descrição-do-desafio> Descrição do Desafio: </a>
 
 Desenvolver uma ferramenta para captura e armazenamento de notícias estratégicas e dados relevantes associados.
 
-## :dart: Objetivo
+<br>
+
+## :dart: <a id="objetivo"> Objetivo
 
 Criar um mecanismo para mapeamento de portais de notícias estratégicas, com captura rotineira para geração de histórico. Em um estágio futuro, aplicar análises baseadas em IA e/ou machine learning para cruzamento de dados, visando identificar ações estratégicas para o negócio. Essa estrutura e conceito também devem ser aplicados a APIs que fornecem dados estratégicos, como, por exemplo, previsão do tempo.
 
-## :page_facing_up: Requisitos Funcionais
+<br>
+
+## :page_facing_up: <a id="requisitos-funcionais"> Requisitos Funcionais </a>
+
 * Cadastro de Portais de notícias
 * Cadastro de APIs
 * Cadastro de Tags
@@ -51,7 +58,9 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 * Tela de consulta de notícias, com filtros de pesquisa
 * Tela de APIs, com filtros de pesquisa
 
-## :page_with_curl: Requisitos Não Funcionais
+<br>
+
+## :page_with_curl: <a id="requisitos-não-funcionais"> Requisitos Não Funcionais </a>
 
 * Prever um grande volume de notícias armazenas
 * Utilizar softwares livres
@@ -63,124 +72,68 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 * Deverá ser uma aplicação web.
 * O front-end deve ser desenvolvido de forma minimalista.
 
-## :calendar: Cronograma
+<br>
+
+## :calendar: <a id="cronograma"> Cronograma </a>
 
 | Sprint  | Nome | Data inicio  | Data Fim | Status |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | --  | KickOff   | 26/08   | 30/08 | Ok |
-|  1  | Sprint 1   | 09/09   | 29/09 |  |
+|  1  | Sprint 1   | 09/09   | 29/09 | Ok |
 |  2  | Sprint 2   | 30/09   | 20/10 |  |
 |  3  | Sprint 3   | 21/10   | 10/11 |  |
 |  4  | Sprint 4   | 11/11   | 30/11 |  |
 |  5  | Feira de Soluções  | 12/12     |
 
+<br>
 
-## :date: Product BackLog
-<table>
-    <thead>
-    <tr>
-        <th>Identificador</th>
-        <th>Como</th>
-        <th>User Storie</th>
-        <th>Sprint</th>
-        <th>Prioridade</th>
-        <th>Dependência</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>A</td>
-        <td>Analista</td>
-        <td>Gerenciar portais de notícias por uma interface que me permita cadastrar endereços e possíveis autores das notícias</td>
-        <td>1</td>
-        <td>Alta</td>
-        <td>-</td>
-    </tr>
-    <tr>
-        <td>B</td>
-        <td>Analista</td>
-        <td>Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços</td>
-        <td>1</td>
-        <td>Alta</td>
-        <td>-</td>
-    </tr>
-    <tr>
-        <td>C</td>
-        <td>Analista</td>
-        <td>Registrar dados provenientes de portais de notícias vinculando uma notícia ao seu devido autor e a data de sua publicação e registro</td>
-        <td>2</td>
-        <td>Alta</td>
-        <td>A</td>
-    </tr>
-    <tr>
-        <td>D</td>
-        <td>Analista</td>
-        <td>Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas a sua devida fonte e a sua data de registro</td>
-        <td>2</td>
-        <td>Alta</td>
-        <td>B</td>
-    </tr>
-    <tr>
-        <td>E</td>
-        <td>Analista</td>
-        <td>Consultar dados provenientes de portais de notícias e de fontes de dados provenientes de APIs</td>
-        <td>3</td>
-        <td>Média</td>
-        <td>-</td>
-    </tr>
-    <tr>
-        <td>F</td>
-        <td>Analista</td>
-        <td>Filtrar os dados de uma consulta de dados provenientes de portais de notícias e de fontes de dados provenientes de APIs utilizando tags, mediante uma análise do conteúdo registrado</td>
-        <td>3</td>
-        <td>Média</td>
-        <td>C, D e E</td>
-    </tr>
-    <tr>
-        <td>G</td>
-        <td>Analista</td>
-        <td>Filtrar os dados de uma consulta de dados provenientes de portais de notícias e de fontes de dados utilizando filtros referente aos dados de uma fonte de dados ou dados de um portal de notícias</td>
-        <td>4</td>
-        <td>Baixa</td>
-        <td>F</td>
-    </tr>
-    <tr>
-        <td>H</td>
-        <td>Analista</td>
-        <td>Filtrar os dados de uma consulta de dados provenientes de portais de notícias e de fontes de dados utilizando filtros referente aos dados de uma fonte de dados ou dados de um portal de notícias</td>
-        <td>4</td>
-        <td>Baixa</td>
-        <td>F</td>
-    </tr>
-    <tr>
-        <td>I</td>
-        <td>Analista</td>
-        <td>Filtrar os dados de uma consulta de dados provenientes de portais de notícias e de fontes de dados utilizando filtros vinculados aos dados de um registro, seja ele proveniente de uma fonte de dados de APIs ou de um portal de notícias.</td>
-        <td>4</td>
-        <td>Baixa</td>
-        <td>F</td>
-    </tr>
-    </tbody>
-</table>
+## :date: <a id="product-backlog"> Product BackLog: </a>
+| Identificador | Como     | Desejo                                                                                                                                                                                                | Sprint | Prioridade | Dependência |
+|---------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|------------|-------------|
+| A             | Analista | Gerenciar portais de notícias por uma interface que me permita cadastrar endereços e possíveis autores das notícias                                                                                   | 1      | Alta       | -           |
+| B             | Analista | Gerenciar tags, sendo essas conteúdos textuais livres, considerando regionalismo e palavras polissêmicas                                                                                             | 1      | Alta       | -           |
+| C             | Analista | Tratar sinônimos de tags, para que a aplicação possa contemplar regionalismo nos textos das tags                                                                                                      | 2      | Alta       | B           |
+| D             | Analista | Consultar dados provenientes de portais de notícias                                                                                                                                                   | 2      | Média      | C           |
+| F             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado  | 3      | Média      | D           |
+| G             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando filtros referentes aos dados de um portal de notícias                                                        | 3      | Média      | D           |
+| H             | Analista | Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços                                                  | 4      | Baixa      | -           |
+| I             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           |
+| J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           |
+| K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           |
+| L             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           |
 
-<!-- ## :chart_with_upwards_trend: Gráfico Burndown
+<br>
+
+## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentacao/imagens/Gráfico BurnDown Sprint 4.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint1.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
-Para mais detalhes, [clique aqui](https://docs.google.com/spreadsheets/d/1nS472wif8jxiT-QqrEeOhHWo78G994Crm7ALtZq7TSU/edit?gid=0#gid=0). -->
+<br>
 
-## :bookmark: Tecnologias Utilizadas
-> * [Java](https://www.java.com/pt-BR/) - Versão 17
+## :page_with_curl: <a id="documentação"> Documentação </a>
+
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+
+### Estrutura da Documentação:
+- **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
+- **[API](./documentation/api/)**: Contém a especificação da API, exemplos de requisições e respostas, e guias de autenticação.
+- **[Manuais](./documentation/manuals/)**: Contém manuais do usuário, guias de instalação, configuração e resolução de problemas.
+- **[Imagens](./documentation/images/)**: Contém imagens de utilização geral no projeto.
+
+<br>
+
+## :bookmark: <a id="tecnologias-utilizadas"> Tecnologias Utilizadas </a>
+> * [Java](https://www.java.com/pt-BR/) - Versão 21
 > * [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) - Versão ES6+
 > * [MySQL](https://www.mysql.com/) - Versão 8.0
 > * [JDBC MySQL](https://dev.mysql.com/downloads/connector/j/) - Versão 8.0.26
 > * [Maven](https://maven.apache.org/) - Versão 3.8.1
-> * [Spring Boot](https://spring.io/projects/spring-boot) - Versão 2.5.4
-> * [Vue.js](https://vuejs.org/) - Versão 3.2.16
+> * [Spring Boot](https://spring.io/projects/spring-boot) - Versão 3.3.3
+> * [Vue.js](https://vuejs.org/) - Versão 3
 > * [Git](https://git-scm.com/)
 > * [GitHub](https://github.com/)
-> * [Itellij](https://www.jetbrains.com/pt-br/idea/)
+> * [Intellij](https://www.jetbrains.com/pt-br/idea/)
 > * [VisualStudioCode](https://visualstudio.microsoft.com/pt-br/)
 > * [Discord](https://discord.com/)
 > * [Slack](https://slack.com/)
