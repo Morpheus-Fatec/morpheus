@@ -48,7 +48,7 @@ public class TagController {
     @ApiResponse(responseCode = "400", description = "Erro ao retornar tags"),
     })
     @GetMapping
-    public ResponseEntity<List<Tag>> getAllTags(){  
+    public ResponseEntity<List<Tag>> getAllTags(){
         return ResponseEntity.ok(tagService.tagFindAll());
     }
 

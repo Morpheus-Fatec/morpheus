@@ -1,18 +1,15 @@
 package fatec.morpheus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.NewsSource;
-import fatec.morpheus.exception.NotFoundException;
-import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.NewsSourceRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NewsSourceService {
@@ -20,69 +17,40 @@ public class NewsSourceService {
     @Autowired
     private NewsSourceRepository newsSourceRepository;
 
-    public NewsSource createNewsSource(NewsSource newsSource) {
-        try {
-            return newsSourceRepository.save(newsSource);
-                
-        } catch (Exception e) {
-            List<String> duplicateFields = this.verifyUniqueKeys(newsSource);
-            
-            ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT,   
-                duplicateFields       
-            );
-
-            throw new UniqueConstraintViolationException(errorResponse);
-        }
-    }
-
-    private List<String> verifyUniqueKeys(NewsSource newsSource) {
-        List<String> duplicateFields = new ArrayList<>();
-        if (newsSourceRepository.existsBySrcName(newsSource.getSrcName())) {
-            duplicateFields.add("srcName");
-        }
-        if (newsSourceRepository.existsByAddress(newsSource.getAddress())) {
-            duplicateFields.add("address");
-        }
-        return duplicateFields;
+    public NewsSource saveNewsSource(NewsSource newsSource) {
+        return newsSourceRepository.save(newsSource);
     }
 
     public List<NewsSource> findAllNewsSources() {
         return newsSourceRepository.findAll();
     }
 
-    public NewsSource findNewsSourceById(int id) {
-        return newsSourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));  
+    public Optional<NewsSource> findNewsSourceById(int id) {
+        return newsSourceRepository.findById(id);
     }
 
-    public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
-        try {
+    public ResponseEntity<NewsSource> updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
         return newsSourceRepository.findById(id)
                 .map(existingNewsSource -> {
                     existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
                     existingNewsSource.setType(newsSourceToUpdate.getType());
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
+
+                    //atualiza tags
                     existingNewsSource.getTags().clear();
                     existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
-
-                    return newsSourceRepository.save(existingNewsSource);
+                    newsSourceRepository.save(existingNewsSource);
+                    return new ResponseEntity<>(existingNewsSource, HttpStatus.OK);
                 })
-                .orElseThrow(() -> new NotFoundException(id));
-        } catch (DataIntegrityViolationException e) {
-            List<String> duplicateFields = this.verifyUniqueKeys(newsSourceToUpdate);
-
-            ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT,  
-                duplicateFields
-            );
-            throw new UniqueConstraintViolationException(errorResponse);
-        }
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    
 
-    public NewsSource deleteNewsSourceById(int id) {
+    public ResponseEntity<NewsSource> deleteNewsSourceById(int id) {
         return newsSourceRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(id));
+                .map(newsSource -> {
+                    newsSourceRepository.deleteById(id);
+                    return new ResponseEntity<NewsSource>(HttpStatus.OK);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

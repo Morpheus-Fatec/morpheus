@@ -39,7 +39,7 @@ public class NewsSourceController {
     })
     @PostMapping
     public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
-        NewsSource savedNewsSource = newsSourceService.createNewsSource(newsSource);
+        NewsSource savedNewsSource = newsSourceService.saveNewsSource(newsSource);
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
     }
 
@@ -61,8 +61,9 @@ public class NewsSourceController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<NewsSource> getNewsSourceById(@PathVariable int id) {
-        NewsSource newsSource = newsSourceService.findNewsSourceById(id);
-        return new ResponseEntity<>(newsSource, HttpStatus.OK);
+        return newsSourceService.findNewsSourceById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(summary= "", description = "Atualiza um portal de notícias pelo ID")
@@ -72,8 +73,7 @@ public class NewsSourceController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<NewsSource> updateNewsSource(@PathVariable int id, @RequestBody NewsSource newsSource) {
-        NewsSource updatedNewsSource = newsSourceService.updateNewsSourceById(id, newsSource);
-        return ResponseEntity.ok(updatedNewsSource);
+        return newsSourceService.updateNewsSourceById(id, newsSource);
     }
 
     @Operation(summary= "", description = "Deleta um portal de notícias pelo ID")
@@ -83,7 +83,6 @@ public class NewsSourceController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<NewsSource> deleteNewsSource(@PathVariable int id) {
-        NewsSource newsSource = newsSourceService.deleteNewsSourceById(id);
-        return new ResponseEntity<>(newsSource, HttpStatus.OK);
+        return newsSourceService.deleteNewsSourceById(id);
     }
 }
