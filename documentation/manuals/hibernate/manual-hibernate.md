@@ -43,6 +43,14 @@ Navegue até o arquivo `application.properties` no seguinte diretório:
 
 Dentro desse arquivo, insira as seguintes informações do banco de dados:
 
+```
+properties
+spring.datasource.url=jdbc:mysql://localhost:3306/<nome_do_banco>
+spring.datasource.username=<seu_usuario>
+spring.datasource.password=<sua_senha>
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
 
 ## 6º Passo: Executar o Comando Maven
 
