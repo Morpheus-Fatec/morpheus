@@ -5,7 +5,9 @@ const url = "http://localhost:8080/morpheus/";
 function scrollToTop() {
   window.scrollTo({
     top: 0,
+
     behavior: 'smooth'
+
   });
 }
 
@@ -63,6 +65,7 @@ new Vue({
 
 
     getNews() {
+
       axios.get(url+'source')
         .then(response => {
           this.newsSource = [];
@@ -90,6 +93,7 @@ new Vue({
       this.newPortalNews.address = news.address;
       this.newPortalNews.tags = news.tags;
       this.tags = this.tags.filter(itemB =>
+
         !this.newPortalNews.tags.some(itemA => itemB.tagCod === itemA.tagCod)
       );
       this.newPortalNews.enabled = true;
@@ -106,7 +110,9 @@ new Vue({
       }
 
       if (this.formData.action === "Cadastrar") {
+
         axios.post("http://localhost:8080/morpheus/source", {
+
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
           type: 1,
@@ -122,6 +128,7 @@ new Vue({
             alert("Erro ao cadastrar notícia:", error);
           });
       } else {
+
         axios.put(`http://localhost:8080/morpheus/source/${Number(this.newPortalNews.code)}`, {
           srcName: this.newPortalNews.name,
           address: this.newPortalNews.address,
@@ -131,6 +138,7 @@ new Vue({
           .then(response => {
           this.getNews(); // Atualiza a lista de notícias
           this.resetForm();
+
             this.newPortalNews.enabled = false;
           })
           .catch(error => {
@@ -153,7 +161,7 @@ new Vue({
         .then(response => {
           this.getNews(); // Atualiza a lista de notícias
           //this.newsToDelete = null; // Reseta a variável
-          
+
           //this.newsToDelete = true;
         })
         .catch(error => {
