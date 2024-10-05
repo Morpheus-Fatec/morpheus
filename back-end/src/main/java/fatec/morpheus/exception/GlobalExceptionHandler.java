@@ -21,5 +21,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(InvalidFieldException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFieldException(InvalidFieldException ex) {
+        return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.BAD_REQUEST);
+    }
+
 }
 
