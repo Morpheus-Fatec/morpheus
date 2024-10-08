@@ -9,13 +9,14 @@ create table Source(
 	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE map_source (
+CREATE TABLE Map_source (
 	map_id INT AUTO_INCREMENT PRIMARY KEY,
     src_cod INT,
     map_author CHAR(100),
     map_body TEXT,
     map_title CHAR(100),
 	map_url char(100),
+	map_date DATE,
     FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );
 
