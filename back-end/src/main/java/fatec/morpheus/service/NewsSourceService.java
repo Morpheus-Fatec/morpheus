@@ -9,23 +9,19 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.NewsSource;
-import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.NewsSourceRepository;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 
 
 @Service
@@ -43,13 +39,15 @@ public class NewsSourceService {
         source.setSrcName(newsSourceDTO.getName());
         source.setAddress(newsSourceDTO.getAddress());
         
-        MapSource mapSource = new MapSource();
-        mapSource.setSource(source);
-        mapSource.setAuthor(newsSourceDTO.getMap().getAuthor());
-        mapSource.setBody(newsSourceDTO.getMap().getBody());
-        mapSource.setTitle(newsSourceDTO.getMap().getTitle());
-        mapSource.setUrl(newsSourceDTO.getMap().getUrl());
-        MapSource mapSourceResolved = findHtmlTags(mapSource);
+        MapSourceDTO MapSourceDTO = new MapSourceDTO();
+        MapSourceDTO.setSource(source);
+        MapSourceDTO.setAuthor(newsSourceDTO.getMap().getAuthor());
+        MapSourceDTO.setBody(newsSourceDTO.getMap().getBody());
+        MapSourceDTO.setTitle(newsSourceDTO.getMap().getTitle());
+        MapSourceDTO.setUrl(newsSourceDTO.getMap().getUrl());
+        MapSourceDTO.setDate(newsSourceDTO.getMap().getDate());  
+        System.out.println("Data: " + MapSourceDTO.getDate());
+        MapSource mapSourceResolved = findHtmlTags(MapSourceDTO);
 
         // Set<ConstraintViolation<NewsSource>> violations = validator.validate(source);
 
@@ -128,17 +126,14 @@ public class NewsSourceService {
                     .orElseThrow(() -> new NotFoundException(id));
     }
 
-    private MapSource findHtmlTags(MapSource mapSource) {
+    private MapSource findHtmlTags(MapSourceDTO mapSourceDTO) {
+        MapSource mapedSource = new MapSource();
         try {
-            // Conecta e obtém o documento HTML da URL
-            Document doc = Jsoup.connect(mapSource.getUrl()).get();
+            Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
     
-            // Procura pela tag que contém o título
-            String title = mapSource.getTitle();
+            String title = mapSourceDTO.getTitle();
             System.out.println("Título: " + title);
-    
             if (title != null) {
-                // Usa a função auxiliar para encontrar o elemento que contém o texto específico
                 Element titleElement = findElementContainingText(doc, title);
                 if (titleElement != null) {
                     String titleClass = titleElement.className();
@@ -148,12 +143,25 @@ public class NewsSourceService {
                 }
             }
     
+            Element dateElement = findDateElement(doc);
+            if (dateElement != null) {
+                String dateText = dateElement.text();
+                String dateClass = dateElement.className();
+                if (dateClass !=null) {
+                    System.out.println("Tag da data: " + dateElement.tagName());
+                }else{
+                    System.out.println("Classe da data: " + dateClass);  
+                }                
+                
+            } else {
+                System.out.println("Data não encontrada.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     
-        return mapSource;
-    }
+        return mapedSource;
+    }    
     
     // Função auxiliar para encontrar o elemento que contém o texto específico
     private Element findElementContainingText(Document doc, String text) {
@@ -165,4 +173,33 @@ public class NewsSourceService {
         }
         return null; // Retorna null se não encontrar
     }
+    
+    private Element findDateElement(Document doc) {
+        // Primeiro, tenta encontrar diretamente a tag <time>
+        Elements timeElements = doc.select("time");
+        if (!timeElements.isEmpty()) {
+            return timeElements.first(); // Retorna o primeiro elemento <time> encontrado
+        }
+        
+        // Se não encontrar <time>, tenta as outras tags
+        Elements elements = doc.select("span, div, p");
+    
+        for (Element element : elements) {
+            String text = element.text();
+            
+            // Verificações para diversos formatos de data
+            if ((text.contains("/") && (text.contains("às") || text.contains("h"))) || // DD/MM/AAAA
+                (text.matches("\\d{4}-\\d{2}-\\d{2}.*") || // YYYY-MM-DD
+                 text.matches("\\d{4}/\\d{2}/\\d{2}.*") || // YYYY/MM/DD
+                 text.matches("\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
+                 text.matches("\\d{2} \\w+ \\d{4}.*")) // DD mês AAAA
+                ) {
+                return element; // Retorna o elemento se o texto contém uma data potencial
+            }
+        }
+    
+        return null; // Retorna null se nenhum elemento corresponder
+    }
+       
+    
 }

@@ -3,6 +3,8 @@ package fatec.morpheus.entity;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +43,8 @@ public class MapSource {
     @Column(name = "map_title")
     private String title; 
     @Column(name = "map_url")
-    private String url; 
+    private String url;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @Column(name = "map_date")
     private Date date;
 
