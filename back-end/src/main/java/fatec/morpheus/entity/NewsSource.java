@@ -48,7 +48,7 @@ public class NewsSource {
 
     @ManyToMany
     @JoinTable(
-        name = "source_tag",
+        name = "Source_tag",
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
     )
