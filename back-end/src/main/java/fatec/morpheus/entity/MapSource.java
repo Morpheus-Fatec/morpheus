@@ -33,7 +33,7 @@ public class MapSource {
     private int mapId; 
 
     @ManyToOne 
-    @JoinColumn(name = "src_cod", nullable = false)
+    @JoinColumn(name = "source", nullable = false)
     private NewsSource source; 
 
     @Column(name = "map_author")
