@@ -44,3 +44,10 @@ create table News_tag(
 	foreign key (new_cod) REFERENCES News(new_cod),
 	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
 );
+
+create table News_author(
+	new_auto_id int auto_increment primary key,
+    new_aut_cod int,
+    new_aut_name Varchar(30),
+    foreign key (new_aut_cod) REFERENCES NEWS(new_cod)
+);
