@@ -107,7 +107,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint1.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint2.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
 <br>
@@ -126,7 +126,7 @@ Todo o material relacionado à documentação do projeto pode ser encontrado no 
 
 ## :page_with_curl: Documentação
 
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
 
 ### Estrutura da Documentação:
 - **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
