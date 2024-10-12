@@ -36,16 +36,16 @@ public class MapSource {
     @JoinColumn(name = "source", nullable = false)
     private NewsSource source; 
 
-    @Column(name = "map_author")
+    @Column(name = "map_author", nullable = false)
     private String author; 
-    @Column(name = "map_body")
+    @Column(name = "map_body", nullable = false)
     private String body; 
-    @Column(name = "map_title")
+    @Column(name = "map_title", nullable = false)
     private String title; 
-    @Column(name = "map_url")
+    @Column(name = "map_url", nullable = false)
     private String url;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    @Column(name = "map_date")
+    @Column(name = "map_date", nullable = false)
     private Date date;
 
 }

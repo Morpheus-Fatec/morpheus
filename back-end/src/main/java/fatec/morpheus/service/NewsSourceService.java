@@ -46,7 +46,6 @@ public class NewsSourceService {
         MapSourceDTO.setTitle(newsSourceDTO.getMap().getTitle());
         MapSourceDTO.setUrl(newsSourceDTO.getMap().getUrl());
         MapSourceDTO.setDate(newsSourceDTO.getMap().getDate());  
-        System.out.println("Data: " + MapSourceDTO.getDate());
         MapSource mapSourceResolved = findHtmlTags(MapSourceDTO);
 
         // Set<ConstraintViolation<NewsSource>> violations = validator.validate(source);
@@ -130,32 +129,40 @@ public class NewsSourceService {
         MapSource mapedSource = new MapSource();
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-    
+
             String title = mapSourceDTO.getTitle();
-            System.out.println("Título: " + title);
-            if (title != null) {
-                Element titleElement = findElementContainingText(doc, title);
-                if (titleElement != null) {
-                    String titleClass = titleElement.className();
-                    System.out.println("Classe do título: " + titleClass);
-                } else {
-                    System.out.println("Título não encontrado.");
-                }
+            String titleClass = findElementContainingText(doc, title);
+            if (titleClass != null) {
+                System.out.println("Classe do título: " + titleClass);
+            }else{
+                System.out.println("Título não encontrado.");
             }
     
-            Element dateElement = findDateElement(doc);
-            if (dateElement != null) {
-                String dateText = dateElement.text();
-                String dateClass = dateElement.className();
-                if (dateClass !=null) {
-                    System.out.println("Tag da data: " + dateElement.tagName());
-                }else{
-                    System.out.println("Classe da data: " + dateClass);  
-                }                
-                
+            String dateClass = findDateElement(doc);
+            if (dateClass != null) {
+                System.out.println("class da data: " + dateClass);
+                                   
+            }else{
+                System.out.println("data nao encontrado");  
+            } 
+
+            String author = mapSourceDTO.getAuthor();
+            if (author != null) {
+                String authorClass = findElementContainingText(doc, author);
+                System.out.println("class Autor: " + authorClass);
             } else {
-                System.out.println("Data não encontrada.");
+                System.out.println("Autor não encontrado.");
             }
+
+            String body = mapSourceDTO.getBody();
+            if (body != null) {
+                String bodyClass = findElementContainingText(doc, body);
+                System.out.println("class do corpo: " + bodyClass);
+            } else {
+                System.out.println("Corpo não encontrado.");
+            }
+
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,22 +170,34 @@ public class NewsSourceService {
         return mapedSource;
     }    
     
-    // Função auxiliar para encontrar o elemento que contém o texto específico
-    private Element findElementContainingText(Document doc, String text) {
+    private String findElementContainingText(Document doc, String text) {
         Elements elements = doc.getAllElements();
         for (Element element : elements) {
-            if (element.text().equals(text)) {  // Verifica se o texto é igual ao título
-                return element; // Retorna o elemento se o texto for encontrado
+            String elementText = element.text();
+    
+            // Verifica se o texto do elemento é longo o suficiente
+            if (elementText.length() >= text.length()) {
+                String startOfElementText = elementText.substring(0, text.length());
+    
+                // Compara o começo do texto com o texto esperado
+                if (startOfElementText.equals(text)) {
+                    String className = element.className();
+    
+                    // Verifica se o elemento possui uma classe não vazia
+                    if (className != null && !className.isEmpty()) {
+                        return className;
+                    }
+                }
             }
         }
         return null; // Retorna null se não encontrar
     }
     
-    private Element findDateElement(Document doc) {
+    private String findDateElement(Document doc) {
         // Primeiro, tenta encontrar diretamente a tag <time>
         Elements timeElements = doc.select("time");
         if (!timeElements.isEmpty()) {
-            return timeElements.first(); // Retorna o primeiro elemento <time> encontrado
+            return timeElements.first().className(); // Retorna o primeiro elemento <time> encontrado
         }
         
         // Se não encontrar <time>, tenta as outras tags
@@ -194,12 +213,13 @@ public class NewsSourceService {
                  text.matches("\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
                  text.matches("\\d{2} \\w+ \\d{4}.*")) // DD mês AAAA
                 ) {
-                return element; // Retorna o elemento se o texto contém uma data potencial
+                return element.className(); // Retorna a classe do elemento se o texto contém uma data potencial
             }
         }
     
         return null; // Retorna null se nenhum elemento corresponder
     }
+
        
     
 }
