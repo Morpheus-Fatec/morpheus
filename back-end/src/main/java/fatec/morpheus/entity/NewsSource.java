@@ -51,7 +51,7 @@ public class NewsSource {
         name = "Source_tag",
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
-    )
+    )   
    
     private List<Tag> tags; 
 }

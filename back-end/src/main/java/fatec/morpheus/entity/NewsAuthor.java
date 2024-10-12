@@ -32,15 +32,11 @@ public class NewsAuthor {
     @Column(name = "new_aut_id")
     private int autId;
 
-    @Column(name = "new_aut_cod", unique = true)
+    @Column(name = "new_aut_cod")
     private int autCode;
 
     @Column(name = "new_aut_name", length = 30, unique = true)
     @Size(max = 30, message = "Name cannot exceed 30 characters")
     private String autName;
 
-    @ManyToOne
-    @JoinColumn(name = "new_cod")
-    private List<News> news;
-    
 }
