@@ -1,124 +1,674 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../css/bootstrap.css">
-        <title>Document</title>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-dark bg-gradient py-4">
-            <div class="container-fluid">
-                <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center gap-3" href="#">
-                    <img src="../assets/logo.png" alt="" width="70" class="d-inline-block align-text-top ">
-                    <h1 class="text-light">Morpheus</h1>
-                    </a>
-                </div>
-                <div class="collapse navbar-collapse w-25 d-flex justify-content-center" id="navbarSupportedContent">
-                    <ul class="navbar-nav mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active px-5 text-white fs-5 fw-bold" aria-current="page" href="managerNews.html">Portal de notícias</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center justify-content-center">
-                        <a class="nav-link active text-white fs-5 fw-bold" aria-current="page" href="index.html">Tags</a>
-                    </li>
-                    </ul>
-                </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpheus</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css\bootstrap-icons-1.11.3\bootstrap-icons-1.11.3\font\bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Configurações</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="mb-3">
+            <label for="intervalSelect" class="form-label">Intervalo de leitura de fontes de dados</label>
+            <select class="form-select" id="intervalSelect" aria-label="Select de intervalo">
+                <option selected>Selecione o intervalo</option>
+                <option value="1">Diário</option>
+                <option value="2">Dois em dois dias</option>
+                <option value="3">Semanal</option>
+            </select>
+            <div class="mb-3">
+                <label for="timeInput" class="form-label">Horário de leitura:</label>
+                    <input type="time" id="timeInput" class="form-control" v-model="selectedTime" />
+              </div>
             </div>
-        </nav>
-        <div id="app"></div>
-        <script type="text/x-template" id="tag-screen-template">
-            <div class="container py-5">
-                <div class="d-flex align-items-center gap-4">
-                    <img src="../assets/tag.png" width="80"/>
-                    <h1>Tags</h1>
-                </div>
-                <div class="mt-4 mb-3">
-                    <button class="btn btn-dark bg-gradient w-25" @click="openModal">Cadastrar tags</button>
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" v-model="searchQuery" aria-label="Text input with dropdown button" placeholder="Pesquisar tags...">
-                </div>
-                <table class="table" v-if="filteredTags.length">
-                    <thead>
+            <button type="button" class="btn btn-primary">Salvar</button>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/Logo_Morpheus.png" alt="Morpheus Logo" width="auto" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            <i class="bi bi-newspaper"></i> Portais de Notícia
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-geo-alt"></i> Noticias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                            <i class="bi bi-tools"></i> Configurações
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-title d-flex justify-content-between align-items-center" :class="{ hidden: !isVisible }">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-newspaper" style="font-size: 30px; color: #004c8a;"></i>
+                <h1 class="ms-2 mb-0">Portais de Notícia</h1>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" @click="toggleVisibility">
+                <i :class="isVisible ? 'bi bi-arrows-fullscreen' : 'bi bi-fullscreen-exit'"></i>
+            </button>
+        </div>
+
+        <div :class="{ hidden: !isVisible }">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button"  @click="createdNews" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Cadastrar
+                </button>
+                <button type="button"  @click="managerTagsOpen" class="btn btn-primary">
+                    <i class="bi bi-tags"></i> Gerenciar Tags
+                </button>
+                <button type="button"  @click="regionalismOpen" class="btn btn-primary">
+                    <i class="bi bi-geo-alt"></i> Regionalismo
+                </button>
+            </div>
+
+            <div class="mt-3 d-flex">
+                <select class="form-select" v-model="searchField" @change="updateSearch" style="width: auto;">
+                    <option value="name">Nome</option>
+                    <option value="address">Endereço</option>
+                </select>
+                <input type="text" class="form-control ms-2" v-model="searchQuery" placeholder="Pesquisar" @input="filterNews" style="flex-grow: 1;">
+            </div>
+        </div>
+
+        <div class="indicator-container">
+            <div class="left-align-button">
+            </div>
+            <label class="record-indicator">Exibidos {{ filteredNews.length }} de {{ newsList.length }}</label>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-bordered mt-2">
+                <thead>
                     <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Tag</th>
-                        <th scope="col">Ações</th>
+                        <th scope="col">
+                            Nome
+                            <button class="btn btn-icon" @click="toggleSort('name')">
+                              <i :class="sort.order != 'asc' 
+                                         ? 'bi bi-arrow-down-circle-fill' 
+                                         : 'bi bi-arrow-up-circle-fill'"></i>
+                            </button>
+                          </th>
+                          <th scope="col">
+                            Endereço
+                            <button class="btn btn-icon" @click="toggleSort('address')">
+                              <i :class="sort.order != 'asc' 
+                                         ? 'bi bi-arrow-down-circle-fill' 
+                                         : 'bi bi-arrow-up-circle-fill'"></i>
+                            </button>
+                          </th>
+                        <th scope="col"></th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="tag in filteredTags" :key="tag.tagCode">
-                        <th scope="row">{{ tag.tagCod }}</th>
-                        <td>{{ tag.tagName }}</td>
-                        <td>
-                        <button class="btn btn-sm btn-outline-dark mx-1" @click="tagBeingEdited = tag; newTagName = tag.tagName; openModal()">
-                            Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger mx-1" @click="confirmDelete(tag)">
-                            Deletar
-                        </button>
+                </thead>
+                <tbody>
+                    <tr v-for="news in filteredNews" :key="news.code">
+                        <td>{{ news.name }}</td>
+                        <td>{{ news.address }}</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button class="btn btn-outline-primary btn-sm" title="Tags" @click="showTags(news)">
+                                    <i class="bi bi-tags"></i> <span class="badge" :class="news.tags.length === 0 ? 'bg-danger' : 'bg-secondary'">{{ news.tags.length }}</span>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" title="Editar" @click="editNews(news)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" title="Excluir" @click="deleteNews(news)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
-                    </tbody>
-                </table>
-                <div v-else class="alert alert-danger" role="alert">
-                    <p>Nenhuma tag encontrada.</p>
-                </div>
-                
-                <!-- Modal de cadastro/edição de tags -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" :id="modalTitleId">{{ modalTitle }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                            <form>
-                                <div class="mb-3">
-                                    <label for="recipient-name" class="col-form-label">Nome da Tag:</label>
-                                    <input type="text" class="form-control" v-model="newTagName" id="recipient-name">
-                                </div>
-                            </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="button" class="btn btn-primary" @click="tagBeingEdited ? handlePutTag() : handlePostTag()">Salvar</button>
-                            </div>
-                        </div>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" ref="deleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-            
-                <!-- Modal de confirmação de exclusão -->
-                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div v-if="tagToDelete">
-                                    Deseja realmente excluir a tag "<strong>{{ tagToDelete.name }}</strong>"?
-                                </div>
-                                <div v-else>
-                                    <p>Tag não encontrada.</p>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-danger" @click="handleDeleteTag">Excluir</button>
-                            </div>
-                        </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{this.delete.news.name}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="confirmDeleteNews()">Excluir</button>
                     </div>
                 </div>
             </div>
-        </script>
-        <script src="../library/axios.js"></script>
-        <script src="../library/vue.js"></script>
-        <script src="../library/bootstrap.bundle.min.js"></script>
-        <script src="../js/tagScreen.js"></script>
-    </body>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="createModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" v-if="created.create" id="createModalLabel">Cadastrar Portal de Noticias</h5>
+                        <h5 class="modal-title" v-if="!created.create" id="createModalLabel">Editar Portal de Noticias</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="newsAddress" class="form-label">Endereçdo:</label>
+                                <input type="text" class="form-control" id="newsAddress" v-model="created.news.address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newsName" class="form-label">Nome:</label>
+                                <input type="text" class="form-control" id="newsName" v-model="created.news.name" required>
+                            </div>
+
+                            <div class="card" >
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs">
+                                        <li class="nav-item">
+                                            <a 
+                                                class="nav-link" 
+                                                :class="{ active: created.mapInsert && !created.mapTag }" 
+                                                aria-current="page" 
+                                                @click="enabledMap()">
+                                                <i class="bi bi-magic"></i> Mapeamento Automatico
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a 
+                                                class="nav-link" 
+                                                :class="{ active: !created.mapInsert && created.mapTag }" 
+                                                @click="enabledEditTags()">
+                                                <i class="bi bi-code-slash"></i> Mapeamento de Tags HTML
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <br>
+                                    <div v-if="created.mapInsert && !created.mapTag">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="newsUrl" class="form-label">URL da Notícia:</label>
+                                                    <input type="url" class="form-control" id="newsUrl" v-model="created.news.map.url" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsTitle" class="form-label">Título da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsTitle" v-model="created.news.map.title" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsBody" class="form-label">Corpo da Notícia:</label>
+                                                    <textarea class="form-control" id="newsBody" v-model="created.news.map.body" rows="4" required></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsAuthor" class="form-label">Autor da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsAuthor" v-model="created.news.map.author" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsAuthor" class="form-label">Data da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsAuthor" v-model="created.news.map.author" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <iframe 
+                                                    v-if="created.news.map.url" 
+                                                    :src="created.news.map.url" 
+                                                    style="width: 100%; height: 100%; border: none;">
+                                                </iframe>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" type="button">Buscar Mapeamento</button>
+                                          </div>
+                                    </div>
+                                    <div  v-if="created.mapTag && !created.mapInsert">
+                                        <div class="row">
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsTitle" class="form-label me-2">Título da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsTitle" v-model="created.news.mapTag.title" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsBody" class="form-label me-2">Corpo da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsBody" v-model="created.news.mapTag.body" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsAuthor" class="form-label me-2">Autor da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsAuthor" v-model="created.news.mapTag.author" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsAuthor" class="form-label me-2">Data da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsAuthor" v-model="created.news.mapTag.author" style="width: 200px;" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="confirmCreateNews()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="tagsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Definir Tags</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input 
+                                                type="text" 
+                                                class="form-control mb-2" 
+                                                placeholder="Buscar tags disponíveis..."
+                                                v-model="tags.search.available">
+                                        </div>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-success w-100" 
+                                            @click="createTag()"
+                                            v-if="unselectedTags.length === 0 && tags.search.available != '' && tags.search.available != null">
+                                            <i class="bi bi-plus-circle"></i> Cadastrar Tag
+                                        </button>
+                                        <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
+                                        <select id="selectOption1" class="form-select" v-model="tags.movedAdd" multiple size="15">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCode" :value="tag.tagCode">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-success w-100" 
+                                        @click="addOption()"
+                                        :disabled="tags.movedAdd.length === 0">
+                                        <i class="bi bi-arrow-right-circle"></i> Adicionar
+                                    </button>
+                                </div>
+        
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input 
+                                                type="text" 
+                                                class="form-control mb-2" 
+                                                placeholder="Buscar tags selecionadas..."
+                                                v-model="tags.search.selected">
+                                            <button 
+                                                v-if="selectedTags.length === 0 && tags.search.selected" 
+                                                class="btn btn-primary ms-2" 
+                                                @click="registerNewTag">
+                                                Cadastrar Tag
+                                            </button>
+                                        </div>
+                                        <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
+                                        <select id="selectOption2" class="form-select" v-model="tags.movedRemove" multiple size="15">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCode" :value="tag.tagCode">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-danger w-100" 
+                                        @click="deleteOption()"
+                                        :disabled="tags.movedRemove.length === 0">
+                                        <i class="bi bi-arrow-left-circle"></i> Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+        
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="saveTags()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="tagManangerModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Gerenciar Tags</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mt-3 d-flex">
+                            <input type="text" class="form-control ms-2" v-model="managerTags.search" placeholder="Pesquisar" @input="filterTags" style="flex-grow: 1;">
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-bordered mt-2">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="w-75">
+                                            Nome
+                                            <button class="btn btn-icon"></button>
+                                        </th>
+                                        <th scope="col" class="w-25 text-center">
+                                            <button v-if="!managerTags.insert" class="btn btn-outline-primary btn-sm" title="Adicionar" @click="managerTags.insert = true">
+                                                <i class="bi bi-plus"></i> Adicionar
+                                            </button>
+                                        </th>
+                                    </tr>
+                                    <tr v-if="managerTags.insert">
+                                        <td>
+                                            <input type="text" v-model="managerTags.insertTag" placeholder="Nome da notícia" class="form-control" />
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-outline-primary btn-sm" title="Adicionar" @click="addTag()">
+                                                <i class="bi bi-save"></i> Salvar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="tag in managerTags.filtered" :key="tag.id">
+                                        <td>
+                                            <span v-if="!tag.isEditing">{{ tag.tagName }}</span>
+                                            <input 
+                                                v-if="tag.isEditing" 
+                                                v-model="tag.tagName" 
+                                                @blur="saveTag(tag)" 
+                                                @keyup.enter="saveTag(tag)"
+                                                type="text" 
+                                            />
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button 
+                                                    class="btn btn-outline-success btn-sm" 
+                                                    title="Salvar" 
+                                                    @click="editTag(tag)"
+                                                >
+                                                <i :class="tag.isEditing ? 'bi bi-save' : 'bi bi-pencil'"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm" title="Excluir">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                                                        
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="saveTags()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="createModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" v-if="created.create" id="createModalLabel">Cadastrar Portal de Noticias</h5>
+                        <h5 class="modal-title" v-if="!created.create" id="createModalLabel">Editar Portal de Noticias</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="newsAddress" class="form-label">Endereço2:</label>
+                                <input type="text" class="form-control" id="newsAddress" v-model="created.news.address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newsName" class="form-label">Nome:</label>
+                                <input type="text" class="form-control" id="newsName" v-model="created.news.name" required>
+                            </div>
+
+                            <div class="card" >
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs">
+                                        <li class="nav-item">
+                                            <a 
+                                                class="nav-link" 
+                                                :class="{ active: created.mapInsert && !created.mapTag }" 
+                                                aria-current="page" 
+                                                @click="enabledMap()">
+                                                <i class="bi bi-magic"></i> Mapeamento Automatico
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a 
+                                                class="nav-link" 
+                                                :class="{ active: !created.mapInsert && created.mapTag }" 
+                                                @click="enabledEditTags()">
+                                                <i class="bi bi-code-slash"></i> Mapeamento de Tags HTML
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <br>
+                                    <div v-if="created.mapInsert && !created.mapTag">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <!-- Formulário -->
+                                                <div class="mb-3">
+                                                    <label for="newsUrl" class="form-label">URL da Notícia:</label>
+                                                    <input type="url" class="form-control" id="newsUrl" v-model="created.news.map.url" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsTitle" class="form-label">Título da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsTitle" v-model="created.news.map.title" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsBody" class="form-label">Corpo da Notícia:</label>
+                                                    <textarea class="form-control" id="newsBody" v-model="created.news.map.body" rows="4" required></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsAuthor" class="form-label">Autor da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsAuthor" v-model="created.news.map.author" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newsAuthor" class="form-label">Data da Notícia:</label>
+                                                    <input type="text" class="form-control" id="newsAuthor" v-model="created.news.map.data" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <iframe 
+                                                    v-if="created.news.map.url" 
+                                                    :src="created.news.map.url" 
+                                                    style="width: 100%; height: 100%; border: none;">
+                                                </iframe>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" type="button">Buscar Mapeamento</button>
+                                          </div>
+                                    </div>
+                                    <div  v-if="created.mapTag && !created.mapInsert">
+                                        <div class="row">
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsTitle" class="form-label me-2">Título da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsTitle" v-model="created.news.mapTag.title" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsBody" class="form-label me-2">Corpo da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsBody" v-model="created.news.mapTag.body" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsAuthor" class="form-label me-2">Autor da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsAuthor" v-model="created.news.mapTag.author" style="width: 200px;" required>
+                                            </div>
+                                            <div class="mb-3 d-flex align-items-center">
+                                                <label for="newsAuthor" class="form-label me-2">Data da Notícia:</label>
+                                                <input type="text" class="form-control" id="newsAuthor" v-model="created.news.mapTag.data" style="width: 200px;" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="confirmCreateNews()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="regionalismModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-geo-alt"></i> Gerenciar Regionalismo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="regionalism.alert.active" :class="['alert', `alert-${regionalism.alert.class}`]" role="alert">
+                            {{ regionalism.alert.message }}
+                        </div>
+                        <div v-if="!regionalism.wordSelected.available">
+                            <div class="mt-3 d-flex">
+                                <input type="text" class="form-control ms-2" v-model="regionalism.search" placeholder="Pesquisar" @input="filterWords" style="flex-grow: 1;">
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-bordered mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="w-75">Conteudo</th>
+                                            <th scope="col" class="w-25 text-center">
+                                                <button v-if="!regionalism.insert" class="btn btn-outline-primary btn-sm" title="Adicionar" @click="regionalism.insert = true">
+                                                    <i class="bi bi-plus"></i> Adicionar
+                                                </button>
+                                            </th>
+                                        </tr>
+                                        <tr v-if="regionalism.insert">
+                                            <td>
+                                                <input type="text" v-model="regionalism.insertWord" placeholder="Conteudo" class="form-control" />
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-primary btn-sm" title="Adicionar" @click="addWord()">
+                                                    <i class="bi bi-save"></i> Salvar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="regionalism.filtered.length === 0">
+                                            <td colspan="2" class="text-center">Sem palavras encontradas</td>
+                                        </tr>
+                                        <tr v-for="word in regionalism.filtered" :key="word.id">
+                                            <td><span>{{ word.content }}</span></td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-outline-success btn-sm" title="Editar" @click="editWord(word)">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm" title="Excluir" @click="deleteWord(word)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+        
+                        <div v-if="regionalism.wordSelected.available">
+                            <div class="mb-3">
+                                <label for="inputContent" class="form-label">Conteúdo</label>
+                                <input type="text" id="inputContent" class="form-control ms-2" 
+                                       v-model="regionalism.wordSelected.word.content" 
+                                       placeholder="Digite o conteúdo da palavra" 
+                                       style="flex-grow: 1;">
+                            </div>
+                            <!-- Card para os checkboxes -->
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    Sinônimos
+                                </div>
+                                <div class="card-body">
+                                    <div class="mt-3 d-flex">
+                                        <input type="text" class="form-control ms-2" v-model="regionalism.wordSelected.search" placeholder="Pesquisar" @input="filterWordsSynonyms" style="flex-grow: 1;">
+                                    </div>
+                                    <form>
+                                        <div class="form-check" v-for="word in regionalism.wordSelected.filtered" :key="word.id">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                :id="'word' + word.id"
+                                                :value="word"
+                                                :checked="isSynonymSelected(word)"
+                                                @change="toggleSynonym(word.id)"
+                                            />
+                                            <label class="form-check-label" :for="'word' + word.id">
+                                                {{ word.content }}
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" v-if="regionalism.wordSelected.available">
+                        <button type="button" class="btn btn-secondary" @click="regionalism.wordSelected.available = false">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="saveWord()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="regionalismDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" ref="regionalismDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{regionalism.delete.wordSelected.content}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="cancelDeleteWord()">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="confirmDeleteWord()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../library/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
+    <script src="../library/axios.js"></script>
+    <script src="../js/index.js"></script>
+</body>
 </html>
