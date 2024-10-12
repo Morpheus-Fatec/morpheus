@@ -112,9 +112,17 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 <br>
 
+## Board de Atividades
+
+Acesse o Board de atividades do Time para visualizar as atividades planejadas, em desenvolvimento e prontas.
+
+[Board de Atividades](https://github.com/orgs/Morpheus-Fatec/projects/1/views/1)
+
+<br>
+
 ## :page_with_curl: <a id="documentação"> Documentação </a>
 
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
 
 ### Estrutura da Documentação:
 - **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
