@@ -36,8 +36,8 @@ public class NewsController {
         @ApiResponse(responseCode = "400", description = "Erro ao retornar notícias"),
     })
     @GetMapping
-    public ResponseEntity<List<News>> getAllNews(){
-        List<News> news = newsService.findAllNews();
+    public ResponseEntity<List<News>> getAllNews(@RequestParam int page, @RequestParam int itens){
+        List<News> news = newsService.findAllNews(page, itens);
         return ResponseEntity.ok(news);
     }
 
