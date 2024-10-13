@@ -194,36 +194,7 @@ public class NewsSourceService {
             }
         }
         return null; // Retorna null se não encontrar
-    } 
-
-    // Deve procurar um elemento que tem o texto do body, e deve retornar a classe do pai
-    private String findBodyElement(Document doc, String body) {
-        // Seleciona todos os elementos relevantes
-        Elements elements = doc.select("a, span, div, p, h1, h2, h3");
-    
-        for (Element element : elements) {
-            String elementText = element.text();
-            
-            // Compara o texto do elemento com o texto esperado
-            if (elementText.equalsIgnoreCase(body)) {
-                System.out.println("Texto encontrado no corpo: " + elementText);
-                // Pega o elemento pai mais distante com uma classe não vazia
-                Element parentElement = element.parent(); // Começa com o pai
-                while (parentElement != null) {
-                    String parentClassName = parentElement.className();
-                    // Se encontrar uma classe não vazia, retorna
-                    if (parentClassName != null && !parentClassName.isEmpty()) {
-                        System.out.println("Texto encontrado no elemento pai: " + elementText);
-                        return parentClassName; // Retorna a classe do pai mais distante
-                    }
-                    parentElement = parentElement.parent(); // Sobe para o próximo pai
-                }
-            }
-        }
-
-        return null; // Retorna null se não encontrar
-    }
-    
+    }    
        
     private String findDateElement(Document doc) {
         // Primeiro, tenta encontrar todas as tags <time> no documento
