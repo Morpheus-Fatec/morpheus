@@ -1,11 +1,12 @@
 package fatec.morpheus.entity;
 
 public class CronProperties {
-    private static String frequency;
-    private static String time;
-    private static String timeZone;
+    private String frequency;
+    private String time;
+    private String timeZone;
 
-    public static String getFrequency() {
+    // Getters e Setters
+    public String getFrequency() {
         return frequency;
     }
 
@@ -13,7 +14,7 @@ public class CronProperties {
         this.frequency = frequency;
     }
 
-    public static String getTime() {
+    public String getTime() {
         return time;
     }
 
@@ -21,7 +22,7 @@ public class CronProperties {
         this.time = time;
     }
 
-    public static String getTimeZone() {
+    public String getTimeZone() {
         return timeZone;
     }
 
