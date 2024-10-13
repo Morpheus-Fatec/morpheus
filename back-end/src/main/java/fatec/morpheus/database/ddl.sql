@@ -56,4 +56,5 @@ create table Synonymous(
     syn_group int,
     primary key (texto_cod, syn_group),
     foreign key (texto_cod) REFERENCES Texto(texto_cod)
+	foreign key (syn_group) REFERENCES texto(texto_cod)
 );
