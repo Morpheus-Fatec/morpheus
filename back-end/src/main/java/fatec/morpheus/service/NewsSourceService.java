@@ -129,7 +129,7 @@ public class NewsSourceService {
         MapSource mapedSource = new MapSource();
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-
+            System.out.println("URL: " + mapSourceDTO.getUrl());
             String title = mapSourceDTO.getTitle();
             String titleClass = findElementContainingText(doc, title);
             if (titleClass != null) {
@@ -137,7 +137,7 @@ public class NewsSourceService {
             }else{
                 System.out.println("Título não encontrado.");
             }
-    
+            System.out.println();
             String dateClass = findDateElement(doc);
             if (dateClass != null) {
                 System.out.println("class da data: " + dateClass);
@@ -145,7 +145,7 @@ public class NewsSourceService {
             }else{
                 System.out.println("data nao encontrado");  
             } 
-
+            System.out.println();
             String author = mapSourceDTO.getAuthor();
             if (author != null) {
                 String authorClass = findElementContainingText(doc, author);
@@ -153,11 +153,11 @@ public class NewsSourceService {
             } else {
                 System.out.println("Autor não encontrado.");
             }
+            System.out.println();
 
             String body = mapSourceDTO.getBody();
             if (body != null) {
-                String bodyClass = findBodyElement(doc, body);
-                String bodyteste = findElementContainingText(doc, bodyClass);
+                String bodyClass = findElementContainingText(doc, body);
                 System.out.println("class do corpo: " + bodyClass);
             } else {
                 System.out.println("Corpo não encontrado.");
@@ -165,7 +165,7 @@ public class NewsSourceService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
+        System.out.println();
         return mapedSource;
     }    
     
@@ -180,7 +180,6 @@ public class NewsSourceService {
     
                 // Verifica se o elemento possui uma classe não vazia
                 if (className != null && !className.isEmpty()) {
-                    System.out.println("\n" +"Texto encontrado: " + elementText + "\n");
                     return className;
                 } else {
                     // Tenta pegar a classe do elemento pai
