@@ -156,13 +156,12 @@ public class NewsSourceService {
 
             String body = mapSourceDTO.getBody();
             if (body != null) {
-                String bodyClass = findElementContainingText(doc, body);
+                String bodyClass = findBodyElement(doc, body);
+                String bodyteste = findElementContainingText(doc, bodyClass);
                 System.out.println("class do corpo: " + bodyClass);
             } else {
                 System.out.println("Corpo não encontrado.");
-            }
-
-            
+            }            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,55 +170,104 @@ public class NewsSourceService {
     }    
     
     private String findElementContainingText(Document doc, String text) {
-        Elements elements = doc.getAllElements();
+        Elements elements = doc.select("a, span, div, p, h1, h2, h3, time");
         for (Element element : elements) {
             String elementText = element.text();
     
-            // Verifica se o texto do elemento é longo o suficiente
-            if (elementText.length() >= text.length()) {
-                String startOfElementText = elementText.substring(0, text.length());
+            // Compara o texto completo do elemento com o texto esperado
+            if (elementText.equalsIgnoreCase(text)) {
+                String className = element.className();
     
-                // Compara o começo do texto com o texto esperado
-                if (startOfElementText.equals(text)) {
-                    String className = element.className();
-    
-                    // Verifica se o elemento possui uma classe não vazia
-                    if (className != null && !className.isEmpty()) {
-                        return className;
+                // Verifica se o elemento possui uma classe não vazia
+                if (className != null && !className.isEmpty()) {
+                    System.out.println("\n" +"Texto encontrado: " + elementText + "\n");
+                    return className;
+                } else {
+                    // Tenta pegar a classe do elemento pai
+                    Element parentElement = element.parent(); // Pega o elemento pai
+                    if (parentElement != null) {
+                        String parentClassName = parentElement.className();
+                        if (parentClassName != null && !parentClassName.isEmpty()) {
+                            return parentClassName;
+                        }
                     }
                 }
             }
         }
         return null; // Retorna null se não encontrar
-    }
-    
-    private String findDateElement(Document doc) {
-        // Primeiro, tenta encontrar diretamente a tag <time>
-        Elements timeElements = doc.select("time");
-        if (!timeElements.isEmpty()) {
-            return timeElements.first().className(); // Retorna o primeiro elemento <time> encontrado
-        }
-        
-        // Se não encontrar <time>, tenta as outras tags
-        Elements elements = doc.select("span, div, p");
+    } 
+
+    // Deve procurar um elemento que tem o texto do body, e deve retornar a classe do pai
+    private String findBodyElement(Document doc, String body) {
+        // Seleciona todos os elementos relevantes
+        Elements elements = doc.select("a, span, div, p, h1, h2, h3");
     
         for (Element element : elements) {
-            String text = element.text();
+            String elementText = element.text();
             
+            // Compara o texto do elemento com o texto esperado
+            if (elementText.equalsIgnoreCase(body)) {
+                System.out.println("Texto encontrado no corpo: " + elementText);
+                // Pega o elemento pai mais distante com uma classe não vazia
+                Element parentElement = element.parent(); // Começa com o pai
+                while (parentElement != null) {
+                    String parentClassName = parentElement.className();
+                    // Se encontrar uma classe não vazia, retorna
+                    if (parentClassName != null && !parentClassName.isEmpty()) {
+                        System.out.println("Texto encontrado no elemento pai: " + elementText);
+                        return parentClassName; // Retorna a classe do pai mais distante
+                    }
+                    parentElement = parentElement.parent(); // Sobe para o próximo pai
+                }
+            }
+        }
+
+        return null; // Retorna null se não encontrar
+    }
+    
+       
+    private String findDateElement(Document doc) {
+        // Primeiro, tenta encontrar todas as tags <time> no documento
+        Elements timeElements = doc.select("time");
+        for (Element timeElement : timeElements) {
+            String datetime = timeElement.attr("datetime");
+            String text = timeElement.text();
+            
+            // Verifica se o atributo datetime está presente e não está vazio
+            if (!datetime.isEmpty()) {
+                return timeElement.tagName(); // Retorna a classe do elemento <time> se o atributo datetime estiver presente
+            }
+            
+            // Verifica o texto do elemento <time> se ele contém um formato de data conhecido
+            if (checkDateText(text)) {
+                return timeElement.className(); // Retorna a classe se o texto contiver uma data
+            }
+        }
+    
+        // Se nenhum elemento <time> válido for encontrado, tenta outras tags
+        Elements elements = doc.select("span, div, p");
+        for (Element element : elements) {
+            String text = element.text();
+    
             // Verificações para diversos formatos de data
-            if ((text.contains("/") && (text.contains("às") || text.contains("h"))) || // DD/MM/AAAA
-                (text.matches("\\d{4}-\\d{2}-\\d{2}.*") || // YYYY-MM-DD
-                 text.matches("\\d{4}/\\d{2}/\\d{2}.*") || // YYYY/MM/DD
-                 text.matches("\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
-                 text.matches("\\d{2} \\w+ \\d{4}.*")) // DD mês AAAA
-                ) {
-                return element.className(); // Retorna a classe do elemento se o texto contém uma data potencial
+            if (checkDateText(text)) {
+                return element.className(); // Retorna a classe do elemento se o texto contiver uma data potencial
             }
         }
     
         return null; // Retorna null se nenhum elemento corresponder
-    }
+    }  
 
-       
+    private boolean checkDateText(String text){
+        if (text.matches(".*\\d{2}/\\d{2}/\\d{4}.*") || // DD/MM/AAAA
+            text.matches(".*\\d{4}-\\d{2}-\\d{2}.*") || // YYYY-MM-DD
+            text.matches(".*\\d{4}/\\d{2}/\\d{2}.*") || // YYYY/MM/DD
+            text.matches(".*\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
+            text.matches(".*\\d{2} \\w+ \\d{4}.*") // DD mês AAAA
+        ) {
+            return true;
+        }
+        return false;
+    }
     
 }
