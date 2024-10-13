@@ -54,4 +54,5 @@ public class NewsSource {
     )
    
     private List<Tag> tags; 
+
 }

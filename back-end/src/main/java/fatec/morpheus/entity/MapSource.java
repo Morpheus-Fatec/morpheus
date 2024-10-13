@@ -1,10 +1,6 @@
 package fatec.morpheus.entity;
 
 
-import java.sql.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,10 +26,11 @@ public class MapSource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "map_id")
     private int mapId; 
 
     @ManyToOne 
-    @JoinColumn(name = "source", nullable = false)
+    @JoinColumn(name = "src_cod", nullable = false)
     private NewsSource source; 
 
     @Column(name = "map_author", nullable = false)
@@ -44,8 +41,7 @@ public class MapSource {
     private String title; 
     @Column(name = "map_url", nullable = false)
     private String url;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @Column(name = "map_date", nullable = false)
-    private Date date;
+    private String date;
 
 }

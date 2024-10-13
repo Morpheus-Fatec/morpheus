@@ -39,8 +39,8 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "400", description = "Erro ao criar portal de notícias"),
     })
     @PostMapping
-    public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
-        NewsSource savedNewsSource = newsSourceService.createNewsSource(newsSourceDTO); 
+    public ResponseEntity<NewsSourceDTO> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
+        NewsSourceDTO savedNewsSource = newsSourceService.createNewsSource(newsSourceDTO); 
         return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
     }
 

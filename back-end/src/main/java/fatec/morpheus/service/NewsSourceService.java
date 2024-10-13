@@ -14,14 +14,19 @@ import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
+import fatec.morpheus.repository.MapSourceRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,48 +36,84 @@ public class NewsSourceService {
     private NewsSourceRepository newsSourceRepository;
 
     @Autowired
+    private MapSourceRepository mapSourceRepository;
+
+    @Autowired
     private Validator validator;
 
-    public NewsSource createNewsSource(NewsSourceDTO newsSourceDTO) {
+    private NewsSource source = new NewsSource();
+    private NewsSourceDTO newsSourceDTO = new NewsSourceDTO();
+    private MapSourceDTO MapSourceDTO = new MapSourceDTO();
 
-        NewsSource source = new NewsSource();
-        source.setSrcName(newsSourceDTO.getName());
-        source.setAddress(newsSourceDTO.getAddress());
+    public NewsSourceDTO createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
+
+        source.setSrcName(newsSourceCreatedDTO.getSrcName());
+        source.setAddress(newsSourceCreatedDTO.getAddress());
+
+        MapSourceDTO.setAuthor(newsSourceCreatedDTO.getMap().getAuthor());
+        MapSourceDTO.setBody(newsSourceCreatedDTO.getMap().getBody());
+        MapSourceDTO.setTitle(newsSourceCreatedDTO.getMap().getTitle());
+        MapSourceDTO.setUrl(newsSourceCreatedDTO.getMap().getUrl());
+        MapSourceDTO.setDate(newsSourceCreatedDTO.getMap().getDate());
+        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);
+        Set<ConstraintViolation<MapSourceDTO>> mapviolations = validator.validate(MapSourceDTO);
+    
+        if (!sourceViolations.isEmpty()) {
+            List<String> errors = sourceViolations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
+
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
+            throw new InvalidFieldException(errorResponse);
+        }
+
+        if (!mapviolations.isEmpty()) {
+            List<String> errors = mapviolations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
+
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
+            throw new InvalidFieldException(errorResponse);
+        }
+
+        try {
+            // Processa as tags HTML e cria MapSource a partir delas
+            MapSource mapSourceResolved = findHtmlTags(MapSourceDTO);
+            mapSourceResolved.setSource(source); // Associa o source ao MapSource
         
-        MapSourceDTO MapSourceDTO = new MapSourceDTO();
-        MapSourceDTO.setSource(source);
-        MapSourceDTO.setAuthor(newsSourceDTO.getMap().getAuthor());
-        MapSourceDTO.setBody(newsSourceDTO.getMap().getBody());
-        MapSourceDTO.setTitle(newsSourceDTO.getMap().getTitle());
-        MapSourceDTO.setUrl(newsSourceDTO.getMap().getUrl());
-        MapSourceDTO.setDate(newsSourceDTO.getMap().getDate());  
-        MapSource mapSourceResolved = findHtmlTags(MapSourceDTO);
-
-        // Set<ConstraintViolation<NewsSource>> violations = validator.validate(source);
-
-        // if (!violations.isEmpty()) {
-        //     List<String> errors = violations.stream()
-        //         .map(ConstraintViolation::getMessage)
-        //         .collect(Collectors.toList());
-
-        //     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
-        //     throw new InvalidFieldException(errorResponse);
-        // }
-
-        // try {
-        //     return newsSourceRepository.save(source);
-                
-        // } catch (Exception e) {
-        //     List<String> duplicateFields = this.verifyUniqueKeys(source);
+            // Salva o source no banco de dados primeiro
+            newsSourceRepository.save(source);
             
-        //     ErrorResponse errorResponse = new ErrorResponse(
-        //         HttpStatus.CONFLICT,   
-        //         duplicateFields       
-        //     );
+            // Agora que o source foi salvo, ele possui um ID, então podemos salvar o MapSource
+            mapSourceRepository.save(mapSourceResolved);
+        
+            // Cria um DTO a partir do mapSourceResolved para retornar
+            MapSourceDTO mapedSourceDTO = new MapSourceDTO();
+            mapedSourceDTO.setAuthor(mapSourceResolved.getAuthor());
+            mapedSourceDTO.setBody(mapSourceResolved.getBody());
+            mapedSourceDTO.setTitle(mapSourceResolved.getTitle());
+            mapedSourceDTO.setUrl(mapSourceResolved.getUrl());
+            mapedSourceDTO.setDate(mapSourceResolved.getDate().toString());
+            
+            // Atualiza os dados do DTO para retorno
+            newsSourceDTO.setSrcName(source.getSrcName());
+            newsSourceDTO.setAddress(source.getAddress());
+            newsSourceDTO.setMap(mapedSourceDTO);
+        
+            System.out.println(mapSourceResolved.toString());
+        
+            return newsSourceDTO;
+                
+        } catch (Exception e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(source);
+            
+            ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,   
+                duplicateFields       
+            );
 
-        //     throw new UniqueConstraintViolationException(errorResponse);
-        // }
-        return null;
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
     }
 
     private List<String> verifyUniqueKeys(NewsSource newsSource) {
@@ -127,41 +168,26 @@ public class NewsSourceService {
 
     private MapSource findHtmlTags(MapSourceDTO mapSourceDTO) {
         MapSource mapedSource = new MapSource();
+        mapedSource.setUrl(mapSourceDTO.getUrl());
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
             System.out.println("URL: " + mapSourceDTO.getUrl());
             String title = mapSourceDTO.getTitle();
             String titleClass = findElementContainingText(doc, title);
-            if (titleClass != null) {
-                System.out.println("Classe do título: " + titleClass);
-            }else{
-                System.out.println("Título não encontrado.");
-            }
-            System.out.println();
+            mapedSource.setTitle(titleClass);
+
             String dateClass = findDateElement(doc);
-            if (dateClass != null) {
-                System.out.println("class da data: " + dateClass);
-                                   
-            }else{
-                System.out.println("data nao encontrado");  
-            } 
-            System.out.println();
+            mapedSource.setDate(dateClass);
+           
             String author = mapSourceDTO.getAuthor();
-            if (author != null) {
-                String authorClass = findElementContainingText(doc, author);
-                System.out.println("class Autor: " + authorClass);
-            } else {
-                System.out.println("Autor não encontrado.");
-            }
-            System.out.println();
+            String authorClass = findElementContainingText(doc, author);
+            mapedSource.setAuthor(authorClass);
+             
 
             String body = mapSourceDTO.getBody();
-            if (body != null) {
-                String bodyClass = findElementContainingText(doc, body);
-                System.out.println("class do corpo: " + bodyClass);
-            } else {
-                System.out.println("Corpo não encontrado.");
-            }            
+            String bodyClass = findElementContainingText(doc, body);
+            mapedSource.setBody(bodyClass);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
