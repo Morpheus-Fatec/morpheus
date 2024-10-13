@@ -85,11 +85,12 @@ public class TextoController {
     public ResponseEntity<Void> deleteTexto(@PathVariable Integer id) {
         return textoService.findTextoById(id)
                 .map(existingTexto -> {
-                    textoService.deleteTexto(id);
+                    textoService.deleteTextoAndRelations(id);
                     return ResponseEntity.ok().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     @Operation(summary = "Metodo para criar um sinônimo entre dois textos", description = "Cria um sinônimo entre dois textos")
     @ApiResponses(value = {

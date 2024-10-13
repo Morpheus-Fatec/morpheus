@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SynonymousRepository extends JpaRepository<Synonymous, Integer> {
+    void deleteByTextoCod(Integer textoCod);
 }

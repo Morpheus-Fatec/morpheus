@@ -55,6 +55,6 @@ create table Synonymous(
     texto_cod int,
     syn_group int,
     primary key (texto_cod, syn_group),
-    foreign key (texto_cod) REFERENCES Texto(texto_cod)
-	foreign key (syn_group) REFERENCES texto(texto_cod)
+    foreign key (texto_cod) REFERENCES Texto(texto_cod) ON DELETE CASCADE,
+	foreign key (syn_group) REFERENCES texto(texto_cod) ON DELETE CASCADE
 );
