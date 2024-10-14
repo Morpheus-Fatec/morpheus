@@ -113,14 +113,24 @@ const app = Vue.createApp({
             }, 20000);
         },
         newsLoad() {
-            this.sourceNews.all.push({ code: 1, name: "AgroNews", address: "www.agronewsbrasil.com.br", tags: [2, 1, 4] });
-            this.sourceNews.all.push({ code: 2, name: "Canal Rural", address: "www.canalrural.com.br", tags: [4, 5, 6] });
-            this.sourceNews.all.push({ code: 3, name: "Globo Rural", address: "g1.globo.com/economia/agronegocios", tags: [1, 6] });
-            this.sourceNews.all.push({ code: 4, name: "AgroLink", address: "www.agrolink.com.br", tags: [4, 7, 1] });
-            this.sourceNews.all.push({ code: 5, name: "AgroMais", address: "www.agromais.com.br", tags: [3, 7, 6] });
-            this.sourceNews.all.push({ code: 6, name: "Notícias Agrícolas", address: "www.noticiasagricolas.com.br", tags: [] });
-            this.sourceNews.all.push({ code: 7, name: "Revista Globo Rural", address: "revistagloborural.globo.com", tags: [4, 2] });
-            this.sourceNews.all.push({ code: 8, name: "AgroNegócio", address: "www.agronegocio.com.br", tags: [6, 8, 5] });
+            axios.get('http://localhost:8080/morpheus/source')
+            .then(response => {
+                this.sourceNews.all = [];
+                response.data.forEach(portalNoticia => {
+                    if (portalNoticia.type == 1) {
+                    const itemAdd = new Object();
+                    itemAdd.code = portalNoticia.code;
+                    itemAdd.name = portalNoticia.srcName;
+                    itemAdd.address = portalNoticia.address;
+                    itemAdd.tags = portalNoticia.tags;
+                    this.sourceNews.all.push(itemAdd);
+                    }
+                });
+
+                })
+                .catch(error => {
+                    this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Não foi possível carregar os dados do portal');
+                });
             this.newsFilter();
         },
         newsUpdateSearch() {
@@ -190,7 +200,7 @@ const app = Vue.createApp({
                         this.rootMontedAlert('success', 'Foi salvo com sucesso o portal: ' + this.sourceNews.formData.sourceSelected.name, 'Portal salvo com sucesso');
                     })
                     .catch(error => {
-                        this.newsMontedAlert('danger','Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
                     });
             } else {
                 this.newsMontedAlert('danger', 'Preencha todos os campos', 'Erro ao tentar salvar! ');
@@ -212,7 +222,7 @@ const app = Vue.createApp({
                     this.rootMontedAlert('success', 'Foi excluido com sucesso o portal: ' + this.sourceNews.delete.sourceSelected.name, 'Portal excluido com sucesso');
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger','Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
+                    this.rootMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
                 });
         },
 
@@ -253,7 +263,7 @@ const app = Vue.createApp({
                         this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
                     })
                     .catch(error => {
-                        this.newsMontedAlert('danger', 'Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
+                        this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
                     })
                     .finally(final => {
                         
@@ -313,7 +323,7 @@ const app = Vue.createApp({
                         this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.sourceNews.formData.sourceSelected.name, 'Tag salva com sucesso');
                     })
                     .catch(error => {
-                        this.tagsMontedAlert('danger','Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
                     });
             }
         },
@@ -332,7 +342,7 @@ const app = Vue.createApp({
                         this.tagsLoad();
                     })
                     .catch(error => {
-                        this.tagsMontedAlert('danger','Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
                         this.tagsLoad();
                     });
             }
@@ -354,7 +364,7 @@ const app = Vue.createApp({
                     this.tagsMontedAlert('success', 'Foi excluido com sucesso a tag: ' + this.tags.delete.tagSelected.tagName, 'Tag excluido com sucesso');
                 })
                 .catch(error => {
-                    this.tagsMontedAlert('danger','Algum indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
+                    this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
                 })
                 .finally( final => {
                     this.tags.modal.show();
