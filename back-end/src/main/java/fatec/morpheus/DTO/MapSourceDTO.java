@@ -1,5 +1,6 @@
 package fatec.morpheus.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,17 +14,20 @@ import lombok.Setter;
 public class MapSourceDTO {
     
     private String author;
-    
-    @NotNull
+    @NotBlank(message = "O corpo não deve estar em branco.")
+    @NotNull(message = "O corpo não deve ser nulo.")
     private String body;
     
-    @NotNull
+    @NotBlank(message = "O título não deve estar em branco.")
+    @NotNull(message = "O título não deve ser nulo.")
     private String title;
     
-    @NotNull
+    @NotBlank(message = "A URL não deve estar em branco.")
+    @NotNull(message = "A URL não deve ser nula.")
     private String url;
     
-    @NotNull
+    @NotBlank(message = "A data não deve estar em branco.")
+    @NotNull(message = "A data não deve ser nula.")
     private String date;
 }
 

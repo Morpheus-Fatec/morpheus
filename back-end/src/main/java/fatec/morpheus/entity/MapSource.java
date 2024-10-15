@@ -1,6 +1,7 @@
 package fatec.morpheus.entity;
 
 
+import fatec.morpheus.DTO.MapSourceDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,5 +44,10 @@ public class MapSource {
     private String url;
     @Column(name = "map_date", nullable = false)
     private String date;
+
+
+    public MapSourceDTO toDTO() {
+        return new MapSourceDTO(author, body, title, url, date);
+    }
 
 }
