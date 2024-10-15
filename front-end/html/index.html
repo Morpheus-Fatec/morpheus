@@ -189,7 +189,7 @@
                                     id="titulo"
                                     v-model="sourceNews.formData.sourceSelected.map.title"
                                     :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.title }"
-                                    placeholder="Digite a tag que contém o título"
+                                    placeholder="Digite a classe da tag que contém o título"
                                     required
                                   >
                                   <div class="invalid-feedback">Este campo é obrigatório.</div>
@@ -202,7 +202,7 @@
                                     id="noticia"
                                     v-model="sourceNews.formData.sourceSelected.map.body"
                                     :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.body }"
-                                    placeholder="Digite a tag que contém a notícia"
+                                    placeholder="Digite a classe da tag que contém a notícia"
                                     required
                                   >
                                   <div class="invalid-feedback">Este campo é obrigatório.</div>
@@ -214,7 +214,7 @@
                                     class="form-control"
                                     id="autor"
                                     v-model="sourceNews.formData.sourceSelected.map.author"
-                                    placeholder="Digite a tag que contém o nome do autor"
+                                    placeholder="Digite a classe da tag que contém o nome do autor"
                                   >
                                 </div>
                                 <div class="mb-3">
@@ -225,7 +225,7 @@
                                     id="data"
                                     v-model="sourceNews.formData.sourceSelected.map.date"
                                     :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.date }"
-                                    placeholder="Digite a tag que contém a data"
+                                    placeholder="Digite a classe da tag que contém a data"
                                     required
                                   >
                                   <div class="invalid-feedback">Este campo é obrigatório.</div>
