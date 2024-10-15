@@ -1,6 +1,7 @@
 package fatec.morpheus.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +33,6 @@ public class MapSourceService {
         MapSourceDTO mapSourceDTO = newsSourceDTO.getMap();
         Set<ConstraintViolation<MapSourceDTO>> mapViolations = validator.validate(mapSourceDTO);
 
-        // Verifica se há violações
         if (!mapViolations.isEmpty()) {
             List<String> errors = mapViolations.stream()
                 .map(ConstraintViolation::getMessage)
@@ -53,34 +53,57 @@ public class MapSourceService {
     }
 
 
-     private MapSource findHtmlTags(MapSourceDTO mapSourceDTO) {
+    private MapSource findHtmlTags(MapSourceDTO mapSourceDTO) {
         MapSource mapedSource = new MapSource();
         mapedSource.setUrl(mapSourceDTO.getUrl());
+        List<String> errors = new ArrayList<>();
+
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
             System.out.println("URL: " + mapSourceDTO.getUrl());
-            String title = mapSourceDTO.getTitle();
-            String titleClass = findElementContainingText(doc, title);
-            mapedSource.setTitle(titleClass);
+
+            String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
+            if (titleClass == null) {
+                errors.add("O título não foi encontrado no HTML.");
+            } else {
+                mapedSource.setTitle(titleClass);
+            }
 
             String dateClass = findDateElement(doc);
-            mapedSource.setDate(dateClass);
-           
-            String author = mapSourceDTO.getAuthor();
-            String authorClass = findElementContainingText(doc, author);
-            mapedSource.setAuthor(authorClass);
-             
+            if (dateClass == null) {
+                errors.add("A data não foi encontrada no HTML.");
+            } else {
+                mapedSource.setDate(dateClass);
+            }
 
-            String body = mapSourceDTO.getBody();
-            String bodyClass = findElementContainingText(doc, body);
-            mapedSource.setBody(bodyClass);
+            String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+            mapedSource.setAuthor(authorClass);
+            // if (authorClass == null) {
+            //     errors.add("O autor não foi encontrado no HTML.");
+            // } else {
+            //     mapedSource.setAuthor(authorClass);
+            // }
+
+            String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
+            if (bodyClass == null) {
+                errors.add("O corpo não foi encontrado no HTML.");
+            } else {
+                mapedSource.setBody(bodyClass);
+            }
+
+            if (!errors.isEmpty()) {
+                throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Não encontrado elemento HTML correspondente."));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            errors.add(mapSourceDTO.getUrl());
+            throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Erro ao acessar a URL."));
         }
-        System.out.println();
+
         return mapedSource;
-    }    
+    }
+    
 
     private String findElementContainingText(Document doc, String text) {
         Elements elements = doc.select("a, span, div, p, h1, h2, h3, time");
