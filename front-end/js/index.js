@@ -24,13 +24,29 @@ const app = Vue.createApp({
                     sourceSelected: {
                         code: null,
                         name: null,
-                        address: null
+                        address: null,
+                        map:{
+                            author: null,
+                            body:null,
+                            title:null,
+                            date:null
+                        }
                     },
                     alert: {
                         show: false,
                         type: 'warning',
                         titleError: 'Erro!',
                         desc: 'Por favor, preencha todos os campos obrigatórios.'
+                    }
+                },
+                automaticMap:{
+                    modal:null,
+                    map:{
+                        author: null,
+                        body:null,
+                        title:null,
+                        url:null,
+                        date:null
                     }
                 },
                 tags:{
@@ -129,7 +145,7 @@ const app = Vue.createApp({
 
                 })
                 .catch(error => {
-                    this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Não foi possível carregar os dados do portal');
+                    this.rootMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Não foi possível carregar os dados do portal');
                 });
             this.newsFilter();
         },
@@ -370,6 +386,44 @@ const app = Vue.createApp({
                     this.tags.modal.show();
                 });
         },
+
+        automaticMapOpen(){
+            const modalElement = this.$refs.automaticMapModal;
+            this.sourceNews.automaticMap.modal = new bootstrap.Modal(modalElement);
+            this.sourceNews.automaticMap.modal.show();
+            this.sourceNews.formData.modal.hide();
+        },
+        automaticMapExecute(){
+            this.sourceNews.automaticMap.isSubmitted = true;
+            if (this.sourceNews.automaticMap.map.url && this.sourceNews.automaticMap.map.title && this.sourceNews.automaticMap.map.body && this.sourceNews.automaticMap.map.date) {
+                this.sourceNews.automaticMap.modal.hide();
+                this.sourceNews.formData.modal.show();
+
+                const payload = {
+                    url: this.sourceNews.automaticMap.map.url,
+                    title: this.sourceNews.automaticMap.map.title,
+                    body: this.sourceNews.automaticMap.map.body,
+                    date: this.sourceNews.automaticMap.map.date,
+                    author: this.sourceNews.automaticMap.map.author
+                };
+
+                axios.post('https://mp43res.free.beeceptor.com/todos', payload)
+                    .then(response => {
+                        const data = response.data;
+                        this.sourceNews.formData.sourceSelected.map.author = data.author || this.sourceNews.formData.sourceSelected.map.author;
+                        this.sourceNews.formData.sourceSelected.map.body = data.body || this.sourceNews.formData.sourceSelected.map.body;
+                        this.sourceNews.formData.sourceSelected.map.title = data.title || this.sourceNews.formData.sourceSelected.map.title;
+                        this.sourceNews.formData.sourceSelected.map.date = data.date || this.sourceNews.formData.sourceSelected.map.date;
+            
+                        this.newsMontedAlert('success', 'Foi realizado com sucesso a busca pelo mapeamento automático, para salvar o novo mapeamento clique em salvar.', 'Mapeamento realizado com sucesso');
+                    })
+                    .catch(error => {
+                        
+                        this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar realizar o mapeamento automático!');
+                    });
+            }
+        }
+        
     },
     computed: {
         selectedTags() {
