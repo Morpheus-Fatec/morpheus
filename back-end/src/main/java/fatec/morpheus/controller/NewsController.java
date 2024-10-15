@@ -1,18 +1,13 @@
 package fatec.morpheus.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.entity.News;
-import fatec.morpheus.repository.NewsRepository;
+import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.service.NewsService;
-import fatec.morpheus.service.NewsSourceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -35,9 +30,10 @@ public class NewsController {
         @ApiResponse(responseCode = "200", description = "Notícias retornadas com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao retornar notícias"),
     })
+
     @GetMapping
-    public ResponseEntity<List<News>> getAllNews(@RequestParam int page, @RequestParam int itens){
-        List<News> news = newsService.findAllNews(page, itens);
+    public ResponseEntity<PaginatedNewsResponse> getAllNews(@RequestParam int page, @RequestParam(defaultValue = "50") int itens) {
+        PaginatedNewsResponse news = newsService.getNewsWithDetails(page, itens);
         return ResponseEntity.ok(news);
     }
 

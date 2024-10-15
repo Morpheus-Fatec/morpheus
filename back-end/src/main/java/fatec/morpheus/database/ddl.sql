@@ -28,11 +28,12 @@ create table News(
 	new_title char(70),
     new_content text,
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	new_aut_cod int,                            
+	new_aut_cod int,
+    new_src_cod int,
     FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id),
+    FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod),
     primary key (new_cod)
 );
-
 
 create table Synonymous(
 	tag_cod int,
@@ -48,8 +49,8 @@ create table News_tag(
 	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
 );
 
+
 CREATE TABLE News_author (
     new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
-    new_aut_cod INT,
     new_aut_name VARCHAR(30)
 );
