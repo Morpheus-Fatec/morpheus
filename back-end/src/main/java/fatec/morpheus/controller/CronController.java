@@ -1,7 +1,7 @@
 package fatec.morpheus.controller;
 
 import fatec.morpheus.entity.CronProperties;
-import fatec.morpheus.service.CronSchedule;
+import fatec.morpheus.service.CronManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,11 @@ import java.util.TimeZone;
 public class CronController {
     private static final Logger logger = LoggerFactory.getLogger(CronController.class);
 
-    private final CronSchedule cronSchedule;
-
     @Autowired
-    public CronController(CronSchedule cronSchedule) {
-        this.cronSchedule = cronSchedule;
+    private final CronManager cronManager;
+
+    public CronController(CronManager cronManager) {
+        this.cronManager = cronManager;
     }
 
     @PostMapping("/update")
@@ -67,7 +67,7 @@ public class CronController {
             }
 
             // Atualiza a expressão cron no CronSchedule
-            cronSchedule.updateCronExpression(cronExpression);
+            cronManager.updateCron(cronExpression);
             logger.info("Updated cron task with expression: {}", cronExpression);
             return ResponseEntity.ok("Properties updated successfully!");
 
@@ -89,7 +89,7 @@ public class CronController {
 
         switch (frequency.toLowerCase()) {
             case "daily":
-                return String.format("0 %s %s * * ?", minute, hour);
+                return String.format("0 %s %s * * *", minute, hour);
             case "hourly":
                 return "0 0 * * * ?";
             case "weekly":
