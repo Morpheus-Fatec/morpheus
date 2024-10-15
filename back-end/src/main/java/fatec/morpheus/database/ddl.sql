@@ -35,13 +35,6 @@ create table News(
     primary key (new_cod)
 );
 
-create table Synonymous(
-	tag_cod int,
-	syn_group int,
-    primary key (tag_cod,syn_group),
-	foreign key (tag_cod) REFERENCES Tag(tag_cod)
-);
-
 create table News_tag(
 	new_cod int,
 	src_tag_cod int,
@@ -49,8 +42,21 @@ create table News_tag(
 	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
 );
 
-
 CREATE TABLE News_author (
     new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
     new_aut_name VARCHAR(30)
+);
+
+create table Texto(
+    texto_cod int auto_increment,
+    texto_description varchar(255),
+    primary key (texto_cod)
+);
+
+create table Synonymous(
+    texto_cod int,
+    syn_group int,
+    primary key (texto_cod, syn_group),
+    foreign key (texto_cod) REFERENCES Texto(texto_cod) ON DELETE CASCADE,
+	foreign key (syn_group) REFERENCES texto(texto_cod) ON DELETE CASCADE
 );
