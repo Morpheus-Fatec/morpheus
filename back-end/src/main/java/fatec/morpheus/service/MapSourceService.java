@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.MapSourceDTO;
-import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.exception.InvalidFieldException;
@@ -28,9 +27,7 @@ public class MapSourceService {
     @Autowired
     private Validator validator;
 
-    public MapSourceDTO validateMap(NewsSourceDTO newsSourceDTO) {
-
-        MapSourceDTO mapSourceDTO = newsSourceDTO.getMap();
+    public MapSourceDTO validateMap(MapSourceDTO mapSourceDTO) {
         Set<ConstraintViolation<MapSourceDTO>> mapViolations = validator.validate(mapSourceDTO);
 
         if (!mapViolations.isEmpty()) {

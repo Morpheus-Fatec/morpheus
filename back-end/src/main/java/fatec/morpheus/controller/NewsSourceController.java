@@ -37,6 +37,17 @@ public class NewsSourceController {
     @Autowired
     private MapSourceService mapSourceService;
 
+    @Operation(summary= "", description = "Valida o mapeamento das tags HTML do portal")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Tags encontradas"),
+        @ApiResponse(responseCode = "400", description = "Tags obrigatórias não encontrada"),
+    })
+    @GetMapping("/mapping")
+    public ResponseEntity<MapSourceDTO> validateMap(@RequestBody MapSourceDTO mapSourceDTO){
+        MapSourceDTO mapSourceDTOResolved = mapSourceService.validateMap(mapSourceDTO);
+        return new ResponseEntity<>(mapSourceDTOResolved, HttpStatus.ACCEPTED);
+    }
+
     @Operation(summary= "", description = "Cria um novo portal de notícias")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Portal de notícias criado com sucesso"),
@@ -44,9 +55,6 @@ public class NewsSourceController {
     })
     @PostMapping
     public ResponseEntity<NewsSourceDTO> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
-        MapSourceDTO mapSourceDTO = mapSourceService.validateMap(newsSourceDTO);
-        newsSourceDTO.setMap(mapSourceDTO);
-        newsSourceDTO.setMap(mapSourceDTO);
         // NewsSourceDTO savedNewsSource = newsSourceService.createNewsSource(newsSourceDTO); 
         return new ResponseEntity<>(newsSourceDTO, HttpStatus.CREATED);
     }
