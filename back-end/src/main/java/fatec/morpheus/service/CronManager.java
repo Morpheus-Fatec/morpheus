@@ -17,7 +17,7 @@ public class CronManager {
     private ScheduledFuture<?> scheduledTask;
 
     // Injetando a expressão cron inicial a partir do arquivo de configuração
-    @Value("${cron.frequency:0 * * * * *}") // Valor padrão: a cada minuto
+    @Value("${cron.expression:0 * * * * *}") // Valor padrão: a cada minuto
     private String cronExpression;
 
     public CronManager() {

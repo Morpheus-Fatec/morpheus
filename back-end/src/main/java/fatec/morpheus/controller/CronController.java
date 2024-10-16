@@ -31,6 +31,35 @@ public class CronController {
         this.cronManager = cronManager;
     }
 
+    // Método GET para retornar as propriedades atuais
+    @GetMapping("/properties")
+    public ResponseEntity<CronProperties> getProperties() {
+        try {
+            Path propertiesFile = Paths.get("src/main/resources/application.properties");
+            Properties properties = new Properties();
+
+            // Carrega as propriedades do arquivo
+            try (InputStream inputStream = Files.newInputStream(propertiesFile)) {
+                properties.load(inputStream);
+            }
+
+            // Preenche o objeto CronProperties com os valores das propriedades
+            CronProperties cronProperties = new CronProperties();
+            cronProperties.setTimeZone(properties.getProperty("cron.timeZone"));
+            cronProperties.setActive(Boolean.parseBoolean(properties.getProperty("cron.active")));
+            cronProperties.setFrequency(properties.getProperty("cron.frequency"));
+            cronProperties.setTime(properties.getProperty("cron.time"));
+
+            // Retorna o objeto com as propriedades para o front-end
+            return ResponseEntity.ok(cronProperties);
+
+        } catch (IOException e) {
+            logger.error("Error loading properties: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     @PostMapping("/update")
     public ResponseEntity<String> updateProperties(@RequestBody CronProperties configRequest) {
         logger.info("Received request: {}", configRequest);
@@ -58,8 +87,11 @@ public class CronController {
             }
 
             // Atualiza as propriedades
-            properties.setProperty("cron.frequency", cronExpression);
+            properties.setProperty("cron.expression", cronExpression);
             properties.setProperty("cron.timeZone", configRequest.getTimeZone());
+            properties.setProperty("cron.active", String.valueOf(configRequest.isActive()));
+            properties.setProperty("cron.frequency", configRequest.getFrequency());
+            properties.setProperty("cron.time", configRequest.getTime());
 
             // Salva as novas propriedades no arquivo
             try (OutputStream outputStream = Files.newOutputStream(propertiesFile)) {
