@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class MapSource {
     @Column(name = "map_id")
     private int mapId; 
 
-    @ManyToOne 
+    @OneToOne 
     @JoinColumn(name = "src_cod", nullable = false)
     private NewsSource source; 
 
@@ -40,8 +40,6 @@ public class MapSource {
     private String body; 
     @Column(name = "map_title", nullable = false)
     private String title; 
-    @Column(name = "map_url", nullable = false)
-    private String url;
     @Column(name = "map_date", nullable = false)
     private String date;
 
@@ -50,7 +48,6 @@ public class MapSource {
         this.author = mapSourceDTO.getAuthor();
         this.body = mapSourceDTO.getBody();
         this.title = mapSourceDTO.getTitle();
-        this.url = mapSourceDTO.getUrl();
         this.date = mapSourceDTO.getDate();
     }
 

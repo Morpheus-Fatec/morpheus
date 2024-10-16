@@ -15,7 +15,6 @@ CREATE TABLE Map_source (
     map_author CHAR(100),
     map_body TEXT,
     map_title CHAR(100),
-	map_url char(255),
 	map_date char(100),
     FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );

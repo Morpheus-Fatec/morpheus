@@ -35,7 +35,7 @@ public class NewsSourceService {
         source.setSrcName(newsSourceCreatedDTO.getSrcName());
         source.setAddress(newsSourceCreatedDTO.getAddress());
         source.setTags(newsSourceCreatedDTO.getTags());
-        source.setMapSource(newsSourceCreatedDTO.getMap().toEntity());
+        source.setMap(newsSourceCreatedDTO.getMap().toEntity());
 
         Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);    
         if (!sourceViolations.isEmpty()) {
@@ -44,7 +44,7 @@ public class NewsSourceService {
                 .collect(Collectors.toList());
 
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
-            errorResponse.setMessage("Campos Vazios");
+            errorResponse.setMessage("Problemas com campos obrigatórios");
             throw new InvalidFieldException(errorResponse);
         }
    
@@ -55,10 +55,21 @@ public class NewsSourceService {
                 
         } catch (Exception e) {
             List<String> duplicateFields = this.verifyUniqueKeys(source);
+
+            if (duplicateFields.isEmpty()) {
+                String errorMessage = e.getCause().getMessage();
+                ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,   
+                    duplicateFields,
+                    errorMessage       
+                );
+                throw new UniqueConstraintViolationException(errorResponse);
+            }
             
             ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT,   
-                duplicateFields       
+                duplicateFields,
+                "Campos Duplicados"       
             );
 
             throw new UniqueConstraintViolationException(errorResponse);

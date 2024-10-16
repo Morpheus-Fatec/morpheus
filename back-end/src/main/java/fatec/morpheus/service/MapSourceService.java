@@ -56,7 +56,6 @@ public class MapSourceService {
 
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-            System.out.println("URL: " + mapSourceDTO.getUrl());
 
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
             if (titleClass == null) {
