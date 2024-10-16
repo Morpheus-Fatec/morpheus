@@ -43,7 +43,7 @@ public class ScrapingService {
                     "urlNoticiaSalva", portalUrl
                 );
 
-                System.out.println("Tags: " + tags);
+                System.out.println("Tags: " + tags.get("title"));
 
                 extractNews(responseDTOS, portalUrl, tags);
 
@@ -69,8 +69,7 @@ public class ScrapingService {
                 }
 
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
-                  System.out.println("Link: " + link);
-                  scrapeNewsDetailsG1(responseDTOS, link, tags);
+                    scrapeNewsDetailsG1(responseDTOS, link, tags);
                 }
             }
         } catch (IOException e) {
@@ -81,17 +80,31 @@ public class ScrapingService {
     private void scrapeNewsDetailsG1(Set<ResponseDTO> responseDTOS, String newsUrl, Map<String, String> tags) {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
-            // System.out.println("URL: " + newsPage);
-
-            String fullContent = newsPage.select(tags.get("content")).text();
-            String title = newsPage.select(tags.get("title")).text();
+    
+            String titleElements = newsPage.select(tags.get("title")).text();
             String datePublished = newsPage.select(tags.get("date")).attr("content");
-
-            // System.out.println("Url: " + newsUrl);
-            // System.out.println("Title: " + title);
-            // System.out.println("Date Published: " + datePublished);
-            // System.out.println("Content: " + fullContent);
-
+    
+            
+            Elements contentElements = newsPage.select(tags.get("content"));
+            StringBuilder fullContent = new StringBuilder();
+            
+            for (Element content : contentElements) {
+                fullContent.append(content.text()).append(System.lineSeparator());
+            }
+            
+            String contentString = fullContent.toString();
+            
+            // Aqui eu estou simulando uma tag vinculada a um portal para realização da filtragem.
+            if (!contentString.toLowerCase().contains("amanhã")) {
+                System.out.println("Não foi encontrado notícias com a tag 'amanhã'");
+                return;
+            }
+            
+            System.out.println("Título: " + titleElements);
+            System.out.println("Data: " + datePublished);
+            System.out.println("Conteúdo: " + contentString);
+            System.out.println("URL: " + newsUrl);
+    
         } catch (IOException e) {
             System.out.println("Erro ao acessar o link: " + newsUrl);
             e.printStackTrace();
