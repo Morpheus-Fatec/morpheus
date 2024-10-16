@@ -103,3 +103,22 @@
     align-items: center; /* Alinha itens verticalmente */
     margin: 10px 0; /* Margem vertical */
 }
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fundo preto semi-transparente */
+    z-index: 9999; /* Fica acima de todo o conteúdo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Desabilitar interação com a página enquanto carrega */
+  .disabled-content {
+    pointer-events: none; /* Desabilita cliques */
+    opacity: 0.5; /* Tornar o conteúdo abaixo um pouco mais escuro */
+  }
