@@ -42,7 +42,7 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "200", description = "Tags encontradas"),
         @ApiResponse(responseCode = "400", description = "Tags obrigatórias não encontrada"),
     })
-    @GetMapping("/mapping")
+    @PostMapping("/mapping")
     public ResponseEntity<MapSourceDTO> validateMap(@RequestBody MapSourceDTO mapSourceDTO){
         MapSourceDTO mapSourceDTOResolved = mapSourceService.validateMap(mapSourceDTO);
         return new ResponseEntity<>(mapSourceDTOResolved, HttpStatus.ACCEPTED);

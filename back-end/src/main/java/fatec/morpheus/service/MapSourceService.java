@@ -71,13 +71,13 @@ public class MapSourceService {
                 mapedSourceDto.setDate(dateClass);
             }
 
-            String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-            mapedSourceDto.setAuthor(authorClass);
-            // if (authorClass == null) {
-            //     errors.add("O autor não foi encontrado no HTML.");
-            // } else {
-            //     mapedSource.setAuthor(authorClass);
-            // }
+            if (mapSourceDTO.getAuthor().isBlank()) {
+                mapSourceDTO.setAuthor(null);
+            }else{
+                String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+                mapedSourceDto.setAuthor(authorClass);
+            }
+            
 
             String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
             if (bodyClass == null) {
