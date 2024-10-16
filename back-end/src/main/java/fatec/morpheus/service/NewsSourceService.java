@@ -1,10 +1,10 @@
 package fatec.morpheus.service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.exception.InvalidFieldException;
@@ -25,28 +25,42 @@ public class NewsSourceService {
 
     @Autowired
     private NewsSourceRepository newsSourceRepository;
-
     @Autowired
     private Validator validator;
+    private NewsSource source = new NewsSource();
+    private NewsSourceDTO newsSourceDTO = new NewsSourceDTO();
 
-    public NewsSource createNewsSource(NewsSource newsSource) {
 
-        Set<ConstraintViolation<NewsSource>> violations = validator.validate(newsSource);
+    public NewsSourceDTO createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
 
-        if (!violations.isEmpty()) {
-            List<String> errors = violations.stream()
+        source.setSrcName(newsSourceCreatedDTO.getSrcName());
+        source.setAddress(newsSourceCreatedDTO.getAddress());
+
+        
+        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);
+       
+    
+        if (!sourceViolations.isEmpty()) {
+            List<String> errors = sourceViolations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
 
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
+            errorResponse.setMessage("Campos Vazios");
             throw new InvalidFieldException(errorResponse);
         }
+   
 
-        try {
-            return newsSourceRepository.save(newsSource);
+        try {         
+            newsSourceRepository.save(source);      
+            newsSourceDTO.setSrcName(source.getSrcName());
+            newsSourceDTO.setAddress(source.getAddress());
+            newsSourceDTO.setMap(newsSourceCreatedDTO.getMap());
+        
+            return newsSourceDTO;
                 
         } catch (Exception e) {
-            List<String> duplicateFields = this.verifyUniqueKeys(newsSource);
+            List<String> duplicateFields = this.verifyUniqueKeys(source);
             
             ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT,   
@@ -74,7 +88,7 @@ public class NewsSourceService {
 
     public NewsSource findNewsSourceById(int id) {
         return newsSourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));  
+                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));  
     }
 
     public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
@@ -89,7 +103,7 @@ public class NewsSourceService {
 
                     return newsSourceRepository.save(existingNewsSource);
                 })
-                .orElseThrow(() -> new NotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
         } catch (DataIntegrityViolationException e) {
             List<String> duplicateFields = this.verifyUniqueKeys(newsSourceToUpdate);
 
@@ -104,6 +118,7 @@ public class NewsSourceService {
 
     public NewsSource deleteNewsSourceById(int id) {
         return newsSourceRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(id));
+                    .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
     }
+    
 }

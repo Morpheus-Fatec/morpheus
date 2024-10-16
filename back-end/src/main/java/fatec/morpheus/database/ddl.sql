@@ -6,8 +6,20 @@ create table Source(
 	src_name char(30) unique,
     src_type enum('1','2'),
 	src_address char(100) unique,
-	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
+	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE Map_source (
+	map_id INT AUTO_INCREMENT PRIMARY KEY,
+    src_cod INT,
+    map_author CHAR(100),
+    map_body TEXT,
+    map_title CHAR(100),
+	map_url char(255),
+	map_date char(100),
+    FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
+);
+
 
 create table Tag(
 	tag_cod int auto_increment primary key,

@@ -4,109 +4,97 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.ResponseDTO;
+import fatec.morpheus.repository.MapSourceRepository;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ScrapingService {
 
-  private final List<Map<String, Object>> portals = Arrays.asList(
-      Map.of(
-          "portal", "https://g1.globo.com/",
-          "tags", new HashMap<>(Map.of(
-              "content", ".content-text__container",
-              "title", ".content-head__title",
-              "date", "[itemprop=datePublished]",
-              "urlNoticiaSalva", ""))),
-      Map.of(
-          "portal", "https://www.cnnbrasil.com.br/",
-          "tags", new HashMap<>(Map.of(
-              "content", ".single-content p",
-              "title", ".single-header__title",
-              "date", ".single-header__time",
-              "urlNoticiaSalva", ""))));
+    @Autowired
+    private MapSourceRepository mapSourceRepository;
 
-  private Set<String> processedUrls = new HashSet<>();
+    private Set<String> processedUrls = new HashSet<>();
 
-  public Set<ResponseDTO> getSearch() {
-    Set<ResponseDTO> responseDTOS = new HashSet<>();
-    System.out.println("Buscando notícias...");
+    public Set<ResponseDTO> getSearch() {
+        Set<ResponseDTO> responseDTOS = new HashSet<>();
+        System.out.println("Buscando notícias...");
 
-    for (Map<String, Object> portalData : portals) {
-      try {
-        String portalUrl = (String) portalData.get("portal");
-        @SuppressWarnings("unchecked")
-        Map<String, String> tags = (Map<String, String>) portalData.get("tags");
+        List<MapSource> sources = mapSourceRepository.findAll();
 
-        System.out.println("Processando portal: " + portalUrl);
-        extractNews(responseDTOS, portalUrl, tags);
+        for (MapSource source : sources) {
+            try {
+                String portalUrl = source.getUrl();
+                System.out.println("PORTAL: " + portalUrl);
 
-      } catch (Exception e) {
-        System.out.println("Erro ao processar o portal: " + portalData.get("portal"));
-        e.printStackTrace();
-      }
-    }
+                Map<String, String> tags = Map.of(
+                    "content", source.getBody(),
+                    "title", source.getTitle(),
+                    "date", source.getDate(),   
+                    "author", source.getAuthor(),
+                    "urlNoticiaSalva", portalUrl
+                );
 
-    return responseDTOS;
-  }
+                System.out.println("Tags: " + tags);
 
-  private void extractNews(Set<ResponseDTO> responseDTOS, String url, Map<String, String> tags) {
-    try {
-      Document document = Jsoup.connect(url).get();
-      Elements newsCards = document.select("a[href]");
+                extractNews(responseDTOS, portalUrl, tags);
 
-      for (Element card : newsCards) {
-        String link = card.attr("href");
-
-        if (!link.startsWith("http")) {
-          link = "https:" + link;
+            } catch (Exception e) {
+                System.out.println("Erro ao processar o portal: " + source.getUrl());
+                e.printStackTrace();
+            }
         }
 
-        if (link.startsWith(url) && !processedUrls.contains(link)) {
-          processedUrls.add(link);
-          scrapeNewsDetailsG1(responseDTOS, link, tags);
+        return responseDTOS;
+    }
+
+    private void extractNews(Set<ResponseDTO> responseDTOS, String url, Map<String, String> tags) {
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements newsCards = document.select("a");
+
+            for (Element card : newsCards) {
+                String link = card.attr("href");
+
+                if (!link.startsWith("http")) {
+                  link = "https:" + link;
+                }
+
+                if (link.startsWith(url) && !processedUrls.contains(link)) {
+                  System.out.println("Link: " + link);
+                  scrapeNewsDetailsG1(responseDTOS, link, tags);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
     }
-  }
 
-  private void scrapeNewsDetailsG1(Set<ResponseDTO> responseDTOS, String newsUrl, Map<String, String> tags) {
-    try {
-      Document newsPage = Jsoup.connect(newsUrl).get();
+    private void scrapeNewsDetailsG1(Set<ResponseDTO> responseDTOS, String newsUrl, Map<String, String> tags) {
+        try {
+            Document newsPage = Jsoup.connect(newsUrl).get();
+            // System.out.println("URL: " + newsPage);
 
-      Elements contentElements = newsPage.select(tags.get("content"));
-      if (contentElements.isEmpty())
-        return;
+            String fullContent = newsPage.select(tags.get("content")).text();
+            String title = newsPage.select(tags.get("title")).text();
+            String datePublished = newsPage.select(tags.get("date")).attr("content");
 
-      StringBuilder fullContent = new StringBuilder();
-      for (Element content : contentElements) {
-        fullContent.append(content.text()).append(System.lineSeparator());
-      }
+            // System.out.println("Url: " + newsUrl);
+            // System.out.println("Title: " + title);
+            // System.out.println("Date Published: " + datePublished);
+            // System.out.println("Content: " + fullContent);
 
-      if (!fullContent.toString().contains("clientes")) {
-        System.out.println("nao tem clientes");
-        return;
-      }
-
-      String title = newsPage.select(tags.get("title")).text();
-      String datePublished = newsPage.select(tags.get("date")).attr("content");
-
-      System.out.println("Url: " + newsUrl);
-      System.out.println("Título: " + title);
-      System.out.println("Conteúdo: " + fullContent);
-      System.out.println("Data: " + datePublished);
-
-      tags.put("urlNoticiaSalva", newsUrl);
-
-    } catch (IOException e) {
-      System.out.println("Erro ao acessar o link: " + newsUrl);
-      e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Erro ao acessar o link: " + newsUrl);
+            e.printStackTrace();
+        }
     }
-  }
 }
