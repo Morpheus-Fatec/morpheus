@@ -1,5 +1,7 @@
 package fatec.morpheus.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import fatec.morpheus.DTO.MapSourceDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +33,7 @@ public class MapSource {
 
     @OneToOne 
     @JoinColumn(name = "src_cod", nullable = false, unique = true)
+    @JsonBackReference
     private NewsSource source; 
 
     @Column(name = "map_author", nullable = false)

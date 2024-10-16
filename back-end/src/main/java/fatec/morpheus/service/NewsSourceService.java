@@ -108,7 +108,10 @@ public class NewsSourceService {
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
                     existingNewsSource.getTags().clear();
                     existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
-
+                    existingNewsSource.getMap().setAuthor(newsSourceToUpdate.getMap().getAuthor());
+                    existingNewsSource.getMap().setBody(newsSourceToUpdate.getMap().getBody());
+                    existingNewsSource.getMap().setTitle(newsSourceToUpdate.getMap().getTitle());
+                    existingNewsSource.getMap().setDate(newsSourceToUpdate.getMap().getDate());
                     return newsSourceRepository.save(existingNewsSource);
                 })
                 .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
