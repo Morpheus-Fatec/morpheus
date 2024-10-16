@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +32,14 @@ public class NewsSource {
     private int code;
 
     @Column(name = "src_name", length = 30, unique = true)
+    @Size(max = 30, message = "Name cannot exceed 30 characters")
     private String srcName;
 
     @Column(name = "src_type")
     private String type;
 
     @Column(name = "src_address", length = 100 ,unique = true)
+    @Size(max = 100, message = "Source Address cannot exceed 100 characters")
     private String address;
 
     @Column(name = "src_registry_date", updatable = false)
@@ -46,9 +48,10 @@ public class NewsSource {
 
     @ManyToMany
     @JoinTable(
-        name = "source_tag",
+        name = "Source_tag",
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
     )
-    private List<Tag> tags;
+   
+    private List<Tag> tags; 
 }
