@@ -55,3 +55,17 @@ create table News_tag(
 	foreign key (new_cod) REFERENCES News(new_cod),
 	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
 );
+
+create table Texto(
+    texto_cod int auto_increment,
+    texto_description varchar(255),
+    primary key (texto_cod)
+);
+
+create table Synonymous(
+    texto_cod int,
+    syn_group int,
+    primary key (texto_cod, syn_group),
+    foreign key (texto_cod) REFERENCES Texto(texto_cod) ON DELETE CASCADE,
+	foreign key (syn_group) REFERENCES texto(texto_cod) ON DELETE CASCADE
+);
