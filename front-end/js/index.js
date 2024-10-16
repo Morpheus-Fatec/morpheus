@@ -1,6 +1,7 @@
 const app = Vue.createApp({
     data() {
         return {
+            isLoading:false,
             cron: {
                 active: false,
                 periodice: "",
@@ -384,14 +385,22 @@ const app = Vue.createApp({
                 });
         },
 
-
-        cronResetFields() {
-            if (!this.cron.active) {
-                this.cron.hour = '';
-                this.cron.minute = '';
-                this.cron.periodice = '';
-                this.cron.timeZone = '';
-            }
+        cronLoad(){
+            this.isLoading = true;
+            axios.get('http://localhost:8080/morpheus/config/properties')
+                .then(response => {
+                    const config = response.data;
+                    this.cron.active = config.active === 'true';
+                    this.cron.periodice = config.frequency;
+                    this.cron.hour = config.time;
+                    this.cron.timeZone = config.timeZone;
+                })
+                .catch(error => {
+                    this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         cronValidateHour() {
             if (this.cron.hour > 23) {
@@ -414,12 +423,29 @@ const app = Vue.createApp({
                 return;
             }
 
-            const offcanvasElement = this.$refs.offcanvas;
-            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-            if (bsOffcanvas) {
-                bsOffcanvas.hide();
-            }
-            this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso', 'Portal salvo com sucesso');
+            this.isLoading = true;
+            const payload = {
+                frequency: this.cron.periodice,
+                time: this.cron.hour,
+                timeZone: this.cron.timeZone,
+                active: this.cron.active.toString()
+            };
+
+            axios.post('http://localhost:8080/morpheus/config/properties', payload)
+                .then(response => {
+                    const offcanvasElement = this.$refs.offcanvas;
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                    this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso', 'Portal salvo com sucesso');
+                })
+                .catch(error => {
+                    this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao salvar os dados do cron');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         cronMontedAlert(type, message, title) {
             this.cron.alert = {
@@ -453,6 +479,12 @@ const app = Vue.createApp({
     mounted() {
         this.newsLoad();
         this.tagsLoad();
+        this.cronLoad();
+
+        this.isLoading = true;
+        setTimeout(() => {
+          this.isLoading = false; // Para o loading após 3 segundos
+        }, 3000);
     }
 });
 
