@@ -69,6 +69,16 @@ public class CronController {
             // Atualiza a expressão cron no CronSchedule
             cronManager.updateCron(cronExpression);
             logger.info("Updated cron task with expression: {}", cronExpression);
+
+            // Ativa ou desativa o cron com base no status 'active' da solicitação
+            if (configRequest.isActive()) {
+                cronManager.startCronTask();
+                logger.info("Cron task started.");
+            } else {
+                cronManager.stopCronTask();
+                logger.info("Cron task stopped.");
+            }
+
             return ResponseEntity.ok("Properties updated successfully!");
 
         } catch (IOException e) {
@@ -87,18 +97,13 @@ public class CronController {
         String hour = timeParts[0];
         String minute = timeParts[1];
 
-        switch (frequency.toLowerCase()) {
-            case "daily":
-                return String.format("0 %s %s * * *", minute, hour);
-            case "hourly":
-                return "0 0 * * * ?";
-            case "weekly":
-                return String.format("0 %s %s ? * MON", minute, hour);
-            case "monthly":
-                return String.format("0 %s %s 1 * ?", minute, hour);
-            default:
-                return null; // Retorna nulo para frequência inválida
-        }
+        return switch (frequency.toLowerCase()) {
+            case "daily" -> String.format("0 %s %s * * *", minute, hour);
+            case "hourly" -> "0 0 * * * ?";
+            case "weekly" -> String.format("0 %s %s ? * MON", minute, hour);
+            case "monthly" -> String.format("0 %s %s 1 * ?", minute, hour);
+            default -> null; // Retorna nulo para frequência inválida
+        };
     }
 
     // Método que valida se o time zone é válido

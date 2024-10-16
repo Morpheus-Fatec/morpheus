@@ -4,6 +4,15 @@ public class CronProperties {
     private String frequency;
     private String time;
     private String timeZone;
+    private boolean active;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     // Getters e Setters
     public String getFrequency() {
