@@ -1,6 +1,5 @@
 package fatec.morpheus.entity;
 
-
 import fatec.morpheus.DTO.MapSourceDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,24 +30,25 @@ public class MapSource {
     private int mapId; 
 
     @OneToOne 
-    @JoinColumn(name = "src_cod", nullable = false)
+    @JoinColumn(name = "src_cod", nullable = false, unique = true)
     private NewsSource source; 
 
     @Column(name = "map_author", nullable = false)
     private String author; 
+
     @Column(name = "map_body", nullable = false)
     private String body; 
+
     @Column(name = "map_title", nullable = false)
     private String title; 
+
     @Column(name = "map_date", nullable = false)
     private String date;
 
-
-   public MapSource(MapSourceDTO mapSourceDTO) {
+    public MapSource(MapSourceDTO mapSourceDTO) {
         this.author = mapSourceDTO.getAuthor();
         this.body = mapSourceDTO.getBody();
         this.title = mapSourceDTO.getTitle();
         this.date = mapSourceDTO.getDate();
     }
-
 }

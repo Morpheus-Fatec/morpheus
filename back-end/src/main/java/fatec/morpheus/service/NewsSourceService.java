@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
@@ -27,15 +28,17 @@ public class NewsSourceService {
     private NewsSourceRepository newsSourceRepository;
     @Autowired
     private Validator validator;
-    private NewsSource source = new NewsSource();
-
 
     public NewsSource createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
+        NewsSource source = new NewsSource();
 
         source.setSrcName(newsSourceCreatedDTO.getSrcName());
         source.setAddress(newsSourceCreatedDTO.getAddress());
         source.setTags(newsSourceCreatedDTO.getTags());
-        source.setMap(newsSourceCreatedDTO.getMap().toEntity());
+
+        MapSource map = newsSourceCreatedDTO.getMap().toEntity();
+        map.setSource(source);
+        source.setMap(map);
 
         Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);    
         if (!sourceViolations.isEmpty()) {

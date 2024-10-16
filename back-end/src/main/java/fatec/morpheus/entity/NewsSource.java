@@ -41,7 +41,7 @@ public class NewsSource {
     @Column(name = "src_type")
     private String type;
 
-    @Column(name = "src_address", length = 100 ,unique = true)
+    @Column(name = "src_address", length = 100, unique = true)
     @Size(max = 100, message = "Source Address cannot exceed 100 characters")
     private String address;
 
@@ -55,10 +55,8 @@ public class NewsSource {
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
     )
-   
     private List<Tag> tags; 
 
-   @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
     private MapSource map;
-
 }
