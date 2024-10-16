@@ -58,7 +58,7 @@ public class NewsSource {
    
     private List<Tag> tags; 
 
-    @OneToOne(mappedBy = "src_cod", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL)
     private MapSource mapSource;
 
 }

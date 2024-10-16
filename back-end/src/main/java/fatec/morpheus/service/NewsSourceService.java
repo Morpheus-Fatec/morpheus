@@ -28,18 +28,16 @@ public class NewsSourceService {
     @Autowired
     private Validator validator;
     private NewsSource source = new NewsSource();
-    private NewsSourceDTO newsSourceDTO = new NewsSourceDTO();
 
 
-    public NewsSourceDTO createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
+    public NewsSource createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
 
         source.setSrcName(newsSourceCreatedDTO.getSrcName());
         source.setAddress(newsSourceCreatedDTO.getAddress());
+        source.setTags(newsSourceCreatedDTO.getTags());
+        source.setMapSource(newsSourceCreatedDTO.getMap().toEntity());
 
-        
-        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);
-       
-    
+        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);    
         if (!sourceViolations.isEmpty()) {
             List<String> errors = sourceViolations.stream()
                 .map(ConstraintViolation::getMessage)
@@ -53,11 +51,7 @@ public class NewsSourceService {
 
         try {         
             newsSourceRepository.save(source);      
-            newsSourceDTO.setSrcName(source.getSrcName());
-            newsSourceDTO.setAddress(source.getAddress());
-            newsSourceDTO.setMap(newsSourceCreatedDTO.getMap());
-        
-            return newsSourceDTO;
+            return source;
                 
         } catch (Exception e) {
             List<String> duplicateFields = this.verifyUniqueKeys(source);

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
-import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.exception.InvalidFieldException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -41,8 +40,8 @@ public class MapSourceService {
         }
 
         try {
-            MapSource mapSourceResolved = findHtmlTags(mapSourceDTO);
-            return mapSourceResolved.toDTO();
+            MapSourceDTO mapSourceDTOResolved = findHtmlTags(mapSourceDTO);
+            return mapSourceDTOResolved;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao processar o MapSource", e);
@@ -50,9 +49,9 @@ public class MapSourceService {
     }
 
 
-    private MapSource findHtmlTags(MapSourceDTO mapSourceDTO) {
-        MapSource mapedSource = new MapSource();
-        mapedSource.setUrl(mapSourceDTO.getUrl());
+    private MapSourceDTO findHtmlTags(MapSourceDTO mapSourceDTO) {
+        MapSourceDTO mapedSourceDto = new MapSourceDTO();
+        mapedSourceDto.setUrl(mapSourceDTO.getUrl());
         List<String> errors = new ArrayList<>();
 
         try {
@@ -63,18 +62,18 @@ public class MapSourceService {
             if (titleClass == null) {
                 errors.add("O título não foi encontrado no HTML.");
             } else {
-                mapedSource.setTitle(titleClass);
+                mapedSourceDto.setTitle(titleClass);
             }
 
             String dateClass = findDateElement(doc);
             if (dateClass == null) {
                 errors.add("A data não foi encontrada no HTML.");
             } else {
-                mapedSource.setDate(dateClass);
+                mapedSourceDto.setDate(dateClass);
             }
 
             String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-            mapedSource.setAuthor(authorClass);
+            mapedSourceDto.setAuthor(authorClass);
             // if (authorClass == null) {
             //     errors.add("O autor não foi encontrado no HTML.");
             // } else {
@@ -85,7 +84,7 @@ public class MapSourceService {
             if (bodyClass == null) {
                 errors.add("O corpo não foi encontrado no HTML.");
             } else {
-                mapedSource.setBody(bodyClass);
+                mapedSourceDto.setBody(bodyClass);
             }
 
             if (!errors.isEmpty()) {
@@ -98,7 +97,7 @@ public class MapSourceService {
             throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Erro ao acessar a URL."));
         }
 
-        return mapedSource;
+        return mapedSourceDto;
     }
     
 

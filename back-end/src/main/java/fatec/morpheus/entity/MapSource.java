@@ -46,8 +46,12 @@ public class MapSource {
     private String date;
 
 
-    public MapSourceDTO toDTO() {
-        return new MapSourceDTO(author, body, title, url, date);
+   public MapSource(MapSourceDTO mapSourceDTO) {
+        this.author = mapSourceDTO.getAuthor();
+        this.body = mapSourceDTO.getBody();
+        this.title = mapSourceDTO.getTitle();
+        this.url = mapSourceDTO.getUrl();
+        this.date = mapSourceDTO.getDate();
     }
 
 }
