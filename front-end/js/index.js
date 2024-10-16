@@ -1,6 +1,20 @@
 const app = Vue.createApp({
     data() {
         return {
+            isLoading:false,
+            cron: {
+                active: false,
+                periodice: "",
+                hour: "",
+                timeZone: "",
+                isSubmited: false,
+                alert: {
+                    show: false,
+                    type: 'warning', // Tipo do alerta ('warning', 'danger', 'success', etc.)
+                    titleError: 'Erro!',
+                    desc: 'Por favor, preencha todos os campos obrigatórios.'
+                }
+            },
             root: {
                 formData: {
                     sourceSelected: {
@@ -33,15 +47,15 @@ const app = Vue.createApp({
                         desc: 'Por favor, preencha todos os campos obrigatórios.'
                     }
                 },
-                tags:{
-                    modal:null,
-                    selected:[],
-                    filtered:[],
-                    movedRemove:[],
-                    movedAdd:[],
+                tags: {
+                    modal: null,
+                    selected: [],
+                    filtered: [],
+                    movedRemove: [],
+                    movedAdd: [],
                     search: {
                         query: '',
-                        selectedQuery:'',
+                        selectedQuery: '',
                         sort: {
                             order: 'asc'
                         },
@@ -67,9 +81,9 @@ const app = Vue.createApp({
                 }
             },
             tags: {
-                all:[],
+                all: [],
                 filtered: [],
-                modal:null,
+                modal: null,
                 search: {
                     query: '',
                     field: 'name',
@@ -78,10 +92,10 @@ const app = Vue.createApp({
                         order: 'asc'
                     },
                 },
-                insert:{
-                    active:false,
-                    content:'',
-                    isSubmitted:false
+                insert: {
+                    active: false,
+                    content: '',
+                    isSubmitted: false
                 },
                 delete: {
                     tagSelected: { tagCode: null, tagName: null },
@@ -114,22 +128,22 @@ const app = Vue.createApp({
         },
         newsLoad() {
             axios.get('http://localhost:8080/morpheus/source')
-            .then(response => {
-                this.sourceNews.all = [];
-                response.data.forEach(portalNoticia => {
-                    if (portalNoticia.type == 1) {
-                    const itemAdd = new Object();
-                    itemAdd.code = portalNoticia.code;
-                    itemAdd.name = portalNoticia.srcName;
-                    itemAdd.address = portalNoticia.address;
-                    itemAdd.tags = portalNoticia.tags;
-                    this.sourceNews.all.push(itemAdd);
-                    }
-                });
+                .then(response => {
+                    this.sourceNews.all = [];
+                    response.data.forEach(portalNoticia => {
+                        if (portalNoticia.type == 1) {
+                            const itemAdd = new Object();
+                            itemAdd.code = portalNoticia.code;
+                            itemAdd.name = portalNoticia.srcName;
+                            itemAdd.address = portalNoticia.address;
+                            itemAdd.tags = portalNoticia.tags;
+                            this.sourceNews.all.push(itemAdd);
+                        }
+                    });
 
                 })
                 .catch(error => {
-                    this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Não foi possível carregar os dados do portal');
+                    this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
                 });
             this.newsFilter();
         },
@@ -200,7 +214,7 @@ const app = Vue.createApp({
                         this.rootMontedAlert('success', 'Foi salvo com sucesso o portal: ' + this.sourceNews.formData.sourceSelected.name, 'Portal salvo com sucesso');
                     })
                     .catch(error => {
-                        this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
                     });
             } else {
                 this.newsMontedAlert('danger', 'Preencha todos os campos', 'Erro ao tentar salvar! ');
@@ -222,11 +236,11 @@ const app = Vue.createApp({
                     this.rootMontedAlert('success', 'Foi excluido com sucesso o portal: ' + this.sourceNews.delete.sourceSelected.name, 'Portal excluido com sucesso');
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar excluir!');
                 });
         },
 
-        tagsForSourceNewsOpen(news){
+        tagsForSourceNewsOpen(news) {
             const modalElement = this.$refs.tagsForSourceNewsModal;
             this.sourceNews.tags.modal = new bootstrap.Modal(modalElement);
             this.sourceNews.tags.modal.show();
@@ -234,40 +248,40 @@ const app = Vue.createApp({
             this.sourceNews.tags.selected = news.tags;
 
         },
-        tagsForSourceNewsAdd(){
+        tagsForSourceNewsAdd() {
             this.sourceNews.tags.selected.push(...this.sourceNews.tags.movedAdd);
             this.sourceNews.tags.movedAdd = [];
         },
-        tagsForSourceNewsRemove(){
+        tagsForSourceNewsRemove() {
             this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCode => !this.sourceNews.tags.movedRemove.includes(tagCode));
             this.sourceNews.tags.movedRemove = [];
         },
-        tagsForSourceNewsCreateTag(){
+        tagsForSourceNewsCreateTag() {
             this.tags.insert.content = this.tags.search.query;
             this.tagCreate();
             this.tags.search.query = "";
         },
-        tagsForSourceNewsSave(){
+        tagsForSourceNewsSave() {
             this.sourceNews.formData.isSubmitted = true;
-                const endpoint = `http://localhost:8080/morpheus/source/${this.sourceNews.tags.newsSelected.code}`;
-            
-                const payload = {
-                    srcName: this.sourceNews.tags.newsSelected.name,
-                    address: this.sourceNews.tags.newsSelected.address,
-                    tags: this.sourceNews.tags.selected,
-                    type: 1
-                };
+            const endpoint = `http://localhost:8080/morpheus/source/${this.sourceNews.tags.newsSelected.code}`;
 
-                axios.patch(endpoint, payload)
-                    .then(response => {
-                        this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
-                    })
-                    .catch(error => {
-                        this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
-                    })
-                    .finally(final => {
-                        
-                    });
+            const payload = {
+                srcName: this.sourceNews.tags.newsSelected.name,
+                address: this.sourceNews.tags.newsSelected.address,
+                tags: this.sourceNews.tags.selected,
+                type: 1
+            };
+
+            axios.patch(endpoint, payload)
+                .then(response => {
+                    this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
+                })
+                .catch(error => {
+                    this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
+                })
+                .finally(final => {
+
+                });
         },
 
         tagsMontedAlert(type, message, title) {
@@ -278,12 +292,12 @@ const app = Vue.createApp({
                 desc: message
             }
         },
-        tagsOpenMananger(){
+        tagsOpenMananger() {
             const modalElement = this.$refs.tagsModal;
             this.tags.modal = new bootstrap.Modal(modalElement);
             this.tags.modal.show();
         },
-        tagsFilter(){
+        tagsFilter() {
             const query = this.tags.search.query.toLowerCase();
             this.tags.filtered = this.tags.all
                 .filter(tag => tag.tagName.toLowerCase().includes(query))
@@ -296,10 +310,10 @@ const app = Vue.createApp({
             this.tags.all = [];
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
-                this.tags.all = response.data.map(tag => ({
-                    tagCod: tag.tagCod,
-                    tagName: tag.tagName
-                }));
+                    this.tags.all = response.data.map(tag => ({
+                        tagCod: tag.tagCod,
+                        tagName: tag.tagName
+                    }));
                 })
                 .catch(error => {
                 })
@@ -310,7 +324,7 @@ const app = Vue.createApp({
                     this.tagsFilter();
                 });
         },
-        tagCreate(){
+        tagCreate() {
             this.tags.insert.isSubmitted = true;
 
             if (this.tags.insert.content) {
@@ -323,7 +337,7 @@ const app = Vue.createApp({
                         this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.sourceNews.formData.sourceSelected.name, 'Tag salva com sucesso');
                     })
                     .catch(error => {
-                        this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
                     });
             }
         },
@@ -332,7 +346,7 @@ const app = Vue.createApp({
         },
         tagSave(tag) {
             tag.isSubmitted = true;
-            if(tag.tagName){
+            if (tag.tagName) {
                 axios
                     .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCod)}`, {
                         tagName: tag.tagName
@@ -342,7 +356,7 @@ const app = Vue.createApp({
                         this.tagsLoad();
                     })
                     .catch(error => {
-                        this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar salvar!');
+                        this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
                         this.tagsLoad();
                     });
             }
@@ -364,11 +378,82 @@ const app = Vue.createApp({
                     this.tagsMontedAlert('success', 'Foi excluido com sucesso a tag: ' + this.tags.delete.tagSelected.tagName, 'Tag excluido com sucesso');
                 })
                 .catch(error => {
-                    this.tagsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar excluir!');
+                    this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar excluir!');
                 })
-                .finally( final => {
+                .finally(final => {
                     this.tags.modal.show();
                 });
+        },
+
+        cronLoad(){
+            this.isLoading = true;
+            axios.get('http://localhost:8080/morpheus/config/properties')
+                .then(response => {
+                    const config = response.data;
+                    this.cron.active = config.active === 'true';
+                    this.cron.periodice = config.frequency;
+                    this.cron.hour = config.time;
+                    this.cron.timeZone = config.timeZone;
+                })
+                .catch(error => {
+                    this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        cronValidateHour() {
+            if (this.cron.hour > 23) {
+                this.cron.hour = 23;
+            } else if (this.cron.hour < 0) {
+                this.cron.hour = 0;
+            }
+        },
+        cronValidateMinute() {
+            if (this.cron.minute > 59) {
+                this.cron.minute = 59;
+            } else if (this.cron.minute < 0) {
+                this.cron.minute = 0;
+            }
+        },
+        cronSalvarConfiguracao() {
+            this.cron.isSubmited = true;
+            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone)) {
+                this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron');
+                return;
+            }
+
+            this.isLoading = true;
+            const payload = {
+                frequency: this.cron.periodice,
+                time: this.cron.hour,
+                timeZone: this.cron.timeZone,
+                active: this.cron.active.toString()
+            };
+
+            axios.post('http://localhost:8080/morpheus/config/properties', payload)
+                .then(response => {
+                    const offcanvasElement = this.$refs.offcanvas;
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                    this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso', 'Portal salvo com sucesso');
+                })
+                .catch(error => {
+                    this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao salvar os dados do cron');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        cronMontedAlert(type, message, title) {
+            this.cron.alert = {
+                show: true,
+                type: type,
+                titleError: title,
+                desc: message
+            }
         },
     },
     computed: {
@@ -394,6 +479,12 @@ const app = Vue.createApp({
     mounted() {
         this.newsLoad();
         this.tagsLoad();
+        this.cronLoad();
+
+        this.isLoading = true;
+        setTimeout(() => {
+          this.isLoading = false; // Para o loading após 3 segundos
+        }, 3000);
     }
 });
 
