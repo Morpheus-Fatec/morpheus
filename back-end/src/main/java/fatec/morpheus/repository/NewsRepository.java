@@ -6,9 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import fatec.morpheus.entity.News;
+import io.micrometer.common.lang.NonNull;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Integer>{
 
-    Page<News> findAll(Pageable Pegeable);
+    Page<News> findAll(@NonNull Pageable Pegeable);
+    
+    
+    System.out.println("TESTE");
 }
