@@ -42,7 +42,7 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "200", description = "Tags encontradas"),
         @ApiResponse(responseCode = "400", description = "Tags obrigatórias não encontrada"),
     })
-    @GetMapping("/mapping")
+    @PostMapping("/mapping")
     public ResponseEntity<MapSourceDTO> validateMap(@RequestBody MapSourceDTO mapSourceDTO){
         MapSourceDTO mapSourceDTOResolved = mapSourceService.validateMap(mapSourceDTO);
         return new ResponseEntity<>(mapSourceDTOResolved, HttpStatus.ACCEPTED);
@@ -54,9 +54,9 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "400", description = "Erro ao criar portal de notícias"),
     })
     @PostMapping
-    public ResponseEntity<NewsSourceDTO> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
-        // NewsSourceDTO savedNewsSource = newsSourceService.createNewsSource(newsSourceDTO); 
-        return new ResponseEntity<>(newsSourceDTO, HttpStatus.CREATED);
+    public ResponseEntity<Void> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
+        newsSourceService.createNewsSource(newsSourceDTO); 
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Operation(summary= "Busca", description = "Retorna todos os portais de notícias cadastrados")

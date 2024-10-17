@@ -32,7 +32,7 @@ public class ScrapingService {
 
         for (MapSource source : sources) {
             try {
-                String portalUrl = source.getUrl();
+                String portalUrl = source.getSource().getAddress();
                 System.out.println("PORTAL: " + portalUrl);
 
                 Map<String, String> tags = Map.of(
@@ -48,7 +48,7 @@ public class ScrapingService {
                 extractNews(responseDTOS, portalUrl, tags);
 
             } catch (Exception e) {
-                System.out.println("Erro ao processar o portal: " + source.getUrl());
+                System.out.println("Erro ao processar o portal: " + source.getSource().getAddress());
                 e.printStackTrace();
             }
         }
@@ -94,8 +94,7 @@ public class ScrapingService {
             
             String contentString = fullContent.toString();
             
-            // Aqui eu estou simulando uma tag vinculada a um portal para realização da filtragem.
-            if (!contentString.toLowerCase().contains("amanhã")) {
+            if (!contentString.toLowerCase().contains("cliente")) {
                 System.out.println("Não foi encontrado notícias com a tag 'amanhã'");
                 return;
             }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
@@ -27,44 +28,51 @@ public class NewsSourceService {
     private NewsSourceRepository newsSourceRepository;
     @Autowired
     private Validator validator;
-    private NewsSource source = new NewsSource();
-    private NewsSourceDTO newsSourceDTO = new NewsSourceDTO();
 
-
-    public NewsSourceDTO createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
+    public NewsSource createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
+        NewsSource source = new NewsSource();
 
         source.setSrcName(newsSourceCreatedDTO.getSrcName());
         source.setAddress(newsSourceCreatedDTO.getAddress());
+        source.setTags(newsSourceCreatedDTO.getTags());
 
-        
-        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);
-       
-    
+        MapSource map = newsSourceCreatedDTO.getMap().toEntity();
+        map.setSource(source);
+        source.setMap(map);
+
+        Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);    
         if (!sourceViolations.isEmpty()) {
             List<String> errors = sourceViolations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
 
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
-            errorResponse.setMessage("Campos Vazios");
+            errorResponse.setMessage("Problemas com campos obrigatórios");
             throw new InvalidFieldException(errorResponse);
         }
    
 
         try {         
             newsSourceRepository.save(source);      
-            newsSourceDTO.setSrcName(source.getSrcName());
-            newsSourceDTO.setAddress(source.getAddress());
-            newsSourceDTO.setMap(newsSourceCreatedDTO.getMap());
-        
-            return newsSourceDTO;
+            return source;
                 
         } catch (Exception e) {
             List<String> duplicateFields = this.verifyUniqueKeys(source);
+
+            if (duplicateFields.isEmpty()) {
+                String errorMessage = e.getCause().getMessage();
+                ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,   
+                    duplicateFields,
+                    errorMessage       
+                );
+                throw new UniqueConstraintViolationException(errorResponse);
+            }
             
             ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT,   
-                duplicateFields       
+                duplicateFields,
+                "Campos Duplicados"       
             );
 
             throw new UniqueConstraintViolationException(errorResponse);
@@ -100,7 +108,10 @@ public class NewsSourceService {
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
                     existingNewsSource.getTags().clear();
                     existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
-
+                    existingNewsSource.getMap().setAuthor(newsSourceToUpdate.getMap().getAuthor());
+                    existingNewsSource.getMap().setBody(newsSourceToUpdate.getMap().getBody());
+                    existingNewsSource.getMap().setTitle(newsSourceToUpdate.getMap().getTitle());
+                    existingNewsSource.getMap().setDate(newsSourceToUpdate.getMap().getDate());
                     return newsSourceRepository.save(existingNewsSource);
                 })
                 .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));

@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,8 +58,9 @@ public class NewsSource {
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
     )
-    private List<Tag> tags;
+    private List<Tag> tags; 
 
-    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL)
-    private MapSource mapSource;
+    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private MapSource map;
 }

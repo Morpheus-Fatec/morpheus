@@ -1,5 +1,7 @@
 package fatec.morpheus.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import fatec.morpheus.DTO.MapSourceDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,24 +31,27 @@ public class MapSource {
     @Column(name = "map_id")
     private int mapId;
 
-    @ManyToOne
-    @JoinColumn(name = "src_cod", nullable = false)
-    private NewsSource source;
+    @OneToOne 
+    @JoinColumn(name = "src_cod", nullable = false, unique = true)
+    @JsonBackReference
+    private NewsSource source; 
 
     @Column(name = "map_author", nullable = false)
-    private String author;
+    private String author; 
+
     @Column(name = "map_body", nullable = false)
-    private String body;
+    private String body; 
+
     @Column(name = "map_title", nullable = false)
-    private String title;
-    @Column(name = "map_url", nullable = false)
-    private String url;
+    private String title; 
+
     @Column(name = "map_date", nullable = false)
     private String date;
 
-
-    public MapSourceDTO toDTO() {
-        return new MapSourceDTO(author, body, title, url, date);
+    public MapSource(MapSourceDTO mapSourceDTO) {
+        this.author = mapSourceDTO.getAuthor();
+        this.body = mapSourceDTO.getBody();
+        this.title = mapSourceDTO.getTitle();
+        this.date = mapSourceDTO.getDate();
     }
-
 }
