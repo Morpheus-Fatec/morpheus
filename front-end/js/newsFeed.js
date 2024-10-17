@@ -8,7 +8,8 @@ const app = Vue.createApp({
                 page: 1,
                 itens: 50
             },
-            dataNews: {
+       
+            modalContent: {
                 title: '',
                 content: '',
                 author: '',
@@ -16,12 +17,6 @@ const app = Vue.createApp({
                 autName: '',
                 srcName: '',
                 srcAddress: ''
-
-            },
-
-            modalContent: {
-                title: '',
-                content: '',
             },
 
             sourceNews: {
@@ -44,19 +39,20 @@ const app = Vue.createApp({
                             newsTitle: element.newsTitle,
                             newsContent: element.newsContent,
                             srcName: element.srcName,
-                            scrAddress: element.srcAddress
+                            scrAddress: element.srcAddress,
+                            autName: element.autName,  
+                            newsRegistryDate: element.newsRegistryDate  
                         };
                         this.newsList.push(itemAdd);
                     });
                     this.pagination.totalPages = data.totalPages;
                     this.pagination.totalElements = data.totalElements;
-
+        
                     this.newsFilter();
                 })
                 .catch(error => {
                     console.error('Erro ao carregar as notícias', error);
                 });
-
         },
 
         newsFilter() {
@@ -78,9 +74,11 @@ const app = Vue.createApp({
             this.newsLoad();
         },
 
-        openModal(content, title) {
+        openModal(content, title, author, data) {
             this.modalContent.content = content;  
-            this.modalContent.title = title;      
+            this.modalContent.title = title;    
+            this.modalContent.author = author;
+            this.modalContent.data = data;
             const modal = new bootstrap.Modal(document.getElementById('content'), {
                 keyboard: false
             });

@@ -99,7 +99,9 @@
                         <tr v-for="news in newsList" :key="news.newsTitle">
                             <td>{{ news.newsTitle }}</td>
                             <td>{{ news.newsContent.slice(0,3) }}
-                                <span v-if="news.newsContent.length > 3" @click="openModal(news.newsContent, news.newsTitle)" style="cursor: pointer; color: blue;">...</span>
+                                <span v-if="news.newsContent.length > 3"
+                                    @click="openModal(news.newsContent, news.newsTitle, news.autName, news.newsRegistryDate)"
+                                    style="cursor: pointer; color: blue;">...</span>
                             </td>
                             <td>{{ news.srcName }}</td>
                             <td>
@@ -113,19 +115,20 @@
 
 
         <!-- Modal de conteúdo -->
-        <div class="modal fade" id="content" tabindex="-1" role="dialog"
-            aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
+        <div class="modal fade" id="content" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="TituloModalLongoExemplo">{{ modalContent.title }}</h5>
-                        <button type="button" class="close" @click="closeModal" aria-label="Fechar">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" class="close" @click="closeModal" aria-label="Fechar"><span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                         <!-- conteúdo -->
-                         {{ modalContent.content }}
+                        {{ modalContent.content }}
+                        <br><br> 
+                        <p><strong>Autor:</strong> {{ modalContent.author }}</p>
+                        <p><strong>Data de Registro:</strong> {{ modalContent.data }}</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="closeModal">Fechar</button>
