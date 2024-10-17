@@ -3,6 +3,7 @@ package fatec.morpheus.service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,15 +12,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.entity.News;
+import fatec.morpheus.entity.NewsAuthor;
 import fatec.morpheus.entity.NewsReponse;
+import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.entity.PaginatedNewsResponse;
+import fatec.morpheus.repository.NewsAuthorRepository;
 import fatec.morpheus.repository.NewsRepository;
+import fatec.morpheus.repository.NewsSourceRepository;
 
 @Service
 public class NewsService {
 
     @Autowired
     private NewsRepository newsRepository;
+
+    @Autowired
+    private NewsAuthorRepository newsAuthorRepository;
+
+    @Autowired
+    private NewsSourceRepository newsSourceRepository;
     
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
@@ -47,6 +58,38 @@ public class NewsService {
             newsPage.getTotalElements()
         );
     }
+
+    public News saveNews(String title, String content, String autName, Date registryDate) {
+
+        if (title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+    
+        if (registryDate == null) {
+            throw new IllegalArgumentException("Publication date is required");
+        }
+    
+        News news = new News();
+        
+        news.setNewsTitle(title);
+        news.setNewsContent(content);
+        news.setNewsRegistryDate(registryDate);
+        
+        if (autName != null && !autName.isEmpty()) {
+            Optional<NewsAuthor> newsAuthorOpt = newsAuthorRepository.findByAutName(autName);
+            if (newsAuthorOpt.isPresent()) {
+                news.setNewsAuthor(newsAuthorOpt.get());
+            } else {
+                throw new IllegalArgumentException("Author not found");
+            }
+        } else {
+            news.setNewsAuthor(null); 
+        }
+    
+        return newsRepository.save(news);
+    }
+    
+
 
     
     

@@ -12,7 +12,4 @@ import io.micrometer.common.lang.NonNull;
 public interface NewsRepository extends JpaRepository<News, Integer>{
 
     Page<News> findAll(@NonNull Pageable Pegeable);
-    
-    
-    System.out.println("TESTE");
 }

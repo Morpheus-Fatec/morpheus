@@ -4,8 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import fatec.morpheus.entity.NewsAuthor;
+import java.util.Optional;
+
 
 @Repository
 public interface NewsAuthorRepository extends JpaRepository<NewsAuthor, Integer>{
+
+    Optional<NewsAuthor> findByAutName(String autName);
     
 }
