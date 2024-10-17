@@ -10,10 +10,10 @@ import lombok.Getter;
 @Getter
 public class NotFoundException extends RuntimeException {
         private final ErrorResponse errorResponse;
-        public NotFoundException(int id) {
+        public NotFoundException(int id, String message) {
             this.errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND, 
-                "News source with id " + id + " not found", 
+                message + " com id " + id, 
                 new ArrayList<>());
         }
 }

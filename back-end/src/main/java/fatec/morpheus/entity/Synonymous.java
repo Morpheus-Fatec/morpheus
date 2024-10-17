@@ -14,11 +14,11 @@ public class Synonymous {
 
     @Id
     @Column(name = "texto_cod")
-    private Integer textoCod;
+    private int textoCod;
 
     @Id
     @Column(name = "syn_group")
-    private Integer synGroup;
+    private int synGroup;
 
     @ManyToOne
     @JoinColumn(name = "texto_cod", insertable = false, updatable = false)

@@ -26,5 +26,11 @@ public class ErrorResponse {
         this.errors = errors;
     }
 
+    public ErrorResponse(HttpStatus status, List<String> errors, String message) {
+        this.status = status;
+        this.errors = errors;
+        this.message = message;
+    }
+
 
 }
