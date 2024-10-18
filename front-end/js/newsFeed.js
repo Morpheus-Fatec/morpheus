@@ -6,7 +6,7 @@ const app = Vue.createApp({
                 totalElements: 0,
                 totalPages: 0,
                 page: 1,
-                itens: 50
+                items: 50
             },
        
             modalContent: {
@@ -21,16 +21,31 @@ const app = Vue.createApp({
 
             sourceNews: {
                 search: {
-                    field: 'srcName',
-                    query: ''
-                }
-            }
+                    field: 'newsTitle',
+                    query: '',
+                    sort: {
+                        field: 'name',
+                        order: 'asc'
+                    },
+                },
+                filteredNews: [],
+            },
+            isLoading: false,
+            root: {
+                    alert: {
+                        show: false,
+                        type: 'warning',                         titleError: 'Erro!',
+                        desc: 'Por favor, preencha todos os campos obrigatórios.'
+                    }
+            },
+
         };
     },
 
     methods: {
         newsLoad() {
-            axios.get(`https://morpheus-api15.free.beeceptor.com/todos?page=${this.pagination.page}&items=${this.pagination.itens}`)
+            this.isLoading = true;
+            axios.get(`https://morpheus-api16.free.beeceptor.com/todos?page=${this.pagination.page}&items=${this.pagination.items}`)
                 .then(response => {
                     const data = response.data;
                     this.newsList = [];
@@ -51,22 +66,26 @@ const app = Vue.createApp({
                     this.newsFilter();
                 })
                 .catch(error => {
-                    console.error('Erro ao carregar as notícias', error);
-                });
+                    this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao carregar notícias!');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                    });
+
+
         },
+
 
         newsFilter() {
             const query = this.sourceNews.search.query.toLowerCase();
-            const field = this.sourceNews.search.field;
-
-            return this.newsList.filter(news => {
-                if (field === 'name') {
-                    return news.srcName.toLowerCase().includes(query);
-                } else if (field === 'address') {
-                    return news.scrAddress.toLowerCase().includes(query);
-                }
-                return true;
-            });
+            this.sourceNews.filtered = this.newsList
+                .filter(news =>
+                    news[this.sourceNews.search.field].toLowerCase().includes(query)
+                )
+                .sort((a, b) => {
+                    const result = a['newsTitle'].toLowerCase().localeCompare(b['newsTitle'].toLowerCase());
+                    return this.sourceNews.search.sort.order === 'asc' ? result : -result;
+                });
         },
 
         changePage(page) {
@@ -89,9 +108,29 @@ const app = Vue.createApp({
             if (modal) {
                 modal.hide(); 
             }
-        }
+        },
+
+        rootMontedAlert(type, message, title) {
+            this.root.alert = {
+                show: true,
+                type: type,
+                titleError: title,
+                desc: message
+            }
+
+            setTimeout(() => {
+                this.root.formData.alert.show = false;
+            }, 20000);
+        },
     
     },
+
+    newsToggleSort(field) {
+        this.sourceNews.search.sort.field = field;
+        this.sourceNews.search.sort.order = this.sourceNews.search.sort.order === 'asc' ? 'desc' : 'asc';
+        this.newsFilter();
+    },
+    
 
     computed: {
         filteredNews() {
