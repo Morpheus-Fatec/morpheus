@@ -4,6 +4,7 @@
     <img src="./documentation/images/Logo_Morpheus.png" alt="Logotipo Morpheus"width="75%">
 </div>
 
+
 <p align="center">
   <a href="#integrantes-da-equipe">Integrantes da Equipe</a> •
   <a href="#descrição-do-desafio">Desafio</a> •
@@ -106,14 +107,22 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint1.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint2.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
+
+<br>
+
+## Board de Atividades
+
+Acesse o Board de atividades do Time para visualizar as atividades planejadas, em desenvolvimento e prontas.
+
+[Board de Atividades](https://github.com/orgs/Morpheus-Fatec/projects/1/views/1)
 
 <br>
 
 ## :page_with_curl: <a id="documentação"> Documentação </a>
 
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
 
 ### Estrutura da Documentação:
 - **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
@@ -122,6 +131,16 @@ Todo o material relacionado à documentação do projeto pode ser encontrado no 
 - **[Imagens](./documentation/images/)**: Contém imagens de utilização geral no projeto.
 
 <br>
+
+## :page_with_curl: Documentação
+
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
+
+### Estrutura da Documentação:
+- **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
+- **[API](./documentation/api/)**: Contém a especificação da API, exemplos de requisições e respostas, e guias de autenticação.
+- **[Manuais](./documentation/manuals/)**: Contém manuais do usuário, guias de instalação, configuração e resolução de problemas.
+
 
 ## :bookmark: <a id="tecnologias-utilizadas"> Tecnologias Utilizadas </a>
 > * [Java](https://www.java.com/pt-BR/) - Versão 21
