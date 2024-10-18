@@ -61,21 +61,21 @@ public class MapSourceService {
             if (titleClass == null) {
                 errors.add("O título não foi encontrado no HTML.");
             } else {
-                mapedSourceDto.setTitle(titleClass);
+                mapedSourceDto.setTitle("."+titleClass);
             }
 
             String dateClass = findDateElement(doc);
             if (dateClass == null) {
                 errors.add("A data não foi encontrada no HTML.");
             } else {
-                mapedSourceDto.setDate(dateClass);
+                mapedSourceDto.setDate("."+dateClass);
             }
 
             if (mapSourceDTO.getAuthor().isBlank()) {
                 mapSourceDTO.setAuthor(null);
             }else{
                 String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-                mapedSourceDto.setAuthor(authorClass);
+                mapedSourceDto.setAuthor("."+authorClass);
             }
             
 
@@ -83,7 +83,7 @@ public class MapSourceService {
             if (bodyClass == null) {
                 errors.add("O corpo não foi encontrado no HTML.");
             } else {
-                mapedSourceDto.setBody(bodyClass);
+                mapedSourceDto.setBody("."+bodyClass);
             }
 
             if (!errors.isEmpty()) {

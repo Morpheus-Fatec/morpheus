@@ -7,7 +7,6 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import fatec.morpheus.entity.MapSource;
-import fatec.morpheus.entity.ResponseDTO;
 import fatec.morpheus.repository.MapSourceRepository;
 
 import java.io.IOException;
@@ -24,8 +23,7 @@ public class ScrapingService {
 
     private Set<String> processedUrls = new HashSet<>();
 
-    public Set<ResponseDTO> getSearch() {
-        Set<ResponseDTO> responseDTOS = new HashSet<>();
+    public void getSearch() {
         System.out.println("Buscando notícias...");
 
         List<MapSource> sources = mapSourceRepository.findAll();
@@ -38,25 +36,21 @@ public class ScrapingService {
                 Map<String, String> tags = Map.of(
                     "content", source.getBody(),
                     "title", source.getTitle(),
-                    "date", source.getDate(),   
+                    "date", source.getDate(),
                     "author", source.getAuthor(),
                     "urlNoticiaSalva", portalUrl
                 );
 
-                System.out.println("Tags: " + tags.get("title"));
-
-                extractNews(responseDTOS, portalUrl, tags);
+                extractNews(portalUrl, tags);
 
             } catch (Exception e) {
                 System.out.println("Erro ao processar o portal: " + source.getSource().getAddress());
                 e.printStackTrace();
             }
         }
-
-        return responseDTOS;
     }
 
-    private void extractNews(Set<ResponseDTO> responseDTOS, String url, Map<String, String> tags) {
+    private void extractNews(String url, Map<String, String> tags) {
         try {
             Document document = Jsoup.connect(url).get();
             Elements newsCards = document.select("a");
@@ -65,11 +59,18 @@ public class ScrapingService {
                 String link = card.attr("href");
 
                 if (!link.startsWith("http")) {
-                  link = "https:" + link;
+                    link = "https:" + link;
                 }
 
+                System.out.println(link);
+
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
-                    scrapeNewsDetailsG1(responseDTOS, link, tags);
+                    if (link.contains("https://www.cnnbrasil.com.br") ||
+                        link.contains("https://www.metropoles.com") ||
+                        link.contains("https://www.g1.globo.com")) {
+                        return;
+                    }
+                    scrapeNewsDetails(link, tags);
                 }
             }
         } catch (IOException e) {
@@ -77,36 +78,36 @@ public class ScrapingService {
         }
     }
 
-    private void scrapeNewsDetailsG1(Set<ResponseDTO> responseDTOS, String newsUrl, Map<String, String> tags) {
+    private void scrapeNewsDetails(String newsUrl, Map<String, String> tags) {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
-    
-            String titleElements = newsPage.select(tags.get("title")).text();
-            String datePublished = newsPage.select(tags.get("date")).attr("content");
-    
-            
+
+            String title = newsPage.select(tags.get("title")).text();
+            String datePublished = newsPage.select(tags.get("date")).text();
+
             Elements contentElements = newsPage.select(tags.get("content"));
             StringBuilder fullContent = new StringBuilder();
-            
+
             for (Element content : contentElements) {
                 fullContent.append(content.text()).append(System.lineSeparator());
             }
-            
+
             String contentString = fullContent.toString();
             
-            if (!contentString.toLowerCase().contains("cliente")) {
-                System.out.println("Não foi encontrado notícias com a tag 'amanhã'");
-                return;
-            }
-            
-            System.out.println("Título: " + titleElements);
+            // if (!contentString.toLowerCase().contains("hoje")) {
+            //     System.out.println("Não foi encontrado notícias com a tag 'amanhã'");
+            //     return;
+            // }
+
+            System.out.println("Título: " + title);
             System.out.println("Data: " + datePublished);
             System.out.println("Conteúdo: " + contentString);
             System.out.println("URL: " + newsUrl);
-    
+
         } catch (IOException e) {
             System.out.println("Erro ao acessar o link: " + newsUrl);
             e.printStackTrace();
         }
     }
 }
+
