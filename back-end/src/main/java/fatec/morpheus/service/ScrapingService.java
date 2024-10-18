@@ -68,14 +68,7 @@ public class ScrapingService {
                     link = "https:" + link;
                 }
 
-                System.out.println(link);
-
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
-                    if (link.contains("https://www.cnnbrasil.com.br") ||
-                        link.contains("https://www.metropoles.com") ||
-                        link.contains("https://www.g1.globo.com")) {
-                        return;
-                    }
                     scrapeNewsDetails(link, tagsClass, tagNames);
                 }
             }
@@ -90,6 +83,7 @@ public class ScrapingService {
 
             String title = newsPage.select(tagsClass.get("title")).text();
             String datePublished = newsPage.select(tagsClass.get("date")).text();
+            String author = newsPage.select(tagsClass.get("author")).text();
 
             Elements contentElements = newsPage.select(tagsClass.get("content"));
             StringBuilder fullContent = new StringBuilder();
@@ -107,7 +101,10 @@ public class ScrapingService {
                 return;
             }
 
+            // Aqui é onde será implementado a persistencia dos dados no banco de dados.
+            // Basta inserir os dados abaixo na tabela.
             System.out.println("Título: " + title);
+            System.out.println("Autor: " + author);
             System.out.println("Data: " + datePublished);
             System.out.println("Conteúdo: " + contentString);
             System.out.println("URL: " + newsUrl);
