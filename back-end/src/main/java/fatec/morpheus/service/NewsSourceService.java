@@ -102,7 +102,6 @@ public class NewsSourceService {
     
 
     public NewsSource deleteNewsSourceById(int id) {
-        return newsSourceRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(id));
+        return newsSourceRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 }

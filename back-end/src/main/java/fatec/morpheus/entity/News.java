@@ -29,19 +29,19 @@ public class News {
     @Column(name = "new_cod")
     private int newsCod;
 
-    @Column(name = "new_title", length = 70)
+    @Column(name = "new_title", length = 70, nullable = false)
     @Size(max = 70, message = "News Title cannot exceed 70 characters")
     private String newsTitle;
 
     @Column(name = "new_content")
     private String newsContent;
 
-    @Column(name = "new_registry_date", updatable = false)
+    @Column(name = "new_registry_date", updatable = false, nullable = false)
     @CreationTimestamp
     private Date newsRegistryDate;
 
     @ManyToOne
-    @JoinColumn(name = "new_aut_cod", referencedColumnName = "new_aut_id")
+    @JoinColumn(name = "new_aut_cod", referencedColumnName = "new_aut_id", nullable = true)
     private NewsAuthor newsAuthor;
 
     @ManyToOne

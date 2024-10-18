@@ -1,11 +1,14 @@
 package fatec.morpheus.controller;
 
+import java.sql.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -35,6 +39,20 @@ public class NewsController {
     public ResponseEntity<PaginatedNewsResponse> getAllNews(@RequestParam int page, @RequestParam(defaultValue = "50") int itens) {
         PaginatedNewsResponse news = newsService.getNewsWithDetails(page, itens);
         return ResponseEntity.ok(news);
+    }
+
+        @PostMapping("/create")
+    public ResponseEntity<News> createNews(
+        @RequestParam String title, 
+        @RequestParam String content, 
+        @RequestParam(required = false) String autName, 
+        @RequestParam Date registryDate) {
+
+        // Chamar o service para salvar a notícia
+        News savedNews = newsService.saveNews(title, content, autName, registryDate);
+
+        // Retornar a notícia criada
+        return ResponseEntity.ok(savedNews);
     }
 
 }
