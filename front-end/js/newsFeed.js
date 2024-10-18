@@ -45,7 +45,7 @@ const app = Vue.createApp({
     methods: {
         newsLoad() {
             this.isLoading = true;
-            axios.get(`https://morpheus-api16.free.beeceptor.com/todos?page=${this.pagination.page}&items=${this.pagination.items}`)
+            axios.get(`https://morpheus-api17.free.beeceptor.com/todos?page=${this.pagination.page}&items=${this.pagination.items}`)
                 .then(response => {
                     const data = response.data;
                     this.newsList = [];
@@ -122,14 +122,16 @@ const app = Vue.createApp({
                 this.root.formData.alert.show = false;
             }, 20000);
         },
+
+        newsToggleSort(field) {
+            this.sourceNews.search.sort.field = field;
+            this.sourceNews.search.sort.order = this.sourceNews.search.sort.order === 'asc' ? 'desc' : 'asc';
+            this.newsFilter();
+        },
     
     },
 
-    newsToggleSort(field) {
-        this.sourceNews.search.sort.field = field;
-        this.sourceNews.search.sort.order = this.sourceNews.search.sort.order === 'asc' ? 'desc' : 'asc';
-        this.newsFilter();
-    },
+
     
 
     computed: {

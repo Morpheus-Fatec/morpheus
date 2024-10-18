@@ -31,7 +31,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="newsFeed.html">
-                            <i class="bi bi-globe2"></i>Noticias
+                            <i class="bi bi-globe2"></i> Noticias
                         </a>
                     </li>
                     <li class="nav-item">
@@ -79,15 +79,23 @@
 
 
             <div class="mt-3 d-flex justify-content-end align-items-center">
-                <select class="form-select" v-model="pagination.items" @change="changePage(pagination.page)"
-                    style="width: auto;">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="40">40</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="inputPassword6" class="col-form-label text-secondary">Número de itens por
+                            página</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="form-select" v-model="pagination.items" @change="changePage(pagination.page)"
+                            style="width: auto;">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
 
                 <nav aria-label="Page navigation example" class="ms-3">
                     <ul class="pagination justify-content-end mb-0">
@@ -126,9 +134,22 @@
                                     <i :class="sourceNews.search.sort.order != 'asc' 
                                                ? 'bi bi-arrow-down-circle-fill' 
                                                : 'bi bi-arrow-up-circle-fill'"></i>
-                                  </button></th>
-                            <th scope="col" style="width: 5%;">Conteúdo</th>
-                            <th scope="col" style="width: 15%;">Portal</th>
+                                </button>
+                            </th>
+                            <th scope="col" style="width: 5%;">Conteúdo
+                                <button class="btn btn-icon" @click="newsToggleSort('newsContent')">
+                                    <i :class="sourceNews.search.sort.order != 'asc' 
+                                           ? 'bi bi-arrow-down-circle-fill' 
+                                           : 'bi bi-arrow-up-circle-fill'"></i>
+                                </button>
+                            </th>
+                            <th scope="col" style="width: 15%;">Portal
+                                <button class="btn btn-icon" @click="newsToggleSort('srcName')">
+                                    <i :class="sourceNews.search.sort.order != 'asc' 
+                                           ? 'bi bi-arrow-down-circle-fill' 
+                                           : 'bi bi-arrow-up-circle-fill'"></i>
+                                </button>
+                            </th>
                             <th scope="col" style="width: 50%;">Endereço</th>
                         </tr>
                     </thead>
@@ -142,7 +163,15 @@
                             </td>
                             <td>{{ news.srcName }}</td>
                             <td style="text-align: center;">
-                                <a :href="news.scrAddress" target="_blank"><i class="bi bi-link"></i></a>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <a :href="news.scrAddress" target="_blank" rel="noopener noreferrer">
+                                        <button class="btn btn-outline-primary btn-sm" title="scrAddress">
+                                            <i class="bi bi-link"></i>
+                                        </button>
+                                    </a>
+
+                                </div>
+
                             </td>
                         </tr>
                     </tbody>
