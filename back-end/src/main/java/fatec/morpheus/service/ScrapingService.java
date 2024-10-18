@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import fatec.morpheus.entity.MapSource;
+import fatec.morpheus.entity.Tag;
 import fatec.morpheus.repository.MapSourceRepository;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ScrapingService {
@@ -33,7 +35,11 @@ public class ScrapingService {
                 String portalUrl = source.getSource().getAddress();
                 System.out.println("PORTAL: " + portalUrl);
 
-                Map<String, String> tags = Map.of(
+                Set<String> tagNames = source.getSource().getTags().stream()
+                    .map(Tag::getTagName)
+                    .collect(Collectors.toSet());
+
+                Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
                     "title", source.getTitle(),
                     "date", source.getDate(),
@@ -41,7 +47,7 @@ public class ScrapingService {
                     "urlNoticiaSalva", portalUrl
                 );
 
-                extractNews(portalUrl, tags);
+                extractNews(portalUrl, tagsClass, tagNames);
 
             } catch (Exception e) {
                 System.out.println("Erro ao processar o portal: " + source.getSource().getAddress());
@@ -50,7 +56,7 @@ public class ScrapingService {
         }
     }
 
-    private void extractNews(String url, Map<String, String> tags) {
+    private void extractNews(String url, Map<String, String> tagsClass, Set<String> tagNames) {
         try {
             Document document = Jsoup.connect(url).get();
             Elements newsCards = document.select("a");
@@ -70,7 +76,7 @@ public class ScrapingService {
                         link.contains("https://www.g1.globo.com")) {
                         return;
                     }
-                    scrapeNewsDetails(link, tags);
+                    scrapeNewsDetails(link, tagsClass, tagNames);
                 }
             }
         } catch (IOException e) {
@@ -78,14 +84,14 @@ public class ScrapingService {
         }
     }
 
-    private void scrapeNewsDetails(String newsUrl, Map<String, String> tags) {
+    private void scrapeNewsDetails(String newsUrl, Map<String, String> tagsClass, Set<String> tagNames) {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
 
-            String title = newsPage.select(tags.get("title")).text();
-            String datePublished = newsPage.select(tags.get("date")).text();
+            String title = newsPage.select(tagsClass.get("title")).text();
+            String datePublished = newsPage.select(tagsClass.get("date")).text();
 
-            Elements contentElements = newsPage.select(tags.get("content"));
+            Elements contentElements = newsPage.select(tagsClass.get("content"));
             StringBuilder fullContent = new StringBuilder();
 
             for (Element content : contentElements) {
@@ -93,11 +99,13 @@ public class ScrapingService {
             }
 
             String contentString = fullContent.toString();
-            
-            // if (!contentString.toLowerCase().contains("hoje")) {
-            //     System.out.println("Não foi encontrado notícias com a tag 'amanhã'");
-            //     return;
-            // }
+
+            boolean containsTag = tagNames.stream().anyMatch(tag -> contentString.toLowerCase().contains(tag.toLowerCase()));
+
+            if (!containsTag) {
+                System.out.println("Conteúdo não contém nenhuma das tags: " + tagNames);
+                return;
+            }
 
             System.out.println("Título: " + title);
             System.out.println("Data: " + datePublished);
@@ -110,4 +118,3 @@ public class ScrapingService {
         }
     }
 }
-
