@@ -4,6 +4,10 @@ import java.sql.Date;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -38,7 +43,7 @@ public class NewsSource {
     @Column(name = "src_type")
     private String type;
 
-    @Column(name = "src_address", length = 100 ,unique = true)
+    @Column(name = "src_address", length = 100, unique = true)
     @Size(max = 100, message = "Source Address cannot exceed 100 characters")
     private String address;
 
@@ -51,7 +56,10 @@ public class NewsSource {
         name = "Source_tag",
         joinColumns = @JoinColumn(name = "src_cod"),
         inverseJoinColumns = @JoinColumn(name = "tag_cod")
-    )   
-   
+    )
     private List<Tag> tags; 
+
+    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private MapSource map;
 }
