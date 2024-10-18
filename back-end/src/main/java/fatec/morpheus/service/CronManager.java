@@ -1,5 +1,8 @@
 package fatec.morpheus.service;
 
+import fatec.morpheus.controller.CronController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
@@ -12,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class CronManager {
-
+    private static final Logger logger = LoggerFactory.getLogger(CronController.class);
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> scheduledTask;
 
@@ -29,7 +32,7 @@ public class CronManager {
     @PostConstruct
     public void startCronTask() {
         scheduledTask = taskScheduler.schedule(this::runTask, getTrigger());
-        System.out.println("Tarefa cron iniciada com a expressão: " + cronExpression);
+        logger.info("Tarefa cron iniciada com a expressão: " + cronExpression);
     }
 
     // Método para atualizar a expressão cron e reiniciar a tarefa
@@ -44,15 +47,15 @@ public class CronManager {
     public void stopCronTask() {
         if (scheduledTask != null && !scheduledTask.isCancelled()) {
             scheduledTask.cancel(false);  // Cancela a tarefa cron se estiver rodando
-            System.out.println("Tarefa cron parada.");
+            logger.info("Tarefa cron parada.");
         } else {
-            System.out.println("Nenhuma tarefa cron ativa para parar.");
+            logger.info("Nenhuma tarefa cron ativa para parar.");
         }
     }
 
     // Tarefa executada pelo cron
     private void runTask() {
-        System.out.println("Executando a tarefa com o cron: " + cronExpression);
+        logger.info("Executando a tarefa com o cron: " + cronExpression);
     }
 
     // Obtém o Trigger com base na expressão cron
