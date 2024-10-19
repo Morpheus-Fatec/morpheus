@@ -30,9 +30,20 @@ public class ScrapingService {
 
         List<MapSource> sources = mapSourceRepository.findAll();
 
+        if (sources.isEmpty()) {
+            System.out.println("Nenhuma fonte encontrada. Finalizando a aplicação.");
+            return;
+        }
+
         for (MapSource source : sources) {
             try {
                 String portalUrl = source.getSource().getAddress();
+
+                if (portalUrl == null || portalUrl.isBlank()) {
+                    System.err.println("URL do portal está ausente. Pulando para a próxima fonte.");
+                    continue;
+                }
+
                 System.out.println("PORTAL: " + portalUrl);
 
                 Set<String> tagNames = source.getSource().getTags().stream()
@@ -54,6 +65,7 @@ public class ScrapingService {
                 e.printStackTrace();
             }
         }
+        System.out.println("Processamento de notícias concluído.");
     }
 
     private void extractNews(String url, Map<String, String> tagsClass, Set<String> tagNames) {
