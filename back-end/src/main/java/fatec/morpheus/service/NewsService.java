@@ -22,7 +22,7 @@ public class NewsService {
     private NewsRepository newsRepository;
     
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
-        PageRequest pageable = PageRequest.of(page, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
+        PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
         
         Page<News> newsPage = newsRepository.findAll(pageable); 
         
@@ -33,7 +33,7 @@ public class NewsService {
             String newsTitle = news.getNewsTitle();
             String newsContent = news.getNewsContent();
             Date newsRegistryDate = news.getNewsRegistryDate();
-            String autName = news.getNewsAuthor().getAutName();
+            String autName = getAuthorName(news);
             String srcName = news.getSourceNews().getSrcName();
             String srcAddress = news.getSourceNews().getAddress();
             String srcURL = news.getNewAddress();
@@ -49,7 +49,15 @@ public class NewsService {
         );
     }
 
+    private String getAuthorName(News news) {
+        if (news.getNewsAuthor() != null) {
+            return news.getNewsAuthor().getAutName();
+        }
+        return null;
+    }
+
     public void saveNews(News newNew){
         newsRepository.save(newNew);
     }
+
 }
