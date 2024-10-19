@@ -58,15 +58,18 @@ public class MapSourceService {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
 
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
-            if (titleClass == null) {
+            if (titleClass == null || titleClass.isBlank()) {
                 errors.add("O título não foi encontrado no HTML.");
             } else {
                 mapedSourceDto.setTitle("."+titleClass);
             }
 
             String dateClass = findDateElement(doc);
-            if (dateClass == null) {
-                errors.add("A data não foi encontrada no HTML.");
+            if (dateClass == null || dateClass.isBlank()) {
+                dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
+                if (dateClass == null || dateClass.isBlank()) {
+                    errors.add("A data não foi encontrada no HTML.");
+                }   
             } else {
                 mapedSourceDto.setDate("."+dateClass);
             }
@@ -75,12 +78,17 @@ public class MapSourceService {
                 mapSourceDTO.setAuthor(null);
             }else{
                 String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-                mapedSourceDto.setAuthor("."+authorClass);
+                if (authorClass == null) {
+                    mapedSourceDto.setAuthor(null);
+                    
+                }else{
+                    mapedSourceDto.setAuthor("."+authorClass);
+                }   
             }
             
 
             String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
-            if (bodyClass == null) {
+            if (bodyClass == null || bodyClass.isBlank()) {
                 errors.add("O corpo não foi encontrado no HTML.");
             } else {
                 mapedSourceDto.setBody("."+bodyClass);
@@ -150,8 +158,7 @@ public class MapSourceService {
             if (checkDateText(text)) {
                 return element.className(); 
             }
-        }
-    
+        }    
         return null; 
     }  
 
