@@ -1,0 +1,124 @@
+
+.btn-icon {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px; /* Ajuste o tamanho do ícone */
+    cursor: pointer;
+}
+.navbar-custom {
+    background: linear-gradient(to bottom, #f0f0f0, #d9d9d9); /* Gradiente vertical de cinzas claros */
+    color: black; /* Cor do texto */
+}
+
+.navbar-custom .nav-link {
+    color: black; /* Cor dos links */
+}
+
+.navbar-custom .nav-link:hover {
+    color: #0056b3; /* Cor dos links ao passar o mouse */
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    margin: 20px 0; /* Margem para separar do topo */
+}
+
+.page-title h1 {
+    margin-left: 10px; /* Espaço entre o ícone e o título */
+    font-size: 24px; /* Tamanho do texto do título */
+    color: #004c8a; /* Cor do título */
+}
+
+.btn-primary {
+    background-color: #004c8a; /* Cor dos botões */
+    border-color: #004c8a; /* Cor da borda dos botões */
+}
+
+.btn-primary:hover {
+    background-color: #003b6f; /* Cor dos botões ao passar o mouse */
+    border-color: #003b6f; /* Cor da borda ao passar o mouse */
+}
+
+.nav-link {
+    color: #004c8a !important; /* Cor dos links do menu */
+}
+
+.table td, .table th {
+    vertical-align: middle; /* Centraliza o conteúdo das células */
+}
+
+/* Estilizando a tabela */
+.table th:nth-child(1), .table td:nth-child(1) {
+    width: 20%; /* Largura da coluna de Nome */
+}
+
+.table th:nth-child(2), .table td:nth-child(2) {
+    width: 60%; /* Largura da coluna de Endereço (maior) */
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+    width: 20%; /* Largura da coluna de Ações (menor) */
+}
+
+.record-indicator {
+    font-size: 14px; /* Tamanho do texto do indicador */
+    color: #666; /* Cor do texto do indicador */
+    margin: 0; /* Remove margem superior e inferior */
+    font-style: italic; /* Texto em itálico */
+}
+
+/* Margem superior para a tabela */
+.table-container {
+    margin-top: 20px; /* Aumenta o espaço entre o indicador e a tabela */
+}
+
+.left-align-button {
+    display: flex; /* Flexbox para alinhas itens */
+    justify-content: flex-start; /* Alinha à esquerda */
+    align-items: center; /* Alinha itens verticalmente */
+    gap: 10px; /* Espaçamento entre os itens */
+}
+
+.small-button {
+    padding: 0.25rem 0.5rem; /* Tamanho menor do botão */
+    border: none; /* Remove a borda */
+    background: transparent; /* Remove o fundo */
+    color: #004c8a; /* Cor do ícone */
+}
+
+.small-button:hover {
+    color: #003b6f; /* Cor ao passar o mouse */
+}
+
+.hidden {
+    display: none; /* Classe para ocultar elementos */
+}
+
+.indicator-container {
+    display: flex; /* Flexbox para alinhas itens */
+    justify-content: space-between; /* Espaço entre os itens */
+    align-items: center; /* Alinha itens verticalmente */
+    margin: 10px 0; /* Margem vertical */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fundo preto semi-transparente */
+    z-index: 9999; /* Fica acima de todo o conteúdo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Desabilitar interação com a página enquanto carrega */
+  .disabled-content {
+    pointer-events: none; /* Desabilita cliques */
+    opacity: 0.5; /* Tornar o conteúdo abaixo um pouco mais escuro */
+  }

@@ -1,44 +1,30 @@
 package fatec.morpheus.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+
 
 @Service
 public class MapSourceService {
 
-    @Autowired
-    private Validator validator;
+    private List<String> errors = new ArrayList<>();
+    private MapSourceDTO mapedSourceDto = new MapSourceDTO();
+    private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
 
     public MapSourceDTO validateMap(MapSourceDTO mapSourceDTO) {
-        Set<ConstraintViolation<MapSourceDTO>> mapViolations = validator.validate(mapSourceDTO);
-
-        if (!mapViolations.isEmpty()) {
-            List<String> errors = mapViolations.stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toList());
-
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
-            errorResponse.setMessage("Campos Vazios");
-            throw new InvalidFieldException(errorResponse);
-        }
-
         try {
             MapSourceDTO mapSourceDTOResolved = findHtmlTags(mapSourceDTO);
             return mapSourceDTOResolved;
@@ -50,52 +36,66 @@ public class MapSourceService {
 
 
     private MapSourceDTO findHtmlTags(MapSourceDTO mapSourceDTO) {
-        MapSourceDTO mapedSourceDto = new MapSourceDTO();
-        mapedSourceDto.setUrl(mapSourceDTO.getUrl());
-        List<String> errors = new ArrayList<>();
-
         try {
+            mapedSourceDto.setUrl(mapSourceDTO.getUrl());
+            if (mapSourceDTO.getUrl() == null || !mapSourceDTO.getUrl().startsWith("http://") && !mapSourceDTO.getUrl().startsWith("https://")) {
+                throw new MalformedURLException("URL inválida: " + mapSourceDTO.getUrl());
+            }
+
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-
+    
+            // Título
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
-            if (titleClass == null) {
-                errors.add("O título não foi encontrado no HTML.");
+            if (nullOrEmpty(titleClass)) {
+                String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
+                mapedSourceDto.setTitle(nullOrEmpty(titleClass2) ? notFoundMessage : "." + titleClass2);
             } else {
-                mapedSourceDto.setTitle("."+titleClass);
+                mapedSourceDto.setTitle("." + titleClass);
             }
 
-            String dateClass = findDateElement(doc);
-            if (dateClass == null) {
-                errors.add("A data não foi encontrada no HTML.");
+            // Data
+            String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
+            String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());
+
+            if (!nullOrEmpty(dateClass)) {
+                if (dateClass.equals(dateClassTime)) {
+                    mapedSourceDto.setDate("." + dateClass);
+                } else {
+                    mapedSourceDto.setDate("." + dateClassTime);
+                }
             } else {
-                mapedSourceDto.setDate("."+dateClass);
+                String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
+                mapedSourceDto.setDate(nullOrEmpty(dateClass2) ? notFoundMessage : "." + dateClass2);
             }
 
-            if (mapSourceDTO.getAuthor().isBlank()) {
-                mapSourceDTO.setAuthor(null);
-            }else{
-                String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-                mapedSourceDto.setAuthor("."+authorClass);
+            // Autor
+            String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+            if (nullOrEmpty(authorClass)) {
+                String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
+                mapedSourceDto.setAuthor(nullOrEmpty(authorClass2) ? notFoundMessage : "." + authorClass2);
+            } else {
+                mapedSourceDto.setAuthor("." + authorClass);
             }
-            
 
+            // Corpo
             String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
-            if (bodyClass == null) {
-                errors.add("O corpo não foi encontrado no HTML.");
+            if (nullOrEmpty(bodyClass)) {
+                String bodyClass2 = findParentClassOfBody(doc, mapSourceDTO.getBody());
+                mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
             } else {
-                mapedSourceDto.setBody("."+bodyClass);
+                mapedSourceDto.setBody("." + bodyClass);
             }
-
-            if (!errors.isEmpty()) {
-                throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Não encontrado elemento HTML correspondente."));
-            }
-
+    
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            errors.add(mapSourceDTO.getUrl());
+            throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "URL inválida."));
         } catch (IOException e) {
             e.printStackTrace();
             errors.add(mapSourceDTO.getUrl());
             throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Erro ao acessar a URL."));
         }
-
+    
         return mapedSourceDto;
     }
     
@@ -104,7 +104,6 @@ public class MapSourceService {
         Elements elements = doc.select("a, span, div, p, h1, h2, h3, time");
         for (Element element : elements) {
             String elementText = element.text();
-
 
             if (elementText.equalsIgnoreCase(text)) {
                 String className = element.className();
@@ -122,48 +121,86 @@ public class MapSourceService {
             }
         }
         return null; 
-    }    
-       
-    private String findDateElement(Document doc) {
-        Elements timeElements = doc.select("time");
-        for (Element timeElement : timeElements) {
-            String datetime = timeElement.attr("datetime");
-            String text = timeElement.text();
-            
-            if (!datetime.isEmpty()) {
-                if (!timeElement.className().isEmpty()) {
-                    return timeElement.className(); 
-                } else {
-                    return timeElement.parent().className();
+    }  
+    
+    private String findParentClassOfBody(Document doc, String text) {
+        Elements elements = doc.body().select("a, span, div, p");
+        for (Element element : elements) {
+            String elementText = element.text();
+    
+            if (elementText.toLowerCase().contains(text.toLowerCase())) {
+                Element parentElement = element.parent(); 
+                if (parentElement != null) {
+                    String parentClassName = parentElement.className();
+                    if (parentClassName != null && !parentClassName.isEmpty()) {
+                        return parentClassName; 
+                    }
                 }
             }
-
-            if (checkDateText(text)) {
-                return timeElement.className(); 
-            }
         }
-    
-        Elements elements = doc.select("span, div, p");
-        for (Element element : elements) {
-            String text = element.text();
-
-            if (checkDateText(text)) {
-                return element.className(); 
-            }
-        }
-    
         return null; 
-    }  
-
-    private boolean checkDateText(String text){
-        if (text.matches(".*\\d{2}/\\d{2}/\\d{4}.*") || // DD/MM/AAAA
-            text.matches(".*\\d{4}-\\d{2}-\\d{2}.*") || // YYYY-MM-DD
-            text.matches(".*\\d{4}/\\d{2}/\\d{2}.*") || // YYYY/MM/DD
-            text.matches(".*\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
-            text.matches(".*\\d{2} \\w+ \\d{4}.*") // DD mês AAAA
-        ) {
-            return true;
-        }
-        return false;
     }
+ 
+    private String findElementContainingText2(Document doc, String text) {
+        Elements elements = doc.select("a, p, span, div, h1, h2, h3, time");
+        for (Element element : elements) {
+            String elementText = element.text().toLowerCase();
+            String searchText = text.toLowerCase();
+            if (elementText.contains(searchText) && isReasonableMatch(elementText, searchText)) {
+                String className = element.className();
+                if (className != null && !className.isEmpty()) {
+                    return className;
+                } else {
+                    Element parentElement = element.parent(); 
+                    if (parentElement != null) {
+                        String parentClassName = parentElement.className();
+                        if (parentClassName != null && !parentClassName.isEmpty()) {
+                            return parentClassName;
+                        }
+                    }
+                }
+            }
+        }
+        return null; 
+    }
+    
+    private boolean isReasonableMatch(String elementText, String searchText) {
+        // Define um tamanho mínimo de texto para considerar a correspondência
+        int minTextLength = 5;
+    
+        // Calcula a proporção entre o tamanho do texto buscado e o texto do elemento
+        double ratio = (double) searchText.length() / elementText.length();
+    
+        // Considera razoável se o texto do elemento for maior que o mínimo e a proporção for alta o suficiente
+        return elementText.length() >= minTextLength && ratio >= 0.5;
+    }
+
+    public String findFirstDateElement(Document doc, String expectedDate) {
+        // Procura todos os elementos <time> no documento
+        Elements timeElements = doc.select("time");
+    
+        for (Element timeElement : timeElements) {
+            String dateText = timeElement.text().trim();
+
+
+            if (dateText.contains(expectedDate)) {
+                String timeClass = timeElement.className();
+                if (!timeClass.isEmpty()) {
+                    return timeClass;
+                } else {
+                    Element parent = timeElement.parent();
+                    if (parent != null && !parent.className().isEmpty()) {
+                        return parent.className();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+        
+    private boolean nullOrEmpty(String text) {
+        return text == null || text.isEmpty();
+    }
+
 }

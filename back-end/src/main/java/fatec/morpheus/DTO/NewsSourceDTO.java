@@ -2,6 +2,7 @@ package fatec.morpheus.DTO;
 
 import java.util.List;
 
+import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +18,5 @@ public class NewsSourceDTO {
     private String type;
     private String address;
     private List<Tag> tags;
-    private MapSourceDTO map;
+    private MapSource map;
 }

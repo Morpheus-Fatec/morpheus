@@ -36,7 +36,7 @@ public class NewsSourceService {
         source.setAddress(newsSourceCreatedDTO.getAddress());
         source.setTags(newsSourceCreatedDTO.getTags());
 
-        MapSource map = newsSourceCreatedDTO.getMap().toEntity();
+        MapSource map = verififyDotMapSource(newsSourceCreatedDTO.getMap());
         map.setSource(source);
         source.setMap(map);
 
@@ -78,6 +78,23 @@ public class NewsSourceService {
             throw new UniqueConstraintViolationException(errorResponse);
         }
     }
+
+    private MapSource verififyDotMapSource(MapSource mapSource) {
+        if (mapSource.getAuthor() != null && !mapSource.getAuthor().startsWith(".")) {
+            mapSource.setAuthor("." + mapSource.getAuthor());
+        }
+        if (mapSource.getBody() != null && !mapSource.getBody().startsWith(".")) {
+            mapSource.setBody("." + mapSource.getBody());
+        }
+        if (mapSource.getTitle() != null && !mapSource.getTitle().startsWith(".")) {
+            mapSource.setTitle("." + mapSource.getTitle());
+        }
+        if (mapSource.getDate() != null && !mapSource.getDate().startsWith(".")) {
+            mapSource.setDate("." + mapSource.getDate());
+        }
+        return mapSource;
+    }
+    
 
     private List<String> verifyUniqueKeys(NewsSource newsSource) {
         List<String> duplicateFields = new ArrayList<>();
