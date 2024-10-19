@@ -74,18 +74,13 @@ public class MapSourceService {
             } else {
                 mapedSourceDto.setDate("." + (!nullOrEmpty(dateClass) ? dateClass : dateClass2));
             }
-    
-            // Autor
-            if (!nullOrEmpty(mapSourceDTO.getAuthor())) {
-                String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-                System.out.println("authorClass: " + authorClass);
-                String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
-                System.out.println("authorClass2: " + authorClass2);
-                if (nullOrEmpty(authorClass) && nullOrEmpty(authorClass2)) {
-                    mapSourceDTO.setAuthor(notFoundMessage);
-                } else {
-                    mapedSourceDto.setAuthor("." + (!nullOrEmpty(authorClass) ? authorClass : authorClass2));
-                }
+            
+            String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+            String authorCLass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
+            if (nullOrEmpty(authorClass) && nullOrEmpty(authorCLass2)) {
+                mapedSourceDto.setAuthor(notFoundMessage);
+            } else {
+                mapedSourceDto.setAuthor("." + (!nullOrEmpty(authorClass) ? authorClass : authorCLass2));
             }
     
             // Corpo
@@ -111,6 +106,8 @@ public class MapSourceService {
         Elements elements = doc.select("a, span, div, p, h1, h2, h3, time");
         for (Element element : elements) {
             String elementText = element.text();
+
+
             if (elementText.equalsIgnoreCase(text)) {
                 String className = element.className();
                 if (className != null && !className.isEmpty()) {
@@ -127,7 +124,7 @@ public class MapSourceService {
             }
         }
         return null; 
-    }    
+    }        
 
     private String findElementContainingText2(Document doc, String text) {
         Elements elements = doc.select("a, p, span, div, h1, h2, h3, time");
