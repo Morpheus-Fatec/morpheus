@@ -53,39 +53,53 @@ public class MapSourceService {
                 } else {
                     mapedSourceDto.setTitle("." + titleClass);
                 }
+            } else {
+                mapedSourceDto.setTitle(notFoundMessage);
             }
             
             // Data
-            String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
-            String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());
-
-            if (!nullOrEmpty(dateClass)) {
-                if (dateClass.equals(dateClassTime)) {
-                    mapedSourceDto.setDate("." + dateClass);
+            if (!nullOrEmpty(mapSourceDTO.getDate())) {
+                String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
+                String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());
+                if (!nullOrEmpty(dateClass)) {
+                    if (dateClass.equals(dateClassTime)) {
+                        mapedSourceDto.setDate("." + dateClass);
+                    } else {
+                        mapedSourceDto.setDate("." + dateClassTime);
+                    }
                 } else {
-                    mapedSourceDto.setDate("." + dateClassTime);
+                    String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
+                    mapedSourceDto.setDate(nullOrEmpty(dateClass2) ? notFoundMessage : "." + dateClass2);
                 }
             } else {
-                String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
-                mapedSourceDto.setDate(nullOrEmpty(dateClass2) ? notFoundMessage : "." + dateClass2);
+                mapedSourceDto.setDate(notFoundMessage);
             }
 
+
             // Autor
-            String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-            if (nullOrEmpty(authorClass)) {
-                String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
-                mapedSourceDto.setAuthor(nullOrEmpty(authorClass2) ? notFoundMessage : "." + authorClass2);
-            } else {
-                mapedSourceDto.setAuthor("." + authorClass);
+            if (!nullOrEmpty(mapSourceDTO.getAuthor())) {
+                String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+                if (nullOrEmpty(authorClass)) {
+                    String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
+                    mapedSourceDto.setAuthor(nullOrEmpty(authorClass2) ? notFoundMessage : "." + authorClass2);
+                } else {
+                    mapedSourceDto.setAuthor("." + authorClass);
+                }
+            } else{
+                mapedSourceDto.setAuthor(notFoundMessage);
             }
 
             // Corpo
-            String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
-            if (nullOrEmpty(bodyClass)) {
-                String bodyClass2 = findParentClassOfBody(doc, mapSourceDTO.getBody());
-                mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
-            } else {
-                mapedSourceDto.setBody("." + bodyClass);
+            if (!nullOrEmpty(mapSourceDTO.getBody())) {
+                String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
+                if (nullOrEmpty(bodyClass)) {
+                    String bodyClass2 = findElementContainingText2(doc, mapSourceDTO.getBody());
+                    mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
+                } else {
+                    mapedSourceDto.setBody("." + bodyClass);
+                }
+            } else{
+                mapedSourceDto.setBody(notFoundMessage);
             }
     
         } catch (MalformedURLException e) {
