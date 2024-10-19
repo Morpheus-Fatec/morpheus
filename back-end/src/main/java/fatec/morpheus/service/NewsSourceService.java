@@ -1,9 +1,11 @@
 package fatec.morpheus.service;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.MapSource;
@@ -37,9 +39,10 @@ public class NewsSourceService {
         source.setAddress(newsSourceCreatedDTO.getAddress());
         source.setTags(newsSourceCreatedDTO.getTags());
 
-        MapSource map = verifyDotMapSource(newsSourceCreatedDTO.getMap());
-        map.setSource(source);
-        source.setMap(map);
+        MapSourceDTO map = verifyDotMapSource(newsSourceCreatedDTO.getMap());
+        MapSource sourceMap = map.toEntity();
+        sourceMap.setSource(source);
+        source.setMap(sourceMap);
 
         Set<ConstraintViolation<NewsSource>> sourceViolations = validator.validate(source);    
         if (!sourceViolations.isEmpty()) {
@@ -80,7 +83,7 @@ public class NewsSourceService {
         }
     }
 
-    private MapSource verifyDotMapSource(MapSource mapSource) {
+    private MapSourceDTO verifyDotMapSource(MapSourceDTO mapSource) {
         // Verifica e ajusta o campo "author"
         if (mapSource.getAuthor() != null) {
             if (mapSource.getAuthor().equals(notFoundMessage)) {
@@ -171,8 +174,14 @@ public class NewsSourceService {
     
 
     public NewsSource deleteNewsSourceById(int id) {
-        return newsSourceRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
+        NewsSource newsSource = newsSourceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
+        Hibernate.initialize(newsSource.getTags());
+        Hibernate.initialize(newsSource.getMap());
+
+        newsSourceRepository.delete(newsSource);
+        return newsSource;
     }
+
     
 }

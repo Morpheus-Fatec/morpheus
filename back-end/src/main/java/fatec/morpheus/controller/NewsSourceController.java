@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.DTO.MapSourceDTO;
+import fatec.morpheus.DTO.MappingDTO;
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.service.MapSourceService;
@@ -43,9 +43,9 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "400", description = "Tags obrigatórias não encontrada"),
     })
     @PostMapping("/mapping")
-    public ResponseEntity<MapSourceDTO> validateMap(@RequestBody MapSourceDTO mapSourceDTO){
-        MapSourceDTO mapSourceDTOResolved = mapSourceService.validateMap(mapSourceDTO);
-        return new ResponseEntity<>(mapSourceDTOResolved, HttpStatus.ACCEPTED);
+    public ResponseEntity<MappingDTO> validateMap(@RequestBody MappingDTO mappingDTO){
+        MappingDTO mappinDTOResolved = mapSourceService.validateMap(mappingDTO);
+        return new ResponseEntity<>(mappinDTOResolved, HttpStatus.ACCEPTED);
     }
 
     @Operation(summary= "", description = "Cria um novo portal de notícias")

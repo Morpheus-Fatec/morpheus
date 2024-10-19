@@ -1,6 +1,4 @@
 package fatec.morpheus.DTO;
-
-import fatec.morpheus.entity.MapSource;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +8,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MapSourceDTO {
+public class MappingDTO {
     private String author;
     private String body;
-    private String title;    
+    private String title;
+    private String url;
     private String date;
-
-    public MapSource toEntity() {
-        return new MapSource(this);
-    }
 }
-

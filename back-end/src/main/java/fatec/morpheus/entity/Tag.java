@@ -27,7 +27,4 @@ public class Tag{
     @Column(name = "tag_name", length = 20, unique = true)
     private String tagName;
 
-
-    
-
 }
