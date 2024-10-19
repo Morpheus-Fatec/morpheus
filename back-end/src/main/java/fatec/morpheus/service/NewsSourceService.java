@@ -28,6 +28,7 @@ public class NewsSourceService {
     private NewsSourceRepository newsSourceRepository;
     @Autowired
     private Validator validator;
+    private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
 
     public NewsSource createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
         NewsSource source = new NewsSource();
@@ -80,7 +81,7 @@ public class NewsSourceService {
     }
 
     private MapSource verififyDotMapSource(MapSource mapSource) {
-        if (mapSource.getAuthor() != null) {
+        if (mapSource.getAuthor() != null || mapSource.getAuthor().equals(notFoundMessage)) {
             if (!mapSource.getAuthor().startsWith(".")) {
                 mapSource.setAuthor("." + mapSource.getAuthor());
             }
@@ -88,7 +89,7 @@ public class NewsSourceService {
             mapSource.setAuthor(null);
         }
         
-        if (mapSource.getBody() != null) {
+        if (mapSource.getBody() != null || mapSource.getBody().equals(notFoundMessage)) {
             if (!mapSource.getBody().startsWith(".")) {
                 mapSource.setBody("." + mapSource.getBody());
             }
@@ -96,7 +97,7 @@ public class NewsSourceService {
             mapSource.setBody(null);
         }
         
-        if (mapSource.getTitle() != null) {
+        if (mapSource.getTitle() != null || mapSource.getTitle().equals(notFoundMessage)) {
             if (!mapSource.getTitle().startsWith(".")) {
                 mapSource.setTitle("." + mapSource.getTitle());
             }
@@ -104,7 +105,7 @@ public class NewsSourceService {
             mapSource.setTitle(null);
         }
         
-        if (mapSource.getDate() != null) {
+        if (mapSource.getDate() != null || mapSource.getDate().equals(notFoundMessage)) {
             if (!mapSource.getDate().startsWith(".")) {
                 mapSource.setDate("." + mapSource.getDate());
             }
