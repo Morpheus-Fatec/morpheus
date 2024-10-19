@@ -36,7 +36,7 @@ public class MapSource {
     @JsonBackReference
     private NewsSource source; 
 
-    @Column(name = "map_author")
+    @Column(name = "map_author", nullable = true)
     private String author; 
 
     @Column(name = "map_body", nullable = false)
