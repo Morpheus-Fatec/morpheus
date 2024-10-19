@@ -43,16 +43,18 @@ public class MapSourceService {
             }
 
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-    
-            // Título
-            String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
-            if (nullOrEmpty(titleClass)) {
-                String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
-                mapedSourceDto.setTitle(nullOrEmpty(titleClass2) ? notFoundMessage : "." + titleClass2);
-            } else {
-                mapedSourceDto.setTitle("." + titleClass);
-            }
 
+            // Título
+            if (!nullOrEmpty(mapSourceDTO.getTitle())) {
+                String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
+                if (nullOrEmpty(titleClass)) {
+                    String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
+                    mapedSourceDto.setTitle(nullOrEmpty(titleClass2) ? notFoundMessage : "." + titleClass2);
+                } else {
+                    mapedSourceDto.setTitle("." + titleClass);
+                }
+            }
+            
             // Data
             String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
             String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());

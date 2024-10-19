@@ -39,13 +39,13 @@ public class MapSource {
     @Column(name = "map_author", nullable = false)
     private String author; 
 
-    @Column(name = "map_body", nullable = false)
+    @Column(name = "map_body")
     private String body; 
 
-    @Column(name = "map_title", nullable = false)
+    @Column(name = "map_title")
     private String title; 
 
-    @Column(name = "map_date", nullable = false)
+    @Column(name = "map_date")
     private String date;
 
     public MapSource(MapSourceDTO mapSourceDTO) {
