@@ -30,7 +30,6 @@ public class NewsSourceService {
     private NewsSourceRepository newsSourceRepository;
     @Autowired
     private Validator validator;
-    private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
 
     public NewsSource createNewsSource(NewsSourceDTO newsSourceCreatedDTO) {
         NewsSource source = new NewsSource();
@@ -85,46 +84,29 @@ public class NewsSourceService {
 
     private MapSourceDTO verifyDotMapSource(MapSourceDTO mapSource) {
         // Verifica e ajusta o campo "author"
-        if (mapSource.getAuthor() != null) {
-            if (mapSource.getAuthor().equals(notFoundMessage)) {
-                mapSource.setAuthor(null);
-            } else if (!mapSource.getAuthor().startsWith(".")) {
-                mapSource.setAuthor("." + mapSource.getAuthor());
-            }
+        if (mapSource.getAuthor() != null && !mapSource.getAuthor().startsWith(".")) {
+            mapSource.setAuthor("." + mapSource.getAuthor());
         }
-    
+        
         // Verifica e ajusta o campo "body"
-        if (mapSource.getBody() != null) {
-            if (mapSource.getBody().equals(notFoundMessage)) {
-                mapSource.setBody(null);
-            } else if (!mapSource.getBody().startsWith(".")) {
-                mapSource.setBody("." + mapSource.getBody());
-            }
+        if (mapSource.getBody() != null && !mapSource.getBody().startsWith(".")) {
+            mapSource.setBody("." + mapSource.getBody());
         }
-    
+        
         // Verifica e ajusta o campo "title"
-        if (mapSource.getTitle() != null) {
-            if (mapSource.getTitle().equals(notFoundMessage)) {
-                mapSource.setTitle(null);
-            } else if (!mapSource.getTitle().startsWith(".")) {
-                mapSource.setTitle("." + mapSource.getTitle());
-            }
+        if (mapSource.getTitle() != null && !mapSource.getTitle().startsWith(".")) {
+            mapSource.setTitle("." + mapSource.getTitle());
         }
-    
+        
         // Verifica e ajusta o campo "date"
-        if (mapSource.getDate() != null) {
-            if (mapSource.getDate().equals(notFoundMessage)) {
-                mapSource.setDate(null);
-            } else if (!mapSource.getDate().startsWith(".")) {
-                mapSource.setDate("." + mapSource.getDate());
-            }
+        if (mapSource.getDate() != null && !mapSource.getDate().startsWith(".")) {
+            mapSource.setDate("." + mapSource.getDate());
         }
     
         return mapSource;
     }
     
     
-
     private List<String> verifyUniqueKeys(NewsSource newsSource) {
         List<String> duplicateFields = new ArrayList<>();
         if (newsSourceRepository.existsBySrcName(newsSource.getSrcName())) {
