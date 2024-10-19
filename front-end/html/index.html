@@ -179,6 +179,67 @@
                                 <div class="invalid-feedback">Este campo é obrigatório.</div>
                             </div>
                         </form>
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                              Mapeamento
+                              <button type="button" @click="automaticMapOpen" class="btn btn-info">
+                                <i class="bi bi-lightbulb"></i> Buscar Mapeamento Automático
+                              </button>
+                            </div>
+                            <div class="card-body">
+                              <form @submit.prevent="newsSave">
+                                <div class="mb-3">
+                                  <label for="titulo" class="form-label">Título</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="titulo"
+                                    v-model="sourceNews.formData.sourceSelected.map.title"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.title }"
+                                    placeholder="Digite a classe da tag que contém o título"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="noticia" class="form-label">Notícia</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="noticia"
+                                    v-model="sourceNews.formData.sourceSelected.map.body"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.body }"
+                                    placeholder="Digite a classe da tag que contém a notícia"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="autor" class="form-label">Autor</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="autor"
+                                    v-model="sourceNews.formData.sourceSelected.map.author"
+                                    placeholder="Digite a classe da tag que contém o nome do autor"
+                                  >
+                                </div>
+                                <div class="mb-3">
+                                  <label for="data" class="form-label">Data</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="data"
+                                    v-model="sourceNews.formData.sourceSelected.map.date"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.date }"
+                                    placeholder="Digite a classe da tag que contém a data"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -583,6 +644,93 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="cancelDeleteWord()">Cancelar</button>
                         <button type="button" class="btn btn-danger" @click="confirmDeleteWord()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+      <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="automaticMapModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-lightbulb"></i> Mapeamento Automático</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="newsSave">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newsUrl" class="form-label">URL:</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="newsUrl"
+                                            v-model="sourceNews.automaticMap.map.url"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.url }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+                                    <iframe :src="sourceNews.automaticMap.map.url" class="w-100" height="300" frameborder="0"></iframe>
+                                </div>
+        
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newsTitle" class="form-label">Título:</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="newsTitle"
+                                            v-model="sourceNews.automaticMap.map.title"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.title }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsBody" class="form-label">Notícia:</label>
+                                        <textarea
+                                            class="form-control"
+                                            id="newsBody"
+                                            v-model="sourceNews.automaticMap.map.body"
+                                            rows="4"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.body }"
+                                            required
+                                        ></textarea>
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsDate" class="form-label">Data:</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="newsDate"
+                                            v-model="sourceNews.automaticMap.map.date"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.date }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsAuthor" class="form-label">Autor:</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="newsAuthor"
+                                            v-model="sourceNews.automaticMap.map.author"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="automaticMapExecute">Executar</button>
                     </div>
                 </div>
             </div>
