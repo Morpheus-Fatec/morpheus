@@ -69,6 +69,10 @@ public class ScrapingService {
                 }
 
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
+                    if(tagNames.size() == 0) {
+                        System.err.println("O link: " + link + " não possui tags. Seguindo para o proximo portal.");
+                        return;
+                    }
                     scrapeNewsDetails(link, tagsClass, tagNames);
                 }
             }
