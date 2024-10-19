@@ -41,6 +41,7 @@ create table News(
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	new_aut_cod int,
     new_src_cod int,
+	new_address VARCHAR(150),
     FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id),
     FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod),
     primary key (new_cod)
