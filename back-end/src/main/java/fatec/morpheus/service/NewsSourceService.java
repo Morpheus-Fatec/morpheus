@@ -80,19 +80,38 @@ public class NewsSourceService {
     }
 
     private MapSource verififyDotMapSource(MapSource mapSource) {
-        if (mapSource.getAuthor() != null && !mapSource.getAuthor().startsWith(".")) {
-            mapSource.setAuthor("." + mapSource.getAuthor());
+        if (mapSource.getAuthor() != null) {
+            if (!mapSource.getAuthor().startsWith(".")) {
+                mapSource.setAuthor("." + mapSource.getAuthor());
+            }
+        } else {
+            mapSource.setAuthor(null);
         }
-        if (mapSource.getBody() != null && !mapSource.getBody().startsWith(".")) {
-            mapSource.setBody("." + mapSource.getBody());
+        
+        if (mapSource.getBody() != null) {
+            if (!mapSource.getBody().startsWith(".")) {
+                mapSource.setBody("." + mapSource.getBody());
+            }
+        } else {
+            mapSource.setBody(null);
         }
-        if (mapSource.getTitle() != null && !mapSource.getTitle().startsWith(".")) {
-            mapSource.setTitle("." + mapSource.getTitle());
+        
+        if (mapSource.getTitle() != null) {
+            if (!mapSource.getTitle().startsWith(".")) {
+                mapSource.setTitle("." + mapSource.getTitle());
+            }
+        } else {
+            mapSource.setTitle(null);
         }
-        if (mapSource.getDate() != null && !mapSource.getDate().startsWith(".")) {
-            mapSource.setDate("." + mapSource.getDate());
-        }
-        return mapSource;
+        
+        if (mapSource.getDate() != null) {
+            if (!mapSource.getDate().startsWith(".")) {
+                mapSource.setDate("." + mapSource.getDate());
+            }
+        } else {
+            mapSource.setDate(null);
+        }      
+        return mapSource;        
     }
     
 
