@@ -11,6 +11,9 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
@@ -22,6 +25,9 @@ public class CronManager {
     // Injetando a expressão cron inicial a partir do arquivo de configuração
     @Value("${cron.expression:0 * * * * *}") // Valor padrão: a cada minuto
     private String cronExpression;
+
+    @Value("${cron.timeZone:America/Sao_Paulo}") // Valor padrão: a cada minuto
+    private String cronTimeZone;
 
     public CronManager() {
         taskScheduler = new ThreadPoolTaskScheduler();
@@ -59,10 +65,22 @@ public class CronManager {
     }
 
     // Obtém o Trigger com base na expressão cron
+//    private Trigger getTrigger() {
+//        return triggerContext -> {
+//            CronTrigger cronTrigger = new CronTrigger(cronExpression);
+//            return cronTrigger.nextExecutionTime(triggerContext).toInstant();
+//        };
     private Trigger getTrigger() {
         return triggerContext -> {
-            CronTrigger cronTrigger = new CronTrigger(cronExpression);
-            return cronTrigger.nextExecutionTime(triggerContext).toInstant();
+            // Cria o CronTrigger com a cron expression
+            CronTrigger cronTrigger = new CronTrigger(cronExpression,TimeZone.getTimeZone(cronTimeZone));
+
+            // Obtém a próxima execução de acordo com o contexto do trigger
+            Date nextExecution = Date.from(Objects.requireNonNull(cronTrigger.nextExecution(triggerContext)));
+
+            // Converte para Instant (evitando o uso de toInstant de Date diretamente)
+            return nextExecution.toInstant();
         };
     }
+
 }
