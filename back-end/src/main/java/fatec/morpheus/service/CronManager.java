@@ -3,6 +3,7 @@ package fatec.morpheus.service;
 import fatec.morpheus.controller.CronController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
@@ -21,6 +22,8 @@ public class CronManager {
     private static final Logger logger = LoggerFactory.getLogger(CronController.class);
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> scheduledTask;
+    @Autowired
+    private ScrapingService scrapingService;    
 
     // Injetando a expressão cron inicial a partir do arquivo de configuração
     @Value("${cron.expression:0 * * * * *}") // Valor padrão: a cada minuto
@@ -61,6 +64,7 @@ public class CronManager {
 
     // Tarefa executada pelo cron
     private void runTask() {
+        scrapingService.getSearch();
         logger.info("Executando a tarefa com o cron: " + cronExpression);
     }
 

@@ -22,6 +22,8 @@ public class ScrapingService {
 
     @Autowired
     private MapSourceRepository mapSourceRepository;
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     private Set<String> processedUrls = new HashSet<>();
 
@@ -38,6 +40,7 @@ public class ScrapingService {
                 Set<String> tagNames = source.getSource().getTags().stream()
                     .map(Tag::getTagName)
                     .collect(Collectors.toSet());
+
 
                 Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
