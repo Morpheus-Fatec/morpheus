@@ -43,7 +43,7 @@ public class News {
     @ManyToOne
     @JoinColumn(name = "new_aut_cod", referencedColumnName = "new_aut_id", nullable = true)
     private NewsAuthor newsAuthor;
-
+ 
     @ManyToOne
     @JoinColumn(name = "new_src_cod", referencedColumnName = "src_cod")
     private NewsSource sourceNews;

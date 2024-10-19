@@ -12,5 +12,6 @@ import fatec.morpheus.entity.NewsAuthor;
 public interface NewsAuthorRepository extends JpaRepository<NewsAuthor, Integer>{
 
     Optional<NewsAuthor> findByAutName(String autName);
+    <S extends NewsAuthor> S save(S entity);
     
 }

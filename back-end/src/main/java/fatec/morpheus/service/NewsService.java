@@ -10,13 +10,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsAuthor;
 import fatec.morpheus.entity.NewsReponse;
+import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsAuthorRepository;
 import fatec.morpheus.repository.NewsRepository;
+import fatec.morpheus.repository.NewsSourceRepository;
 
 @Service
 public class NewsService {
@@ -26,6 +30,9 @@ public class NewsService {
 
     @Autowired 
     NewsAuthorRepository newsAuthorRepository;
+
+    @Autowired
+    NewsSourceRepository newsSourceRepository;
     
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
@@ -54,39 +61,60 @@ public class NewsService {
         );
     }
 
-    public News saveNews(String title, String content, String autName, Date registryDate) {
+    // @Transactional
+    // public News saveNews(String newsTitle, String newsContent, String authorName, Date registryDate, Integer sourceId) {
+    //     if (!StringUtils.hasText(newsTitle)) {
+    //         throw new IllegalArgumentException("O título da notícia é obrigatório.");
+    //     }
+    
+    //     NewsSource sourceNews = newsSourceRepository.findById(sourceId).orElseThrow(() -> new IllegalArgumentException("Fonte de notícia não encontrada."));
+        
+    //     News news = new News();
+    //     news.setNewsTitle(newsTitle);
+    //     news.setNewsContent(newsContent);
+    //     news.setNewsRegistryDate(registryDate);
+    //     news.setSourceNews(sourceNews);
+    
+    //     if (StringUtils.hasText(authorName)) {
+    //         NewsAuthor author = new NewsAuthor();
+    //         author.setAutName(authorName);
+    //         news.setNewsAuthor(author);
+    //     } else {
+    //         news.setNewsAuthor(null); 
+    //     }
+    
+    //     return newsRepository.save(news);
+    // }
+    public News saveNews(String newsTitle, String newsContent, String authorName, Date registryDate, Integer sourceId) {
+        // Validação do título
+        if (newsTitle == null || newsTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("O título da notícia é obrigatório.");
+        }
 
-        if (title == null || title.isEmpty()) {
-            throw new IllegalArgumentException("Title is required");
-        }
-    
-        if (registryDate == null) {
-            throw new IllegalArgumentException("Publication date is required");
-        }
-    
+        // Busca a fonte de notícias pelo ID
+        NewsSource sourceNews = newsSourceRepository.findById(sourceId)
+                .orElseThrow(() -> new IllegalArgumentException("Fonte de notícia não encontrada."));
+
+        // Criação da instância de News
         News news = new News();
-        
-        news.setNewsTitle(title);
-        news.setNewsContent(content);
+        news.setNewsTitle(newsTitle);
+        news.setNewsContent(newsContent);
         news.setNewsRegistryDate(registryDate);
-        
-        if (autName != null && !autName.isEmpty()) {
-            Optional<NewsAuthor> newsAuthorOpt = newsAuthorRepository.findByAutName(autName);
-            if (newsAuthorOpt.isPresent()) {
-                news.setNewsAuthor(newsAuthorOpt.get());
-            } else {
-                throw new IllegalArgumentException("Author not found");
-            }
-        } else {
-            news.setNewsAuthor(null); 
+        news.setSourceNews(sourceNews);
+
+        // Caso o autor seja fornecido, ele será associado à notícia
+        if (authorName != null && !authorName.trim().isEmpty()) {
+            NewsAuthor author = new NewsAuthor();
+            author.setAutName(authorName);
+
+            // Salva o autor no banco de dados, se for necessário
+            newsAuthorRepository.save(author);
+
+            news.setNewsAuthor(author);
         }
-    
+
+        // Salva a notícia no banco de dados
         return newsRepository.save(news);
     }
 
-    
-    
-
-
-    
 }

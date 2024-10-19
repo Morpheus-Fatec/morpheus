@@ -28,7 +28,7 @@ create table News(
 	new_title char(70),
     new_content text,
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	new_aut_cod int,
+	new_aut_cod int NULL,
     new_src_cod int,
     FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id),
     FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod),
