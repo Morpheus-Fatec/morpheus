@@ -12,7 +12,7 @@ public class AdaptedTagsService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<String> findVariacao(String tagName) {
+    public List<String> findVariation(String tagName) {
         String sql = "SELECT " +
                 "REPLACE(tg.tag_name, txA.texto_description, txB.texto_description) AS variacao " +
                 "FROM " +
