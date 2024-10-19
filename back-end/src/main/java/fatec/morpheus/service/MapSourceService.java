@@ -93,7 +93,7 @@ public class MapSourceService {
             if (!nullOrEmpty(mapSourceDTO.getBody())) {
                 String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
                 if (nullOrEmpty(bodyClass)) {
-                    String bodyClass2 = findElementContainingText2(doc, mapSourceDTO.getBody());
+                    String bodyClass2 = findParentClassOfBody(doc, mapSourceDTO.getBody());
                     mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
                 } else {
                     mapedSourceDto.setBody("." + bodyClass);
