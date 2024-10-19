@@ -59,37 +59,44 @@ public class MapSourceService {
     
             // Título
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
-            String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
-            if (nullOrEmpty(titleClass) && nullOrEmpty(titleClass2)) {
-                mapedSourceDto.setTitle(notFoundMessage);
+            if (nullOrEmpty(titleClass)) {
+                String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
+                mapedSourceDto.setTitle(nullOrEmpty(titleClass2) ? notFoundMessage : "." + titleClass2);
             } else {
-                mapedSourceDto.setTitle("." + (!nullOrEmpty(titleClass) ? titleClass : titleClass2));
+                mapedSourceDto.setTitle("." + titleClass);
             }
-    
+
             // Data
             String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
-            String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
-            if (nullOrEmpty(dateClass) && nullOrEmpty(dateClass2)) {
-                mapedSourceDto.setDate(notFoundMessage);
+            String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());
+
+            if (!nullOrEmpty(dateClass)) {
+                if (dateClass.equals(dateClassTime)) {
+                    mapedSourceDto.setDate("." + dateClass);
+                } else {
+                    mapedSourceDto.setDate("." + dateClassTime);
+                }
             } else {
-                mapedSourceDto.setDate("." + (!nullOrEmpty(dateClass) ? dateClass : dateClass2));
+                String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
+                mapedSourceDto.setDate(nullOrEmpty(dateClass2) ? notFoundMessage : "." + dateClass2);
             }
-            
+
+            // Autor
             String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-            String authorCLass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
-            if (nullOrEmpty(authorClass) && nullOrEmpty(authorCLass2)) {
-                mapedSourceDto.setAuthor(notFoundMessage);
+            if (nullOrEmpty(authorClass)) {
+                String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
+                mapedSourceDto.setAuthor(nullOrEmpty(authorClass2) ? notFoundMessage : "." + authorClass2);
             } else {
-                mapedSourceDto.setAuthor("." + (!nullOrEmpty(authorClass) ? authorClass : authorCLass2));
+                mapedSourceDto.setAuthor("." + authorClass);
             }
-    
+
             // Corpo
             String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
-            String bodyClass2 = findElementContainingText2(doc, mapSourceDTO.getBody());
-            if (nullOrEmpty(bodyClass) && nullOrEmpty(bodyClass2)) {
-                mapedSourceDto.setBody(notFoundMessage);
+            if (nullOrEmpty(bodyClass)) {
+                String bodyClass2 = findParentClassOfBody(doc, mapSourceDTO.getBody());
+                mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
             } else {
-                mapedSourceDto.setBody("." + (!nullOrEmpty(bodyClass) ? bodyClass : bodyClass2));
+                mapedSourceDto.setBody("." + bodyClass);
             }
     
         } catch (IOException e) {
@@ -107,7 +114,6 @@ public class MapSourceService {
         for (Element element : elements) {
             String elementText = element.text();
 
-
             if (elementText.equalsIgnoreCase(text)) {
                 String className = element.className();
                 if (className != null && !className.isEmpty()) {
@@ -124,8 +130,26 @@ public class MapSourceService {
             }
         }
         return null; 
-    }        
-
+    }  
+    
+    private String findParentClassOfBody(Document doc, String text) {
+        Elements elements = doc.body().select("a, span, div, p");
+        for (Element element : elements) {
+            String elementText = element.text();
+    
+            if (elementText.toLowerCase().contains(text.toLowerCase())) {
+                Element parentElement = element.parent(); 
+                if (parentElement != null) {
+                    String parentClassName = parentElement.className();
+                    if (parentClassName != null && !parentClassName.isEmpty()) {
+                        return parentClassName; 
+                    }
+                }
+            }
+        }
+        return null; 
+    }
+ 
     private String findElementContainingText2(Document doc, String text) {
         Elements elements = doc.select("a, p, span, div, h1, h2, h3, time");
         for (Element element : elements) {
@@ -158,6 +182,29 @@ public class MapSourceService {
     
         // Considera razoável se o texto do elemento for maior que o mínimo e a proporção for alta o suficiente
         return elementText.length() >= minTextLength && ratio >= 0.5;
+    }
+
+    public String findFirstDateElement(Document doc, String expectedDate) {
+        // Procura todos os elementos <time> no documento
+        Elements timeElements = doc.select("time");
+    
+        for (Element timeElement : timeElements) {
+            String dateText = timeElement.text().trim();
+
+
+            if (dateText.contains(expectedDate)) {
+                String timeClass = timeElement.className();
+                if (!timeClass.isEmpty()) {
+                    return timeClass;
+                } else {
+                    Element parent = timeElement.parent();
+                    if (parent != null && !parent.className().isEmpty()) {
+                        return parent.className();
+                    }
+                }
+            }
+        }
+        return null;
     }
     
         
