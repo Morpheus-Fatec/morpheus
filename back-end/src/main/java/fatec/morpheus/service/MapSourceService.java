@@ -25,6 +25,9 @@ public class MapSourceService {
 
     @Autowired
     private Validator validator;
+    private List<String> errors = new ArrayList<>();
+    private MapSourceDTO mapedSourceDto = new MapSourceDTO();
+    private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
 
     public MapSourceDTO validateMap(MapSourceDTO mapSourceDTO) {
         Set<ConstraintViolation<MapSourceDTO>> mapViolations = validator.validate(mapSourceDTO);
@@ -50,60 +53,56 @@ public class MapSourceService {
 
 
     private MapSourceDTO findHtmlTags(MapSourceDTO mapSourceDTO) {
-        MapSourceDTO mapedSourceDto = new MapSourceDTO();
-        mapedSourceDto.setUrl(mapSourceDTO.getUrl());
-        List<String> errors = new ArrayList<>();
-
         try {
             Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
-
+            mapedSourceDto.setUrl(mapSourceDTO.getUrl());
+    
+            // Título
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
-            if (titleClass == null || titleClass.isBlank()) {
-                errors.add("O título não foi encontrado no HTML.");
+            String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
+            if (nullOrEmpty(titleClass) && nullOrEmpty(titleClass2)) {
+                mapedSourceDto.setTitle(notFoundMessage);
             } else {
-                mapedSourceDto.setTitle("."+titleClass);
+                mapedSourceDto.setTitle("." + (!nullOrEmpty(titleClass) ? titleClass : titleClass2));
             }
-
-            String dateClass = findDateElement(doc);
-            if (dateClass == null || dateClass.isBlank()) {
-                dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
-                if (dateClass == null || dateClass.isBlank()) {
-                    errors.add("A data não foi encontrada no HTML.");
-                }   
+    
+            // Data
+            String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
+            String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
+            if (nullOrEmpty(dateClass) && nullOrEmpty(dateClass2)) {
+                mapedSourceDto.setDate(notFoundMessage);
             } else {
-                mapedSourceDto.setDate("."+dateClass);
+                mapedSourceDto.setDate("." + (!nullOrEmpty(dateClass) ? dateClass : dateClass2));
             }
-
-            if (mapSourceDTO.getAuthor().isBlank()) {
-                mapSourceDTO.setAuthor(null);
-            }else{
+    
+            // Autor
+            if (!nullOrEmpty(mapSourceDTO.getAuthor())) {
                 String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
-                if (authorClass == null) {
-                    mapedSourceDto.setAuthor(null);
-                    
-                }else{
-                    mapedSourceDto.setAuthor("."+authorClass);
-                }   
+                System.out.println("authorClass: " + authorClass);
+                String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
+                System.out.println("authorClass2: " + authorClass2);
+                if (nullOrEmpty(authorClass) && nullOrEmpty(authorClass2)) {
+                    mapSourceDTO.setAuthor(notFoundMessage);
+                } else {
+                    mapedSourceDto.setAuthor("." + (!nullOrEmpty(authorClass) ? authorClass : authorClass2));
+                }
             }
-            
-
+    
+            // Corpo
             String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
-            if (bodyClass == null || bodyClass.isBlank()) {
-                errors.add("O corpo não foi encontrado no HTML.");
+            String bodyClass2 = findElementContainingText2(doc, mapSourceDTO.getBody());
+            if (nullOrEmpty(bodyClass) && nullOrEmpty(bodyClass2)) {
+                mapedSourceDto.setBody(notFoundMessage);
             } else {
-                mapedSourceDto.setBody("."+bodyClass);
+                mapedSourceDto.setBody("." + (!nullOrEmpty(bodyClass) ? bodyClass : bodyClass2));
             }
-
-            if (!errors.isEmpty()) {
-                throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Não encontrado elemento HTML correspondente."));
-            }
-
+    
         } catch (IOException e) {
             e.printStackTrace();
             errors.add(mapSourceDTO.getUrl());
             throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Erro ao acessar a URL."));
         }
-
+    
         return mapedSourceDto;
     }
     
@@ -112,8 +111,6 @@ public class MapSourceService {
         Elements elements = doc.select("a, span, div, p, h1, h2, h3, time");
         for (Element element : elements) {
             String elementText = element.text();
-
-
             if (elementText.equalsIgnoreCase(text)) {
                 String className = element.className();
                 if (className != null && !className.isEmpty()) {
@@ -131,46 +128,44 @@ public class MapSourceService {
         }
         return null; 
     }    
-       
-    private String findDateElement(Document doc) {
-        Elements timeElements = doc.select("time");
-        for (Element timeElement : timeElements) {
-            String datetime = timeElement.attr("datetime");
-            String text = timeElement.text();
-            
-            if (!datetime.isEmpty()) {
-                if (!timeElement.className().isEmpty()) {
-                    return timeElement.className(); 
+
+    private String findElementContainingText2(Document doc, String text) {
+        Elements elements = doc.select("a, p, span, div, h1, h2, h3, time");
+        for (Element element : elements) {
+            String elementText = element.text().toLowerCase();
+            String searchText = text.toLowerCase();
+            if (elementText.contains(searchText) && isReasonableMatch(elementText, searchText)) {
+                String className = element.className();
+                if (className != null && !className.isEmpty()) {
+                    return className;
                 } else {
-                    return timeElement.parent().className();
+                    Element parentElement = element.parent(); 
+                    if (parentElement != null) {
+                        String parentClassName = parentElement.className();
+                        if (parentClassName != null && !parentClassName.isEmpty()) {
+                            return parentClassName;
+                        }
+                    }
                 }
             }
-
-            if (checkDateText(text)) {
-                return timeElement.className(); 
-            }
         }
-    
-        Elements elements = doc.select("span, div, p");
-        for (Element element : elements) {
-            String text = element.text();
-
-            if (checkDateText(text)) {
-                return element.className(); 
-            }
-        }    
         return null; 
-    }  
-
-    private boolean checkDateText(String text){
-        if (text.matches(".*\\d{2}/\\d{2}/\\d{4}.*") || // DD/MM/AAAA
-            text.matches(".*\\d{4}-\\d{2}-\\d{2}.*") || // YYYY-MM-DD
-            text.matches(".*\\d{4}/\\d{2}/\\d{2}.*") || // YYYY/MM/DD
-            text.matches(".*\\d{2}\\.\\d{2}\\.\\d{4}.*") || // DD.MM.AAAA
-            text.matches(".*\\d{2} \\w+ \\d{4}.*") // DD mês AAAA
-        ) {
-            return true;
-        }
-        return false;
     }
+    
+    private boolean isReasonableMatch(String elementText, String searchText) {
+        // Define um tamanho mínimo de texto para considerar a correspondência
+        int minTextLength = 5;
+    
+        // Calcula a proporção entre o tamanho do texto buscado e o texto do elemento
+        double ratio = (double) searchText.length() / elementText.length();
+    
+        // Considera razoável se o texto do elemento for maior que o mínimo e a proporção for alta o suficiente
+        return elementText.length() >= minTextLength && ratio >= 0.5;
+    }
+    
+        
+    private boolean nullOrEmpty(String text) {
+        return text == null || text.isEmpty();
+    }
+
 }
