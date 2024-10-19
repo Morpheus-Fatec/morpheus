@@ -28,11 +28,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleInvalidJson(HttpMessageNotReadableException ex) {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body("O JSON enviado está malformado ou contém valores inválidos.");
+    public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "O JSON enviado está malformado ou contém valores inválidos.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+    
     
 
 }
