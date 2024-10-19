@@ -11,7 +11,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.entity.News;
+import fatec.morpheus.entity.NewsAuthor;
 import fatec.morpheus.entity.NewsReponse;
+import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsRepository;
 
@@ -48,9 +50,18 @@ public class NewsService {
         );
     }
 
+    public News saveNews(String newsTitle, String newsContent, Date newsRegistryDate, NewsAuthor newsAuthor, NewsSource sourceNews){
     
-    
+        News newNew = new News();
 
+        newNew.setNewsTitle(newsTitle);
+        newNew.setNewsContent(newsContent);
+        newNew.setNewsRegistryDate(newsRegistryDate);
+        newNew.setNewsAuthor(newsAuthor);
+        newNew.setSourceNews(sourceNews);
 
-    
+        newsRepository.save(newNew);
+
+        return newNew;
+    }
 }
