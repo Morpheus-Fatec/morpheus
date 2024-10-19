@@ -48,9 +48,7 @@ public class NewsService {
         );
     }
 
-    
-    
-
-
-    
+    public void saveNews(News newNew){
+        newsRepository.save(newNew);
+    }
 }
