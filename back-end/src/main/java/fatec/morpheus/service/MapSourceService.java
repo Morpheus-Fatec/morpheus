@@ -1,47 +1,30 @@
 package fatec.morpheus.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+
 
 @Service
 public class MapSourceService {
 
-    @Autowired
-    private Validator validator;
     private List<String> errors = new ArrayList<>();
     private MapSourceDTO mapedSourceDto = new MapSourceDTO();
     private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
 
     public MapSourceDTO validateMap(MapSourceDTO mapSourceDTO) {
-        Set<ConstraintViolation<MapSourceDTO>> mapViolations = validator.validate(mapSourceDTO);
-
-        if (!mapViolations.isEmpty()) {
-            List<String> errors = mapViolations.stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toList());
-
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
-            errorResponse.setMessage("Campos Vazios");
-            throw new InvalidFieldException(errorResponse);
-        }
-
         try {
             MapSourceDTO mapSourceDTOResolved = findHtmlTags(mapSourceDTO);
             return mapSourceDTOResolved;
@@ -54,8 +37,12 @@ public class MapSourceService {
 
     private MapSourceDTO findHtmlTags(MapSourceDTO mapSourceDTO) {
         try {
-            Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
             mapedSourceDto.setUrl(mapSourceDTO.getUrl());
+            if (mapSourceDTO.getUrl() == null || !mapSourceDTO.getUrl().startsWith("http://") && !mapSourceDTO.getUrl().startsWith("https://")) {
+                throw new MalformedURLException("URL inválida: " + mapSourceDTO.getUrl());
+            }
+
+            Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
     
             // Título
             String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
@@ -99,6 +86,10 @@ public class MapSourceService {
                 mapedSourceDto.setBody("." + bodyClass);
             }
     
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            errors.add(mapSourceDTO.getUrl());
+            throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "URL inválida."));
         } catch (IOException e) {
             e.printStackTrace();
             errors.add(mapSourceDTO.getUrl());
