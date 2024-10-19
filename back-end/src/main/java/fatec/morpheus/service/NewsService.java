@@ -36,8 +36,9 @@ public class NewsService {
             String autName = getAuthorName(news);
             String srcName = news.getSourceNews().getSrcName();
             String srcAddress = news.getSourceNews().getAddress();
+            String srcURL = news.getNewAddress();
             
-            NewsReponse dto = new NewsReponse(newsTitle, newsContent, newsRegistryDate, autName, srcName, srcAddress);
+            NewsReponse dto = new NewsReponse(newsTitle, newsContent, newsRegistryDate, autName, srcName, srcAddress, srcURL);
             responseDTOs.add(dto);
         }
         
@@ -53,6 +54,10 @@ public class NewsService {
             return news.getNewsAuthor().getAutName();
         }
         return null;
+    }
+
+    public void saveNews(News newNew){
+        newsRepository.save(newNew);
     }
 
 }
