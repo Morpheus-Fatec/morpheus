@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fatec.morpheus.DTO.MappingDTO;
+import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.service.MapSourceService;
 import fatec.morpheus.service.NewsSourceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,6 +34,19 @@ public class NewsSourceController {
 
     @Autowired
     private NewsSourceService newsSourceService;
+    @Autowired
+    private MapSourceService mapSourceService;
+
+    @Operation(summary= "", description = "Valida o mapeamento das tags HTML do portal")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Tags encontradas"),
+        @ApiResponse(responseCode = "400", description = "Tags obrigatórias não encontrada"),
+    })
+    @PostMapping("/mapping")
+    public ResponseEntity<MappingDTO> validateMap(@RequestBody MappingDTO mappingDTO){
+        MappingDTO mappinDTOResolved = mapSourceService.validateMap(mappingDTO);
+        return new ResponseEntity<>(mappinDTOResolved, HttpStatus.ACCEPTED);
+    }
 
     @Operation(summary= "", description = "Cria um novo portal de notícias")
     @ApiResponses(value = {
@@ -38,9 +54,9 @@ public class NewsSourceController {
         @ApiResponse(responseCode = "400", description = "Erro ao criar portal de notícias"),
     })
     @PostMapping
-    public ResponseEntity<NewsSource> createNewsSource(@RequestBody NewsSource newsSource) {
-        NewsSource savedNewsSource = newsSourceService.createNewsSource(newsSource);
-        return new ResponseEntity<>(savedNewsSource, HttpStatus.CREATED);
+    public ResponseEntity<Void> createNewsSource(@RequestBody NewsSourceDTO newsSourceDTO) {
+        newsSourceService.createNewsSource(newsSourceDTO); 
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Operation(summary= "Busca", description = "Retorna todos os portais de notícias cadastrados")

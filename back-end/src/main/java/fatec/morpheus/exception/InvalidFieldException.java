@@ -7,7 +7,6 @@ public class InvalidFieldException extends RuntimeException{
 
     public InvalidFieldException(ErrorResponse errorResponse) {
         this.errorResponse = errorResponse;
-        this.errorResponse.setMessage("Invalid field");
     }
 
     public ErrorResponse getErrorResponse() {

@@ -10,6 +10,5 @@ public class UniqueConstraintViolationException extends RuntimeException{
         public UniqueConstraintViolationException(ErrorResponse errorResponse) {
             super(errorResponse.getMessage());
             this.errorResponse = errorResponse;
-            this.errorResponse.setMessage("Duplicate unique value detected");
         }
 }

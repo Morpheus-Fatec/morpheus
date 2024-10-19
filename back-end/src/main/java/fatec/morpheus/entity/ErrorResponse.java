@@ -1,5 +1,6 @@
 package fatec.morpheus.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,18 @@ public class ErrorResponse {
     public ErrorResponse(HttpStatus status, List<String> errors) {
         this.status = status;
         this.errors = errors;
+    }
+
+    public ErrorResponse(HttpStatus status, List<String> errors, String message) {
+        this.status = status;
+        this.errors = errors;
+        this.message = message;
+    }
+
+    public ErrorResponse(HttpStatus status, String message) {
+        this.status = status;
+        this.errors = new ArrayList<>();
+        this.message = message;
     }
 
 
