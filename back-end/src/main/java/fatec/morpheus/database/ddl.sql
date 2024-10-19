@@ -31,13 +31,6 @@ create table News(
     primary key (new_cod)
 );
 
-create table Synonymous(
-	tag_cod int,
-	syn_group int,
-    primary key (tag_cod,syn_group),
-	foreign key (tag_cod) REFERENCES Tag(tag_cod)
-);
-
 create table News_tag(
 	new_cod int,
 	src_tag_cod int,
