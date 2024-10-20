@@ -38,13 +38,29 @@ const app = Vue.createApp({
                     sourceSelected: {
                         code: null,
                         name: null,
-                        address: null
+                        address: null,
+                        map:{
+                            author: null,
+                            body:null,
+                            title:null,
+                            date:null
+                        }
                     },
                     alert: {
                         show: false,
                         type: 'warning',
                         titleError: 'Erro!',
                         desc: 'Por favor, preencha todos os campos obrigatórios.'
+                    }
+                },
+                automaticMap:{
+                    modal:null,
+                    map:{
+                        author: null,
+                        body:null,
+                        title:null,
+                        url:null,
+                        date:null
                     }
                 },
                 tags: {
@@ -107,7 +123,38 @@ const app = Vue.createApp({
                     titleError: 'Erro!',
                     desc: 'Por favor, preencha todos os campos obrigatórios.'
                 }
-            }
+            },
+            regionalism: {
+                insertWord:  '',
+                alert:{
+                    active:true,
+                    class:"primary",
+                    message:""
+                },
+                delete:{
+                    modal:null,
+                    wordSelected:{
+                        content:"",
+                        id:null
+                    }
+                },
+                insert: '',
+                modal: null,
+                words: [],
+                search: "",
+                filtered: [],
+                wordSelected: {
+                    search: "",
+                    filtered: [],
+                    available: false,
+                    word: "",
+                    synonyms: []
+                },
+                sort: {
+                    order: 'asc'
+                }
+            },
+
         }
     },
     methods: {
@@ -143,7 +190,7 @@ const app = Vue.createApp({
 
                 })
                 .catch(error => {
-                    this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
+                    this.rootMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Não foi possível carregar os dados do portal');
                 });
             this.newsFilter();
         },
@@ -384,7 +431,42 @@ const app = Vue.createApp({
                     this.tags.modal.show();
                 });
         },
+        automaticMapOpen(){
+            const modalElement = this.$refs.automaticMapModal;
+            this.sourceNews.automaticMap.modal = new bootstrap.Modal(modalElement);
+            this.sourceNews.automaticMap.modal.show();
+            this.sourceNews.formData.modal.hide();
+        },
+        automaticMapExecute(){
+            this.sourceNews.automaticMap.isSubmitted = true;
+            if (this.sourceNews.automaticMap.map.url && this.sourceNews.automaticMap.map.title && this.sourceNews.automaticMap.map.body && this.sourceNews.automaticMap.map.date) {
+                this.sourceNews.automaticMap.modal.hide();
+                this.sourceNews.formData.modal.show();
 
+                const payload = {
+                    url: this.sourceNews.automaticMap.map.url,
+                    title: this.sourceNews.automaticMap.map.title,
+                    body: this.sourceNews.automaticMap.map.body,
+                    date: this.sourceNews.automaticMap.map.date,
+                    author: this.sourceNews.automaticMap.map.author
+                };
+
+                axios.post('https://mp43res.free.beeceptor.com/todos', payload)
+                    .then(response => {
+                        const data = response.data;
+                        this.sourceNews.formData.sourceSelected.map.author = data.author || this.sourceNews.formData.sourceSelected.map.author;
+                        this.sourceNews.formData.sourceSelected.map.body = data.body || this.sourceNews.formData.sourceSelected.map.body;
+                        this.sourceNews.formData.sourceSelected.map.title = data.title || this.sourceNews.formData.sourceSelected.map.title;
+                        this.sourceNews.formData.sourceSelected.map.date = data.date || this.sourceNews.formData.sourceSelected.map.date;
+            
+                        this.newsMontedAlert('success', 'Foi realizado com sucesso a busca pelo mapeamento automático, para salvar o novo mapeamento clique em salvar.', 'Mapeamento realizado com sucesso');
+                    })
+                    .catch(error => {
+                        
+                        this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao tentar realizar o mapeamento automático!');
+                    });
+            }
+        },
         cronLoad(){
             this.isLoading = true;
             axios.get('http://localhost:8080/morpheus/config/properties')
@@ -455,6 +537,158 @@ const app = Vue.createApp({
                 desc: message
             }
         },
+
+        regionalismOpen() {
+            const modalElement = this.$refs.regionalismModal;
+            this.regionalism.modal = new bootstrap.Modal(modalElement);
+            this.regionalism.modal.show();
+            this.getWordsRegionalism();
+        },
+        getWordsRegionalism() {
+            this.isLoading = true;
+            axios.get('https://morpheus-palavras2.free.beeceptor.com/all')
+                .then(response => {
+                    const words = response.data;
+                    
+                    this.regionalism.words = [];
+
+                    words.forEach(word => {
+                        let item = new Object();
+                        item.content = word.content;
+                        item.id=word.id;
+                        item.synonyms = word.synonyms;
+                        this.regionalism.words.push(item);
+                    });
+
+                })
+                .catch(error => {
+                    this.alertRegionalism("Erro ao carregar os sinônimos", "danger");
+                })
+                .finally(final => {
+                    this.filterWords();
+                    this.isLoading = false;
+                });
+            this.regionalism.wordSelected.available = false;
+            this.regionalism.alert = {
+                active:false,
+                class:"primary",
+                message:""
+            };
+        },
+        alertRegionalism(messageInsert, classInsert){
+            this.regionalism.alert = {
+                active:true,
+                class:classInsert,
+                message:messageInsert
+            }
+        },
+        filterWords() {
+            const query = this.regionalism.search.toLowerCase();
+            this.regionalism.filtered = this.regionalism.words
+                .filter(word => word.content.toLowerCase().includes(query))
+                .sort((a, b) => {
+                    const result = a.content.toLowerCase().localeCompare(b.content.toLowerCase());
+                    return this.regionalism.sort.order === 'asc' ? result : -result;
+                });
+        },
+        filterWordsSynonyms() {
+            const query = this.regionalism.wordSelected.search.toLowerCase();
+            const selectedWordId = this.regionalism.wordSelected.word.id;
+
+            this.regionalism.wordSelected.filtered = this.regionalism.words
+                .filter(word =>
+                    word.content.toLowerCase().includes(query) &&
+                    word.id !== selectedWordId 
+                )
+                .sort((a, b) => {
+                    const result = a.content.toLowerCase().localeCompare(b.content.toLowerCase());
+                    return this.regionalism.sort.order === 'asc' ? result : -result;
+                });
+        },
+        editWord(word) {
+            this.regionalism.wordSelected.word = word;
+            this.regionalism.wordSelected.available = true;
+            this.regionalism.search = "";
+            this.filterWordsSynonyms();
+            this.regionalism.wordSelected.synonyms = word.synonyms;
+        },
+        saveWord() {
+            this.isLoading = true;
+            const idWord = this.regionalism.wordSelected.word.id;
+            axios.patch(`https://morpheus-palavras2.free.beeceptor.com/${idWord}`, {
+                synonyms: this.regionalism.wordSelected.synonyms,
+                content:this.regionalism.wordSelected.word.content
+            })
+            .then(response => {
+                this.getWordsRegionalism();
+                this.alertRegionalism("Editado com sucesso", "success");
+
+            })
+            .catch(error => {
+                this.alertRegionalism("Erro ao atualizar a palavra", "danger");
+            })
+            .finally(() => {
+                this.isLoading = false;
+                });
+        },
+        addWord() {
+            if(this.regionalism.insertWord === ""){
+                this.alertRegionalism("Preencha o conteúdo", "danger");
+                return false;
+            }
+            this.isLoading = true;
+            axios.post('https://morpheus-palavras2.free.beeceptor.com/', {
+                content:this.regionalism.insertWord
+            })
+            .then(response => {
+                  this.regionalism.insert = "";
+                this.getWordsRegionalism();
+                this.alertRegionalism("Cadastro realizado com sucesso", "success");
+            })
+            .catch(error => {
+                this.alertRegionalism("Erro ao cadastrar a palavra", "danger");
+            })
+            .finally(() => {
+                this.isLoading = false;
+                });
+        },
+        isSynonymSelected(word) {
+            return this.regionalism.wordSelected.synonyms.includes(word.id);
+        },        
+        toggleSynonym(id) {
+            const index = this.regionalism.wordSelected.synonyms.indexOf(id);
+            if (index > -1) {
+                this.regionalism.wordSelected.synonyms.splice(index, 1);
+            } else {
+                this.regionalism.wordSelected.synonyms.push(id);
+            }
+        },
+        deleteWord(word) {
+            this.regionalism.delete.wordSelected = word;
+            const modalElement = this.$refs.regionalismDeleteModal;
+            this.regionalism.delete.modal = new bootstrap.Modal(modalElement);
+            this.regionalism.modal.hide();
+            this.regionalism.delete.modal.show();
+        },
+        confirmDeleteWord(){
+            this.isLoading = true;
+            axios.delete(`https://morpheus-palavras2.free.beeceptor.com/${this.regionalism.delete.wordSelected.id}`)
+            .then(response => {
+                this.alertRegionalism("Palavra deletada com sucesso", "success");
+            })
+            .catch(error => {
+                this.alertRegionalism("Erro ao deletar palavra", "danger");
+            })
+            .finally(final=>{
+                this.regionalism.modal.show();
+                this.regionalism.delete.modal.hide();
+                this.isLoading = false;
+            });
+        },
+        cancelDeleteWord(){
+            this.regionalism.modal.show();
+            this.regionalism.delete.modal.hide();
+        }
     },
     computed: {
         selectedTags() {
