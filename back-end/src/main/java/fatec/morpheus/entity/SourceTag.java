@@ -8,7 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -29,11 +31,13 @@ public class SourceTag {
     @Column(name = "src_tag_cod")
     private int id;
 
-    @Column(name = "src_tag_name", length = 50)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "src_cod") 
+    private NewsSource source;
 
-    @ManyToMany(mappedBy = "tags")
-    private Set<NewsSource> sources = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "tag_cod")
+    private Tag tag;
 
     @ManyToMany(mappedBy = "tags")
     private Set<News> news = new HashSet<>();
