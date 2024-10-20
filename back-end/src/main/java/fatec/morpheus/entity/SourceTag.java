@@ -8,31 +8,33 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "News_author")
+@Table(name = "Source_tag")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewsAuthor {
+public class SourceTag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "new_aut_id")
-    private int autId;
+    @Column(name = "src_tag_cod")
+    private int id;
 
-    @Column(name = "new_aut_name", length = 30, unique = true)
-    @Size(max = 30, message = "Name cannot exceed 30 characters")
-    private String autName;
+    @Column(name = "src_tag_name", length = 50)
+    private String name;
 
-    @OneToMany(mappedBy = "newsAuthor")
+    @ManyToMany(mappedBy = "tags")
+    private Set<NewsSource> sources = new HashSet<>();
+
+    @ManyToMany(mappedBy = "tags")
     private Set<News> news = new HashSet<>();
-
 }
