@@ -1,27 +1,40 @@
 package fatec.morpheus.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import fatec.morpheus.DTO.TextDTO;
 import fatec.morpheus.entity.Synonymous;
-import fatec.morpheus.entity.Texto;
+import fatec.morpheus.entity.Text;
 import fatec.morpheus.service.SynonymousService;
-import fatec.morpheus.service.TextoService;
+import fatec.morpheus.service.TextService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/textos")
-public class TextoController {
+@RequestMapping("/texts")
+public class TextController {
 
     @Autowired
-    private TextoService textoService;
+    private TextService textService;
 
     @Autowired
     private SynonymousService synonymousService;
+
 
     @Operation(summary = "Metodo para criar um novo texto", description = "Cria um novo texto")
     @ApiResponses(value = {
@@ -29,9 +42,10 @@ public class TextoController {
         @ApiResponse(responseCode = "400", description = "Erro ao criar texto"),
     })
     @PostMapping
-    public ResponseEntity<Texto> saveTexto(@RequestBody Texto texto) {
-        return ResponseEntity.ok(textoService.saveTexto(texto));
+    public ResponseEntity<Text> saveTexo(@RequestBody Text texto) {
+        return ResponseEntity.ok(textService.saveText(texto));
     }
+
 
     @Operation(summary = "Metodo para encontrar um texto pelo ID", description = "Encontra um texto pelo ID")
     @ApiResponses(value = {
@@ -39,42 +53,59 @@ public class TextoController {
         @ApiResponse(responseCode = "404", description = "Texto não encontrado"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Texto> getTextoById(@PathVariable Integer id) {
-        return textoService.findTextoById(id)
+    public ResponseEntity<Text> getTextById(@PathVariable Integer id) {
+        return textService.findTextById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Metodo para listar todos os textos", description = "Lista todos os textos")
+
+    @Operation(summary = "Metodo para listar todos os textos com seus sinonimos", description = "Lista todos os textos")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Textos encontrados com sucesso"),
         @ApiResponse(responseCode = "404", description = "Nenhum texto encontrado"),
     })
     @GetMapping
-    public ResponseEntity<List<Texto>> getAllTextos() {
-        List<Texto> textos = textoService.findAllTextos();
-        if (textos.isEmpty()) {
+    public ResponseEntity<List<TextDTO>> getAllTexts() {
+        List<Text> texts = textService.findAllTexts();
+        if (texts.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
-            return ResponseEntity.ok(textos);
+            List<TextDTO> textDTOs = texts.stream().map(text -> {
+                List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCod());
+                return new TextDTO(text.getTextDescription(), text.getTextCod(), synonyms);
+            }).collect(Collectors.toList());
+            return ResponseEntity.ok(textDTOs);
         }
     }
 
-    @Operation(summary = "Metodo para atualizar um texto pelo ID", description = "Atualiza um texto pelo ID")
+
+    @Operation(summary = "Metodo para atualizar um texto pelo ID e ligar os sinonimos", description = "Atualiza um texto pelo ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Texto atualizado com sucesso"),
         @ApiResponse(responseCode = "404", description = "Texto não encontrado"),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Texto> updateTextoById(@PathVariable Integer id, @RequestBody Texto texto) {
-        return textoService.findTextoById(id)
-                .map(existingTexto -> {
-                    existingTexto.setTextoDescription(texto.getTextoDescription());
-                    Texto updatedTexto = textoService.saveTexto(existingTexto);
-                    return ResponseEntity.ok(updatedTexto);
+    public ResponseEntity<Text> updateTextById(@PathVariable Integer id, @RequestBody TextService.TextUpdateRequest request) {
+        return textService.findTextById(id)
+                .map(existingText -> {
+                    existingText.setTextDescription(request.getTextoDescription());
+                    Text updatedText = textService.saveText(existingText);
+
+                    synonymousService.deleteRelationById(id);
+    
+                    for (Integer synonymId : request.getSynonymIds()) {
+                        Synonymous synonymous = new Synonymous();
+                        synonymous.setTextCod(id);
+                        synonymous.setSynGroup(synonymId);
+                        synonymousService.saveSynonymous(synonymous);
+                    }
+    
+                    return ResponseEntity.ok(updatedText);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     @Operation(summary = "Metodo para deletar um texto pelo ID", description = "Deleta um texto pelo ID")
     @ApiResponses(value = {
@@ -82,10 +113,10 @@ public class TextoController {
         @ApiResponse(responseCode = "404", description = "Texto não encontrado"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTexto(@PathVariable Integer id) {
-        return textoService.findTextoById(id)
-                .map(existingTexto -> {
-                    textoService.deleteTextoAndRelations(id);
+    public ResponseEntity<Void> deleteText(@PathVariable Integer id) {
+        return textService.findTextById(id)
+                .map(existingText -> {
+                    textService.deleteTextAndRelations(id);
                     return ResponseEntity.ok().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -99,21 +130,22 @@ public class TextoController {
     })
     @PostMapping("/{id1}/synonym/{id2}")
     public ResponseEntity<Synonymous> createSynonym(@PathVariable Integer id1, @PathVariable Integer id2) {
-        Texto texto1 = textoService.findTextoById(id1).orElse(null);
-        Texto texto2 = textoService.findTextoById(id2).orElse(null);
+        Text text1 = textService.findTextById(id1).orElse(null);
+        Text text2 = textService.findTextById(id2).orElse(null);
     
-        if (texto1 == null || texto2 == null) {
+        if (text1 == null || text2 == null) {
             return ResponseEntity.notFound().build();
         }
     
         Synonymous synonymous = new Synonymous();
-        synonymous.setTextoCod(texto1.getTextoCod());
-        synonymous.setSynGroup(texto2.getTextoCod());
+        synonymous.setTextCod(text1.getTextCod());
+        synonymous.setSynGroup(text2.getTextCod());
     
         synonymousService.saveSynonymous(synonymous);
     
         return ResponseEntity.ok(synonymous);
     }
+
 
     @Operation(summary = "Metodo para listar todos os sinônimos", description = "Lista todos os sinônimos")
     @ApiResponses(value = {
