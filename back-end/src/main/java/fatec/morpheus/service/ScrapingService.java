@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @Service
 public class ScrapingService {
@@ -25,6 +25,7 @@ public class ScrapingService {
     private MapSourceRepository mapSourceRepository;
     @Autowired
     private AdaptedTagsService adaptedTagsService;
+    private Set<Tag> foundTags = new HashSet<>();
 
     private Set<String> processedUrls = new HashSet<>();
 
@@ -49,11 +50,10 @@ public class ScrapingService {
 
                 System.out.println("PORTAL: " + portalUrl);
 
-                Set<String> tagNames = source.getSource().getTags().stream()
-                    .map(Tag::getTagName)
-                    .collect(Collectors.toSet());
-
-                Map<String, List<String>> tagsVariations = getTagsVariations(tagNames);
+                List<Tag> tags = source.getSource().getTags();
+                Map<Tag, List<String>> tagsAndVariations = getTagsVariations(tags);
+                // System.out.println("tagsAndVariations: " + tagsAndVariations);
+                
 
                 Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
@@ -63,7 +63,7 @@ public class ScrapingService {
                     "urlNoticiaSalva", portalUrl
                 );
 
-                extractNews(portalUrl, tagsClass, tagNames);
+                extractNews(portalUrl, tagsClass, tagsAndVariations);
 
             } catch (Exception e) {
                 System.out.println("Erro ao processar o portal: " + source.getSource().getAddress());
@@ -73,18 +73,7 @@ public class ScrapingService {
         System.out.println("Processamento de notícias concluído.");
     }
 
-    private Map<String, List<String>> getTagsVariations(Set<String> tags) {
-        Map<String, List<String>> tagsAndVariations  = new HashMap<>();
-        for (String tag : tags) {
-           tagsAndVariations.put(tag, adaptedTagsService.findVariation(tag));
-        }
-        System.out.println("Tags e variações: ");
-        System.out.println(tagsAndVariations);
-        System.out.println("-------------------------------------------------");
-        return tagsAndVariations;
-    }
-
-    private void extractNews(String url, Map<String, String> tagsClass, Set<String> tagNames) {
+    private void extractNews(String url, Map<String, String> tagsClass, Map<Tag, List<String>> tagsAndVariations) {
         try {
             Document document = Jsoup.connect(url).get();
             Elements newsCards = document.select("a");
@@ -97,11 +86,11 @@ public class ScrapingService {
                 }
 
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
-                    if(tagNames.size() == 0) {
+                    if(tagsAndVariations.size() == 0) {
                         System.err.println("O link: " + link + " não possui tags. Seguindo para o proximo portal.");
                         return;
                     }
-                    scrapeNewsDetails(link, tagsClass, tagNames);
+                    scrapeNewsDetails(link, tagsClass, tagsAndVariations);
                 }
             }
         } catch (IOException e) {
@@ -109,41 +98,67 @@ public class ScrapingService {
         }
     }
 
-    private void scrapeNewsDetails(String newsUrl, Map<String, String> tagsClass, Set<String> tagNames) {
+    private void scrapeNewsDetails(String newsUrl, Map<String, String> tagsClass, Map<Tag, List<String>> tagsAndVariations) {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
-
+    
             String title = newsPage.select(tagsClass.get("title")).text();
             String datePublished = newsPage.select(tagsClass.get("date")).text();
             String author = newsPage.select(tagsClass.get("author")).text();
-
+    
             Elements contentElements = newsPage.select(tagsClass.get("content"));
             StringBuilder fullContent = new StringBuilder();
-
+    
             for (Element content : contentElements) {
                 fullContent.append(content.text()).append(System.lineSeparator());
             }
-
+    
             String contentString = fullContent.toString();
-
-            boolean containsTag = tagNames.stream().anyMatch(tag -> contentString.toLowerCase().contains(tag.toLowerCase()));
-
-            if (!containsTag) {
-                System.out.println("Conteúdo não contém nenhuma das tags: " + tagNames);
+            System.out.println("Verificando conteúdo da notícia...");
+    
+            boolean foundTag = false;
+    
+            for (Map.Entry<Tag, List<String>> entry : tagsAndVariations.entrySet()) {
+                List<String> variations = entry.getValue();
+                for (String variation : variations) {
+                    System.out.println("Procurando por variação: " + variation);
+                    if (contentString.toLowerCase().contains(variation.toLowerCase())) {
+                        System.out.println("Variação encontrada: " + variation);
+                        foundTags.add(entry.getKey());
+                        foundTag = true;
+                        break;
+                    }
+                }
+                if (foundTag) break; // Para assim que uma tag ou variação for encontrada
+            }
+    
+            if (!foundTag) {
+                System.out.println("Conteúdo não contém nenhuma das tags.");
                 return;
             }
-
-            // Aqui é onde será implementado a persistencia dos dados no banco de dados.
-            // Basta inserir os dados abaixo na tabela.
+    
+            // Aqui é onde será implementada a persistência dos dados no banco de dados.
             System.out.println("Título: " + title);
             System.out.println("Autor: " + author);
             System.out.println("Data: " + datePublished);
             System.out.println("Conteúdo: " + contentString);
             System.out.println("URL: " + newsUrl);
-
+    
         } catch (IOException e) {
             System.out.println("Erro ao acessar o link: " + newsUrl);
             e.printStackTrace();
         }
+    }
+     
+
+    private Map<Tag, List<String>> getTagsVariations(List<Tag> tags) {
+        Map<Tag, List<String>> tagsAndVariations  = new HashMap<>();
+        for (Tag tag : tags) {
+           tagsAndVariations.put(tag, adaptedTagsService.findVariation(tag.getTagName()));
+        }
+        System.out.println("Tags e variações: ");
+        System.out.println(tagsAndVariations);
+        System.out.println("-------------------------------------------------");
+        return tagsAndVariations;
     }
 }
