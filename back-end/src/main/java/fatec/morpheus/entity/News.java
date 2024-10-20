@@ -31,11 +31,11 @@ public class News {
     @Column(name = "new_cod")
     private int newsCod;
 
-    @Column(name = "new_title", length = 70)
-    @Size(max = 70, message = "News Title cannot exceed 70 characters")
+    @Column(name = "new_title", length = 150)
+    @Size(max = 150, message = "News Title cannot exceed 150 characters")
     private String newsTitle;
 
-    @Column(name = "new_content")
+    @Column(name = "new_content", columnDefinition = "LONGTEXT")
     private String newsContent;
 
     @Column(name = "new_registry_date", updatable = false)
@@ -50,7 +50,7 @@ public class News {
     @JoinColumn(name = "new_src_cod", referencedColumnName = "src_cod")
     private NewsSource sourceNews;
 
-    @Column(name = "new_address", length = 150)
+    @Column(name = "new_address")
     private String newAddress;
 
     
