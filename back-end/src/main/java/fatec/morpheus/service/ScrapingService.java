@@ -147,7 +147,6 @@ public class ScrapingService {
             News news = new News();
             news.setNewsTitle(title);
             news.setNewsContent(contentString);
-            System.out.println("News content: " + contentString);
             news.setNewAddress(newsUrl);
             news.setNewsAuthor(newsAuthor);
 
