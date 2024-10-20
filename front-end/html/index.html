@@ -393,8 +393,8 @@
                                         <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
                                         <select id="selectOption1" class="form-select"
                                             v-model="sourceNews.tags.movedAdd" multiple size="15">
-                                            <option v-for="tag in unselectedTags" :key="tag.tagCode"
-                                                :value="tag.tagCode">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCod"
+                                                :value="tag.tagCod">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>
@@ -419,7 +419,7 @@
                                         <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
                                         <select id="selectOption2" class="form-select"
                                             v-model="sourceNews.tags.movedRemove" multiple size="15">
-                                            <option v-for="tag in selectedTags" :key="tag.tagCode" :value="tag.tagCode">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCod" :value="tag.tagCod">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>

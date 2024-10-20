@@ -177,13 +177,14 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/source')
                 .then(response => {
                     this.sourceNews.all = [];
+                    console.log(response.data)
                     response.data.forEach(portalNoticia => {
 
                         const itemAdd = new Object();
                         itemAdd.code = portalNoticia.code;
                         itemAdd.name = portalNoticia.srcName;
                         itemAdd.address = portalNoticia.address;
-                        itemAdd.tags = portalNoticia.tags;
+                        itemAdd.tags = portalNoticia.tagCodes;
                         itemAdd.map = portalNoticia.map;
                         this.sourceNews.all.push(itemAdd);
 
@@ -311,6 +312,7 @@ const app = Vue.createApp({
             this.sourceNews.tags.modal.show();
             this.sourceNews.tags.newsSelected = news;
             this.sourceNews.tags.selected = news.tags;
+            console.log(news.tags)
 
         },
         tagsForSourceNewsAdd() {
@@ -318,7 +320,7 @@ const app = Vue.createApp({
             this.sourceNews.tags.movedAdd = [];
         },
         tagsForSourceNewsRemove() {
-            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCode => !this.sourceNews.tags.movedRemove.includes(tagCode));
+            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCod => !this.sourceNews.tags.movedRemove.includes(tagCod));
             this.sourceNews.tags.movedRemove = [];
         },
         tagsForSourceNewsCreateTag() {
@@ -331,12 +333,13 @@ const app = Vue.createApp({
             const endpoint = `http://localhost:8080/morpheus/source/${this.sourceNews.tags.newsSelected.code}`;
 
             const payload = {
+                code:  this.sourceNews.tags.newsSelected.code,
                 srcName: this.sourceNews.tags.newsSelected.name,
                 address: this.sourceNews.tags.newsSelected.address,
-                tags: this.sourceNews.tags.selected,
-                map: this.sourceNews.formData.sourceSelected.map,
+                tagCodes: this.sourceNews.tags.selected,
+                map: this.sourceNews.tags.newsSelected.map,
                 type: 1
-
+                
             };
 
             console.log(this.sourceNews.tags.selected)
@@ -348,7 +351,7 @@ const app = Vue.createApp({
                     this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
                 })
                 .finally(final => {
-
+                    this.sourceNews.tags.modal.hide();
                 });
         },
 
@@ -450,6 +453,7 @@ const app = Vue.createApp({
                 })
                 .finally(final => {
                     this.tags.modal.show();
+                    this.tagsLoad();
                 });
         },
         automaticMapOpen() {
@@ -718,7 +722,7 @@ const app = Vue.createApp({
     computed: {
         selectedTags() {
             return this.tags.all
-                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCode))
+                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCod))
                 .filter(tag => {
                     return !this.tags.search.selectedQuery ||
                         tag.tagName.toLowerCase().includes(this.tags.search.selectedQuery.toLowerCase());
@@ -726,8 +730,9 @@ const app = Vue.createApp({
                 .sort((a, b) => a.tagName.localeCompare(b.tagName));
         },
         unselectedTags() {
+            console.log(this.sourceNews.tags.selected)
             return this.tags.all
-                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCode))
+                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCod))
                 .filter(tag => {
                     return !this.tags.search.query ||
                         tag.tagName.toLowerCase().includes(this.tags.search.query.toLowerCase());
