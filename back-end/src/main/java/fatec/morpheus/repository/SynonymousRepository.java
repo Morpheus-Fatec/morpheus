@@ -1,10 +1,11 @@
 package fatec.morpheus.repository;
 
-import fatec.morpheus.entity.Synonymous;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import fatec.morpheus.entity.Synonymous;
+
 @Repository
 public interface SynonymousRepository extends JpaRepository<Synonymous, fatec.morpheus.entity.SynonymousId> {
-    void deleteByTextoCod(Integer textoCod);
+    void deleteByTextCod(Integer textCod);
 }
