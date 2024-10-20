@@ -59,16 +59,16 @@ CREATE TABLE News_author (
     new_aut_name VARCHAR(500)
 );
 
-create table Texto(
-    texto_cod int auto_increment,
-    texto_description varchar(255),
-    primary key (texto_cod)
+create table Text(
+    text_cod int auto_increment,
+    text_description varchar(255),
+    primary key (text_cod)
 );
 
 create table Synonymous(
-    texto_cod int,
+    text_cod int,
     syn_group int,
-    primary key (texto_cod, syn_group),
-    foreign key (texto_cod) REFERENCES Texto(texto_cod) ON DELETE CASCADE,
-	foreign key (syn_group) REFERENCES texto(texto_cod) ON DELETE CASCADE
+    primary key (text_cod, syn_group),
+    foreign key (text_cod) REFERENCES Text(text_cod) ON DELETE CASCADE,
+	foreign key (syn_group) REFERENCES text(text_cod) ON DELETE CASCADE
 );

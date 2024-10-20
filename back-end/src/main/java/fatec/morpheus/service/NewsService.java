@@ -14,12 +14,16 @@ import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsReponse;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsRepository;
+import fatec.morpheus.repository.NewsSourceRepository;
 
 @Service
 public class NewsService {
 
     @Autowired
     private NewsRepository newsRepository;
+
+    @Autowired
+    private NewsSourceRepository newsSourceRepository;
     
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
@@ -49,10 +53,7 @@ public class NewsService {
         );
     }
 
-
-    public boolean existsByNewAddress(String newAddress) {
-        return newsRepository.existsByNewAddress(newAddress);
-    }
+<<<<<<<<< Temporary merge branch 1
     private String getAuthorName(News news) {
         if (news.getNewsAuthor() != null) {
             return news.getNewsAuthor().getAutName();
@@ -62,6 +63,10 @@ public class NewsService {
 
     public void saveNews(News newNew){
         newsRepository.save(newNew);
+    }
+
+    public boolean existsByNewAddress(String address) {
+        return newsSourceRepository.existsByAddress(address);
     }
 
 }
