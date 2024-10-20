@@ -5,7 +5,7 @@ create table Source(
 	src_cod int auto_increment primary key,
 	src_name char(30) unique,
     src_type enum('1','2'),
-	src_address char(100) unique,
+	src_address char(150) unique,
 	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -39,6 +39,11 @@ create table News(
 	new_title char(70),
     new_content text,
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	new_aut_cod int,
+    new_src_cod int,
+	new_address LONGTEXT,
+    FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id),
+    FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod),
     primary key (new_cod)
 );
 
@@ -47,6 +52,11 @@ create table News_tag(
 	src_tag_cod int,
 	foreign key (new_cod) REFERENCES News(new_cod),
 	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
+);
+
+CREATE TABLE News_author (
+    new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
+    new_aut_name VARCHAR(500)
 );
 
 create table Texto(
