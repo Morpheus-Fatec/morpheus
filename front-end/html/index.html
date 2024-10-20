@@ -468,10 +468,9 @@
                     <select class="form-select" id="periodicidade" v-model="cron.periodice"
                         :class="{'is-invalid': cron.isSubmited && !cron.periodice}">
                         <option value="">Escolha uma opção</option>
-                        <option value="daily">Diário</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensal</option>
-                        <option value="custom">Personalizado</option>
+                        <option value="Daily">Diário</option>
+                        <option value="Weekly">Semanal</option>
+                        <option value="Monthly">Mensal</option>
                     </select>
                     <div v-if="cron.isSubmited && !cron.periodice">
                         <span class="text-danger">Este campo é obrigatório.</span>

@@ -472,9 +472,11 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/config/properties')
                 .then(response => {
                     const config = response.data;
-                    this.cron.active = config.active === 'true';
+                    this.cron.active = config.active;
                     this.cron.periodice = config.frequency;
-                    this.cron.hour = config.time;
+                    let parts = config.time.split(':');
+                    this.cron.hour = parts[0];
+                    this.cron.minute = parts[1];
                     this.cron.timeZone = config.timeZone;
                 })
                 .catch(error => {
@@ -508,12 +510,12 @@ const app = Vue.createApp({
             this.isLoading = true;
             const payload = {
                 frequency: this.cron.periodice,
-                time: this.cron.hour,
+                time: this.cron.hour+':'+this.cron.minute,
                 timeZone: this.cron.timeZone,
                 active: this.cron.active.toString()
             };
 
-            axios.post('http://localhost:8080/morpheus/config/properties', payload)
+            axios.post('http://localhost:8080/morpheus/config/update', payload)
                 .then(response => {
                     const offcanvasElement = this.$refs.offcanvas;
                     const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
