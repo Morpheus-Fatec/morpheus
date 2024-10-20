@@ -35,8 +35,9 @@ public class NewsSourceService {
         NewsSource source = new NewsSource();
 
         source.setSrcName(newsSourceCreatedDTO.getSrcName());
+        source.setType(newsSourceCreatedDTO.getType());
         source.setAddress(newsSourceCreatedDTO.getAddress());
-        source.setTags(newsSourceCreatedDTO.getTags());
+        source.setTagCodes(newsSourceCreatedDTO.getTagCodes());
 
         MapSourceDTO map = verifyDotMapSource(newsSourceCreatedDTO.getMap());
         MapSource sourceMap = map.toEntity();
@@ -123,8 +124,7 @@ public class NewsSourceService {
     }
 
     public NewsSource findNewsSourceById(int id) {
-        return newsSourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));  
+        return newsSourceRepository.findById(id).orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));  
     }
 
     public NewsSource updateNewsSourceById(int id, NewsSource newsSourceToUpdate) {
@@ -134,8 +134,8 @@ public class NewsSourceService {
                     existingNewsSource.setSrcName(newsSourceToUpdate.getSrcName());
                     existingNewsSource.setType(newsSourceToUpdate.getType());
                     existingNewsSource.setAddress(newsSourceToUpdate.getAddress());
-                    existingNewsSource.getTags().clear();
-                    existingNewsSource.getTags().addAll(newsSourceToUpdate.getTags());
+                    existingNewsSource.getTagCodes().clear();
+                    existingNewsSource.getTagCodes().addAll(newsSourceToUpdate.getTagCodes());
                     existingNewsSource.getMap().setAuthor(newsSourceToUpdate.getMap().getAuthor());
                     existingNewsSource.getMap().setBody(newsSourceToUpdate.getMap().getBody());
                     existingNewsSource.getMap().setTitle(newsSourceToUpdate.getMap().getTitle());
@@ -158,7 +158,7 @@ public class NewsSourceService {
     public NewsSource deleteNewsSourceById(int id) {
         NewsSource newsSource = newsSourceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
-        Hibernate.initialize(newsSource.getTags());
+        Hibernate.initialize(newsSource.getTagCodes());
         Hibernate.initialize(newsSource.getMap());
 
         newsSourceRepository.delete(newsSource);
