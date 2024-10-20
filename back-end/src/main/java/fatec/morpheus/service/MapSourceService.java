@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.DTO.MapSourceDTO;
+import fatec.morpheus.DTO.MappingDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
 
@@ -21,12 +21,11 @@ import fatec.morpheus.exception.InvalidFieldException;
 public class MapSourceService {
 
     private List<String> errors = new ArrayList<>();
-    private MapSourceDTO mapedSourceDto = new MapSourceDTO();
-    private final String notFoundMessage = "Não encontrado elemento HTML correspondente.";
+    private MappingDTO mappingDTOResolved = new MappingDTO();
 
-    public MapSourceDTO validateMap(MapSourceDTO mapSourceDTO) {
+    public MappingDTO validateMap(MappingDTO mapSourceDTO) {
         try {
-            MapSourceDTO mapSourceDTOResolved = findHtmlTags(mapSourceDTO);
+            MappingDTO mapSourceDTOResolved = findHtmlTags(mapSourceDTO);
             return mapSourceDTOResolved;
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,84 +34,84 @@ public class MapSourceService {
     }
 
 
-    private MapSourceDTO findHtmlTags(MapSourceDTO mapSourceDTO) {
+    private MappingDTO findHtmlTags(MappingDTO mappingDTO) {
         try {
-            mapedSourceDto.setUrl(mapSourceDTO.getUrl());
-            if (mapSourceDTO.getUrl() == null || !mapSourceDTO.getUrl().startsWith("http://") && !mapSourceDTO.getUrl().startsWith("https://")) {
-                throw new MalformedURLException("URL inválida: " + mapSourceDTO.getUrl());
+            mappingDTOResolved.setUrl(mappingDTO.getUrl());
+            if (mappingDTO.getUrl() == null || !mappingDTO.getUrl().startsWith("http://") && !mappingDTO.getUrl().startsWith("https://")) {
+                throw new MalformedURLException("URL inválida: " + mappingDTO.getUrl());
             }
 
-            Document doc = Jsoup.connect(mapSourceDTO.getUrl()).get();
+            Document doc = Jsoup.connect(mappingDTO.getUrl()).get();
 
             // Título
-            if (!nullOrEmpty(mapSourceDTO.getTitle())) {
-                String titleClass = findElementContainingText(doc, mapSourceDTO.getTitle());
+            if (!nullOrEmpty(mappingDTO.getTitle())) {
+                String titleClass = findElementContainingText(doc, mappingDTO.getTitle());
                 if (nullOrEmpty(titleClass)) {
-                    String titleClass2 = findElementContainingText2(doc, mapSourceDTO.getTitle());
-                    mapedSourceDto.setTitle(nullOrEmpty(titleClass2) ? notFoundMessage : "." + titleClass2);
+                    String titleClass2 = findElementContainingText2(doc, mappingDTO.getTitle());
+                    mappingDTOResolved.setTitle(nullOrEmpty(titleClass2) ? null : "." + titleClass2);
                 } else {
-                    mapedSourceDto.setTitle("." + titleClass);
+                    mappingDTOResolved.setTitle("." + titleClass);
                 }
             } else {
-                mapedSourceDto.setTitle(notFoundMessage);
+                mappingDTOResolved.setTitle(null);
             }
             
             // Data
-            if (!nullOrEmpty(mapSourceDTO.getDate())) {
-                String dateClass = findElementContainingText(doc, mapSourceDTO.getDate());
-                String dateClassTime = findFirstDateElement(doc, mapSourceDTO.getDate());
+            if (!nullOrEmpty(mappingDTO.getDate())) {
+                String dateClass = findElementContainingText(doc, mappingDTO.getDate());
+                String dateClassTime = findFirstDateElement(doc, mappingDTO.getDate());
                 if (!nullOrEmpty(dateClass)) {
                     if (dateClass.equals(dateClassTime)) {
-                        mapedSourceDto.setDate("." + dateClass);
+                        mappingDTOResolved.setDate("." + dateClass);
                     } else {
-                        mapedSourceDto.setDate("." + dateClassTime);
+                        mappingDTOResolved.setDate("." + dateClassTime);
                     }
                 } else {
-                    String dateClass2 = findElementContainingText2(doc, mapSourceDTO.getDate());
-                    mapedSourceDto.setDate(nullOrEmpty(dateClass2) ? notFoundMessage : "." + dateClass2);
+                    String dateClass2 = findElementContainingText2(doc, mappingDTO.getDate());
+                    mappingDTOResolved.setDate(nullOrEmpty(dateClass2) ? null : "." + dateClass2);
                 }
             } else {
-                mapedSourceDto.setDate(notFoundMessage);
+                mappingDTOResolved.setDate(null);
             }
 
 
             // Autor
-            if (!nullOrEmpty(mapSourceDTO.getAuthor())) {
-                String authorClass = findElementContainingText(doc, mapSourceDTO.getAuthor());
+            if (!nullOrEmpty(mappingDTO.getAuthor())) {
+                String authorClass = findElementContainingText(doc, mappingDTO.getAuthor());
                 if (nullOrEmpty(authorClass)) {
-                    String authorClass2 = findElementContainingText2(doc, mapSourceDTO.getAuthor());
-                    mapedSourceDto.setAuthor(nullOrEmpty(authorClass2) ? notFoundMessage : "." + authorClass2);
+                    String authorClass2 = findElementContainingText2(doc, mappingDTO.getAuthor());
+                    mappingDTOResolved.setAuthor(nullOrEmpty(authorClass2) ? null : "." + authorClass2);
                 } else {
-                    mapedSourceDto.setAuthor("." + authorClass);
+                    mappingDTOResolved.setAuthor("." + authorClass);
                 }
             } else{
-                mapedSourceDto.setAuthor(notFoundMessage);
+                mappingDTOResolved.setAuthor(null);
             }
 
             // Corpo
-            if (!nullOrEmpty(mapSourceDTO.getBody())) {
-                String bodyClass = findElementContainingText(doc, mapSourceDTO.getBody());
+            if (!nullOrEmpty(mappingDTO.getBody())) {
+                String bodyClass = findElementContainingText(doc, mappingDTO.getBody());
                 if (nullOrEmpty(bodyClass)) {
-                    String bodyClass2 = findParentClassOfBody(doc, mapSourceDTO.getBody());
-                    mapedSourceDto.setBody(nullOrEmpty(bodyClass2) ? notFoundMessage : "." + bodyClass2);
+                    String bodyClass2 = findParentClassOfBody(doc, mappingDTO.getBody());
+                    mappingDTOResolved.setBody(nullOrEmpty(bodyClass2) ? null : "." + bodyClass2);
                 } else {
-                    mapedSourceDto.setBody("." + bodyClass);
+                    mappingDTOResolved.setBody("." + bodyClass);
                 }
             } else{
-                mapedSourceDto.setBody(notFoundMessage);
+                mappingDTOResolved.setBody(null);
             }
     
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            errors.add(mapSourceDTO.getUrl());
+            errors.add(mappingDTO.getUrl());
             throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "URL inválida."));
         } catch (IOException e) {
             e.printStackTrace();
-            errors.add(mapSourceDTO.getUrl());
+            errors.add(mappingDTO.getUrl());
             throw new InvalidFieldException(new ErrorResponse(HttpStatus.BAD_REQUEST, errors, "Erro ao acessar a URL."));
         }
     
-        return mapedSourceDto;
+        return mappingDTOResolved;
     }
     
 

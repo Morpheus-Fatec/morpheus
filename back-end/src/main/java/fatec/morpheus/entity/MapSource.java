@@ -29,23 +29,23 @@ public class MapSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "map_id")
-    private int mapId;
+    private int mapId; 
 
     @OneToOne 
     @JoinColumn(name = "src_cod", nullable = false, unique = true)
     @JsonBackReference
     private NewsSource source; 
 
-    @Column(name = "map_author", nullable = false)
+    @Column(name = "map_author", nullable = true)
     private String author; 
 
-    @Column(name = "map_body")
+    @Column(name = "map_body", nullable = false)
     private String body; 
 
-    @Column(name = "map_title")
+    @Column(name = "map_title", nullable = false)
     private String title; 
 
-    @Column(name = "map_date")
+    @Column(name = "map_date", nullable = false)
     private String date;
 
     public MapSource(MapSourceDTO mapSourceDTO) {
