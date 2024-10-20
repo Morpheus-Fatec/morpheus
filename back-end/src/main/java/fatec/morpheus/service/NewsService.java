@@ -53,7 +53,6 @@ public class NewsService {
         );
     }
 
-<<<<<<<<< Temporary merge branch 1
     private String getAuthorName(News news) {
         if (news.getNewsAuthor() != null) {
             return news.getNewsAuthor().getAutName();
