@@ -32,7 +32,7 @@ public class NewsController {
     })
 
     @GetMapping
-    public ResponseEntity<PaginatedNewsResponse> getAllNews(@RequestParam int page, @RequestParam(defaultValue = "50") int itens) {
+    public ResponseEntity<PaginatedNewsResponse> getAllNews(@RequestParam (defaultValue = "1")int page, @RequestParam(defaultValue = "50") int itens) {
         PaginatedNewsResponse news = newsService.getNewsWithDetails(page, itens);
         return ResponseEntity.ok(news);
     }

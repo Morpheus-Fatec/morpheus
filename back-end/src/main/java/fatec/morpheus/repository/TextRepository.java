@@ -3,8 +3,8 @@ package fatec.morpheus.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fatec.morpheus.entity.Texto;
+import fatec.morpheus.entity.Text;
 
 @Repository
-public interface TextoRepository extends JpaRepository<Texto, Integer> {
+public interface TextRepository extends JpaRepository<Text, Integer> {
 }

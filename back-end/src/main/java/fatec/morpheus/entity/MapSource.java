@@ -29,14 +29,14 @@ public class MapSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "map_id")
-    private int mapId;
+    private int mapId; 
 
     @OneToOne 
     @JoinColumn(name = "src_cod", nullable = false, unique = true)
     @JsonBackReference
     private NewsSource source; 
 
-    @Column(name = "map_author", nullable = false)
+    @Column(name = "map_author", nullable = true)
     private String author; 
 
     @Column(name = "map_body", nullable = false)

@@ -16,6 +16,6 @@ public class NewsSourceDTO {
     private String srcName;
     private String type;
     private String address;
-    private List<Tag> tags;
+    private List<Integer> tagCodes;
     private MapSourceDTO map;
 }

@@ -11,20 +11,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "Text")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "Tag")
-public class Tag{
-
+public class Text {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_cod")
-    private Integer tagCod;
-    
-    @Column(name = "tag_name", length = 20, unique = true)
-    private String tagName;
+    @Column(name = "text_cod")
+    private Integer textCod;
 
+    @Column(name = "text_description", length = 255, unique = true)
+    private String textDescription;
 }

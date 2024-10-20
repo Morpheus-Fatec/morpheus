@@ -62,9 +62,10 @@ public class ScrapingService {
 
                 System.out.println("PORTAL: " + portalUrl);
 
-                Set<String> tagNames = source.getSource().getTags().stream()
-                    .map(Tag::getTagName)
-                    .collect(Collectors.toSet());
+                Set<String> tagNames = new HashSet<>();
+                tagNames.add("hoje");
+                tagNames.add("noticias");
+                tagNames.add("Corinthians");
 
                 Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
