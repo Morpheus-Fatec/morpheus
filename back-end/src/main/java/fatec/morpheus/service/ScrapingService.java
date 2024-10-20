@@ -10,7 +10,6 @@ import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsAuthor;
 import fatec.morpheus.entity.NewsSource;
-import fatec.morpheus.entity.Tag;
 import fatec.morpheus.repository.MapSourceRepository;
 import fatec.morpheus.repository.NewsAuthorRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
@@ -20,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ScrapingService {
@@ -36,6 +34,9 @@ public class ScrapingService {
 
     @Autowired
     private NewsSourceRepository newsSourceRepository;
+
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     private Set<String> processedUrls = new HashSet<>();
 
@@ -62,10 +63,7 @@ public class ScrapingService {
 
                 System.out.println("PORTAL: " + portalUrl);
 
-                Set<String> tagNames = new HashSet<>();
-                tagNames.add("hoje");
-                tagNames.add("noticias");
-                tagNames.add("Corinthians");
+                List<String> tagsAndVariations = findVariation(source.getSource().getCode());
 
                 Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
@@ -75,7 +73,7 @@ public class ScrapingService {
                     "urlNoticiaSalva", portalUrl
                 );
 
-                extractNews(portalUrl, tagsClass, tagNames, portalCodeUrl);
+                extractNews(portalUrl, tagsClass, tagsAndVariations, portalCodeUrl);
 
             } catch (Exception e) {
                 System.out.println("Erro ao processar o portal: " + source.getSource().getAddress());
@@ -85,7 +83,7 @@ public class ScrapingService {
         System.out.println("Processamento de notícias concluído.");
     }
 
-    private void extractNews(String url, Map<String, String> tagsClass, Set<String> tagNames, String portalCodeUrl) {
+    private void extractNews(String url, Map<String, String> tagsClass, List<String> tagsAndVariations, String portalCodeUrl) {
         try {
             Document document = Jsoup.connect(url).get();
             Elements newsCards = document.select("a");
@@ -98,11 +96,11 @@ public class ScrapingService {
                 }
 
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
-                    if(tagNames.size() == 0) {
+                    if(tagsAndVariations.size() == 0) {
                         System.err.println("O link: " + link + " não possui tags. Seguindo para o proximo portal.");
                         return;
                     }
-                    scrapeNewsDetails(link, tagsClass, tagNames, portalCodeUrl);
+                    scrapeNewsDetails(link, tagsClass, tagsAndVariations, portalCodeUrl);
                 }
             }
         } catch (IOException e) {
@@ -110,7 +108,7 @@ public class ScrapingService {
         }
     }
 
-    private void scrapeNewsDetails(String newsUrl, Map<String, String> tagsClass, Set<String> tagNames, String portalCodeUrl) {
+    private void scrapeNewsDetails(String newsUrl, Map<String, String> tagsClass, List<String> tagsAndVariations, String portalCodeUrl) {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
 
@@ -127,10 +125,10 @@ public class ScrapingService {
 
             String contentString = fullContent.toString();
 
-            boolean containsTag = tagNames.stream().anyMatch(tag -> contentString.toLowerCase().contains(tag.toLowerCase()));
+            boolean containsTag = tagsAndVariations.stream().anyMatch(tag -> contentString.toLowerCase().contains(tag.toLowerCase()));
 
             if (!containsTag) {
-                System.out.println("Conteúdo não contém nenhuma das tags: " + tagNames);
+                System.out.println("Conteúdo não contém nenhuma das tags: " + tagsAndVariations);
                 return;
             }
 
@@ -168,6 +166,11 @@ public class ScrapingService {
             System.out.println("Erro ao acessar o link: " + newsUrl);
             e.printStackTrace();
         }
+    }
+
+    private List<String> findVariation(int newsSourceCode){
+        List<String> tagsAndVariations = adaptedTagsService.findVariation(newsSourceCode);
+        return tagsAndVariations;
     }
 
 }

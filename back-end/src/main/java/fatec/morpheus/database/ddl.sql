@@ -37,7 +37,7 @@ create table Source_tag(
 create table News(
 	new_cod int auto_increment,
 	new_title char(70),
-    new_content text,
+   
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	new_aut_cod int,
     new_src_cod int,

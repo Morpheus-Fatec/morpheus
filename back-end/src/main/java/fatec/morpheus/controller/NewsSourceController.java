@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.DTO.MappingDTO;
 import fatec.morpheus.DTO.NewsSourceDTO;
 import fatec.morpheus.entity.NewsSource;
