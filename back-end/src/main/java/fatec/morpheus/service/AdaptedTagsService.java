@@ -24,14 +24,11 @@ public class AdaptedTagsService {
                 "Texto txA ON txA.texto_cod = tr.texto_cod " +
                 "JOIN " +
                 "Texto txB ON txB.texto_cod = tr.syn_group " +
-                "WHERE tg.tag_name = '" + tagName + "' " +
-                "AND tg.tag_name <> txB.texto_description " +
+                "WHERE tg.tag_name = '"+ tagName +"'" +
                 "UNION " +
                 "SELECT tag_name AS variacao " +
                 "FROM Tag " +
-                "WHERE tag_name = '" + tagName + "' " +
-                "AND tag_name <> '" + tagName + "'";
-
+                "WHERE tag_name = '" + tagName + "'";
 
         Query query = entityManager.createNativeQuery(sql);
         List<String> resultList = query.getResultList();
