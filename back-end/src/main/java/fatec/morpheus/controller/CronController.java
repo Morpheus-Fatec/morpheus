@@ -7,11 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,11 +40,15 @@ public class CronController {
     @GetMapping("/properties")
     public ResponseEntity<CronProperties> getProperties() {
         try {
-            Path propertiesFile = Paths.get("src/main/resources/application.properties");
             Properties properties = new Properties();
 
-            // Carrega as propriedades do arquivo
-            try (InputStream inputStream = Files.newInputStream(propertiesFile)) {
+            // Carrega o arquivo application.properties do classpath
+            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+                if (inputStream == null) {
+                    logger.error("Arquivo application.properties não encontrado.");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(null);
+                }
                 properties.load(inputStream);
             }
 
@@ -54,7 +63,7 @@ public class CronController {
             return ResponseEntity.ok(cronProperties);
 
         } catch (IOException e) {
-            logger.error("Error loading properties: {}", e.getMessage());
+            logger.error("Erro ao carregar as propriedades: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
@@ -62,28 +71,45 @@ public class CronController {
 
     @PostMapping("/update")
     public ResponseEntity<String> updateProperties(@RequestBody CronProperties configRequest) {
-        logger.info("Received request: {}", configRequest);
+        System.out.println("Entrou: ResponseEntity");
+        logger.info("Solicitação recebida: {}", configRequest);
         try {
-            Path propertiesFile = Paths.get("src/main/resources/application.properties");
+            System.out.println("Entrou: ResponseEntity, try");
+            // Caminho externo do arquivo de propriedades (fora do JAR)
+            Path externalPropertiesFile = Paths.get("back-end/src/main/resources/application.properties");
+
+            // Se o arquivo externo não existir, cria uma cópia do arquivo original
+            if (Files.notExists(externalPropertiesFile)) {
+                System.out.println("Entrou: ResponseEntity, condicional");
+                logger.info("Arquivo externo de propriedades não encontrado. Criando uma cópia.");
+                Files.createDirectories(externalPropertiesFile.getParent());
+                try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+                System.out.println("Entrou: ResponseEntity, try dentro da condicional");
+                    if (inputStream != null) {
+                        Files.copy(inputStream, externalPropertiesFile);
+                    }
+                }
+            }
+
             Properties properties = new Properties();
 
-            // Carrega as propriedades atuais
-            try (InputStream inputStream = Files.newInputStream(propertiesFile)) {
+            // Carrega o arquivo de propriedades externo
+            try (InputStream inputStream = Files.newInputStream(externalPropertiesFile)) {
                 properties.load(inputStream);
             }
 
             // Valida o time zone
             if (!isValidTimeZone(configRequest.getTimeZone())) {
-                logger.error("Invalid time zone: {}", configRequest.getTimeZone());
+                logger.error("Fuso horário inválido: {}", configRequest.getTimeZone());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid time zone: " + configRequest.getTimeZone());
+                        .body("Fuso horário inválido: " + configRequest.getTimeZone());
             }
 
             // Converte a frequência e o horário para expressão cron
             String cronExpression = convertToCronExpression(configRequest.getFrequency(), configRequest.getTime());
             if (cronExpression == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid frequency value: " + configRequest.getFrequency());
+                        .body("Valor de frequência inválido: " + configRequest.getFrequency());
             }
 
             // Atualiza as propriedades
@@ -93,30 +119,33 @@ public class CronController {
             properties.setProperty("cron.frequency", configRequest.getFrequency());
             properties.setProperty("cron.time", configRequest.getTime());
 
-            // Salva as novas propriedades no arquivo
-            try (OutputStream outputStream = Files.newOutputStream(propertiesFile)) {
-                properties.store(outputStream, "Updated by Spring Boot");
+            // Loga as propriedades antes de salvar
+            logger.info("Propriedades antes da gravação: {}", properties);
+
+            // Salva as novas propriedades no arquivo externo
+            try (OutputStream outputStream = Files.newOutputStream(externalPropertiesFile)) {
+                properties.store(outputStream, "Atualizado pelo Spring Boot");
             }
 
-            // Atualiza a expressão cron no CronSchedule
+            // Atualiza a expressão cron no CronManager
             cronManager.updateCron(cronExpression);
-            logger.info("Updated cron task with expression: {}", cronExpression);
+            logger.info("Tarefa cron atualizada com a expressão: {}", cronExpression);
 
-            // Ativa ou desativa o cron com base no status 'active' da solicitação
+            // Ativa ou desativa o cron com base no status 'active'
             if (configRequest.isActive()) {
                 cronManager.startCronTask();
-                logger.info("Cron task started.");
+                logger.info("Tarefa cron iniciada.");
             } else {
                 cronManager.stopCronTask();
-                logger.info("Cron task stopped.");
+                logger.info("Tarefa cron parada.");
             }
 
-            return ResponseEntity.ok("Properties updated successfully!");
+            return ResponseEntity.ok("Propriedades atualizadas com sucesso!");
 
         } catch (IOException e) {
-            logger.error("Error updating properties: {}", e.getMessage());
+            logger.error("Erro ao atualizar as propriedades: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating properties: " + e.getMessage());
+                    .body("Erro ao atualizar as propriedades: " + e.getMessage());
         }
     }
 
