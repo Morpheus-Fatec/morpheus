@@ -3,23 +3,17 @@ package fatec.morpheus.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 
 import fatec.morpheus.DTO.MappingDTO;
 
