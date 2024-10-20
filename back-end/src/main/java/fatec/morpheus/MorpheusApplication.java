@@ -14,12 +14,14 @@ public class MorpheusApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MorpheusApplication.class, args);
+		
     }
 
     @Bean
     public CommandLineRunner run(AdaptedTagsService adaptedTags) {
         return args -> {
             System.out.println(adaptedTags.findVariation("safra abacaxi"));
+			
         };
     }
 }

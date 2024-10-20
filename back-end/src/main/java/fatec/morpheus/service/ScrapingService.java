@@ -11,6 +11,7 @@ import fatec.morpheus.entity.Tag;
 import fatec.morpheus.repository.MapSourceRepository;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class ScrapingService {
 
     @Autowired
     private MapSourceRepository mapSourceRepository;
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     private Set<String> processedUrls = new HashSet<>();
 
@@ -50,6 +53,8 @@ public class ScrapingService {
                     .map(Tag::getTagName)
                     .collect(Collectors.toSet());
 
+                Map<String, List<String>> tagsVariations = getTagsVariations(tagNames);
+
                 Map<String, String> tagsClass = Map.of(
                     "content", source.getBody(),
                     "title", source.getTitle(),
@@ -66,6 +71,17 @@ public class ScrapingService {
             }
         }
         System.out.println("Processamento de notícias concluído.");
+    }
+
+    private Map<String, List<String>> getTagsVariations(Set<String> tags) {
+        Map<String, List<String>> tagsAndVariations  = new HashMap<>();
+        for (String tag : tags) {
+           tagsAndVariations.put(tag, adaptedTagsService.findVariation(tag));
+        }
+        System.out.println("Tags e variações: ");
+        System.out.println(tagsAndVariations);
+        System.out.println("-------------------------------------------------");
+        return tagsAndVariations;
     }
 
     private void extractNews(String url, Map<String, String> tagsClass, Set<String> tagNames) {
