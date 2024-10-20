@@ -1,29 +1,31 @@
 package fatec.morpheus.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Entity
 @Table(name = "Source")
@@ -53,15 +55,26 @@ public class NewsSource {
     @CreationTimestamp
     private Date registrationDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "Source_tag",
-        joinColumns = @JoinColumn(name = "src_cod"),
-        inverseJoinColumns = @JoinColumn(name = "tag_cod")
-    )
-    private List<Tag> tags; 
-
     @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private MapSource map;
+
+    @Transient
+    public List<Integer> getTagCodes() {
+        return tagCodes;
+    }
+
+    @ElementCollection
+    @CollectionTable(name = "Source_tag", joinColumns = @JoinColumn(name = "src_cod"))
+    @Column(name = "tag_cod")
+    private List<Integer> tagCodes;
+
+    public void setTagCodes(List<Integer> tagCodes) {
+        if (tagCodes != null) {
+            this.tagCodes = new ArrayList<>(tagCodes);
+        } else {
+            this.tagCodes = new ArrayList<>();
+        }
+    }
 }
+
