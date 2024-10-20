@@ -45,8 +45,8 @@ public class NewsSource {
     @Column(name = "src_type")
     private String type;
 
-    @Column(name = "src_address", length = 100, unique = true)
-    @Size(max = 100, message = "Source Address cannot exceed 100 characters")
+    @Column(name = "src_address", length = 150, unique = true)
+    @Size(max = 150, message = "Source Address cannot exceed 150 characters")
     private String address;
 
     @Column(name = "src_registry_date", updatable = false)

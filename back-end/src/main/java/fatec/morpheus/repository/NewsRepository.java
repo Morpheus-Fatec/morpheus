@@ -12,4 +12,5 @@ import io.micrometer.common.lang.NonNull;
 public interface NewsRepository extends JpaRepository<News, Integer>{
 
     Page<News> findAll(@NonNull Pageable Pegeable);
+    boolean existsByNewAddress(String newAddress);
 }

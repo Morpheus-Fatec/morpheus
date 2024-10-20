@@ -28,8 +28,8 @@ public class NewsAuthor {
     @Column(name = "new_aut_id")
     private int autId;
 
-    @Column(name = "new_aut_name", length = 30, unique = true)
-    @Size(max = 30, message = "Name cannot exceed 30 characters")
+    @Column(name = "new_aut_name", length = 500, unique = true)
+    @Size(max = 500, message = "Name cannot exceed 500 characters")
     private String autName;
 
     @OneToMany(mappedBy = "newsAuthor")

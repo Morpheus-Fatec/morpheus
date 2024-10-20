@@ -49,6 +49,10 @@ public class NewsService {
         );
     }
 
+
+    public boolean existsByNewAddress(String newAddress) {
+        return newsRepository.existsByNewAddress(newAddress);
+    }
     private String getAuthorName(News news) {
         if (news.getNewsAuthor() != null) {
             return news.getNewsAuthor().getAutName();
