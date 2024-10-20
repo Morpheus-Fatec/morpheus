@@ -1,10 +1,12 @@
 package fatec.morpheus.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AdaptedTagsService {
@@ -14,12 +16,12 @@ public class AdaptedTagsService {
 
     public List<String> findVariation(int idNewSource) {
         String sql = "SELECT " +
-            "REPLACE(tg.tag_name, txA.texto_description, txB.texto_description) AS variacao " +
+            "REPLACE(tg.tag_name, txA.text_description, txB.text_description) AS variacao " +
             "FROM Tag tg " +
             "JOIN synonymous tr " +
-            "ON LOCATE((SELECT texto_description FROM Texto WHERE texto_cod = tr.texto_cod), tg.tag_name) > 0 " +
-            "JOIN Texto txA ON txA.texto_cod = tr.texto_cod " +
-            "JOIN Texto txB ON txB.texto_cod = tr.syn_group " +
+            "ON LOCATE((SELECT text_description FROM Text WHERE text_cod = tr.text_cod), tg.tag_name) > 0 " +
+            "JOIN Text txA ON txA.text_cod = tr.text_cod " +
+            "JOIN Text txB ON txB.text_cod = tr.syn_group " +
             "JOIN source_tag ON source_tag.tag_cod = tg.tag_cod " +
             "WHERE source_tag.src_cod = '" + idNewSource + "' " +  // Correção de espaço aqui
             "UNION " +
