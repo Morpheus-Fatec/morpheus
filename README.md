@@ -106,6 +106,12 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 | K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           | VII e VI      |
 | L             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
 
+<a href="/morpheus/documentation/documentation.md" target="_blank">
+    <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
+        Acessa critério de Aprovação
+    </button>
+</a>
+
 
 <br>
 
