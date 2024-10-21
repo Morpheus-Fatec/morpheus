@@ -4,6 +4,7 @@
     <img src="./documentation/images/Logo_Morpheus.png" alt="Logotipo Morpheus"width="75%">
 </div>
 
+
 <p align="center">
   <a href="#integrantes-da-equipe">Integrantes da Equipe</a> •
   <a href="#descrição-do-desafio">Desafio</a> •
@@ -49,14 +50,17 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :page_facing_up: <a id="requisitos-funcionais"> Requisitos Funcionais </a>
 
-* Cadastro de Portais de notícias
-* Cadastro de APIs
-* Cadastro de Tags
-* Cadastro de Jornalistas
-* Processo de web scraping (capturar os dados de notícias e apis e armazenar em banco de dados)
-* Indicação de tags que estão relacionadas
-* Tela de consulta de notícias, com filtros de pesquisa
-* Tela de APIs, com filtros de pesquisa
+| Funcionalidade                          | Indicador |
+|-----------------------------------------|-----------|
+| Cadastro de Portais de notícias         | I         |
+| Cadastro de APIs                        | II        |
+| Cadastro de Tags                        | III       |
+| Cadastro de Jornalistas                 | IV        |
+| Processo de web scraping                | V         |
+| Indicação de tags que estão relacionadas| VI        |
+| Tela de consulta de notícias            | VII       |
+| Tela de APIs                            | VIII      |
+
 
 <br>
 
@@ -80,7 +84,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | --  | KickOff   | 26/08   | 30/08 | Ok |
 |  1  | Sprint 1   | 09/09   | 29/09 | Ok |
-|  2  | Sprint 2   | 30/09   | 20/10 |  |
+|  2  | Sprint 2   | 30/09   | 20/10 | Ok |
 |  3  | Sprint 3   | 21/10   | 10/11 |  |
 |  4  | Sprint 4   | 11/11   | 30/11 |  |
 |  5  | Feira de Soluções  | 12/12     |
@@ -88,32 +92,47 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 <br>
 
 ## :date: <a id="product-backlog"> Product BackLog: </a>
-| Identificador | Como     | Desejo                                                                                                                                                                                                | Sprint | Prioridade | Dependência |
-|---------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|------------|-------------|
-| A             | Analista | Gerenciar portais de notícias por uma interface que me permita cadastrar endereços e possíveis autores das notícias                                                                                   | 1      | Alta       | -           |
-| B             | Analista | Gerenciar tags, sendo essas conteúdos textuais livres, considerando regionalismo e palavras polissêmicas                                                                                             | 1      | Alta       | -           |
-| C             | Analista | Tratar sinônimos de tags, para que a aplicação possa contemplar regionalismo nos textos das tags                                                                                                      | 2      | Alta       | B           |
-| D             | Analista | Consultar dados provenientes de portais de notícias                                                                                                                                                   | 2      | Média      | C           |
-| F             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado  | 3      | Média      | D           |
-| G             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando filtros referentes aos dados de um portal de notícias                                                        | 3      | Média      | D           |
-| H             | Analista | Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços                                                  | 4      | Baixa      | -           |
-| I             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           |
-| J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           |
-| K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           |
-| L             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           |
+| Identificador | Como     | Desejo                                                                                                                                                                                                | Sprint | Prioridade | Dependência | Requisito     |
+|---------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|------------|-------------|---------------|
+| A             | Analista | Gerenciar portais de notícias por uma interface que me permita cadastrar endereços e possíveis autores das notícias                                                                                   | 1      | Alta       | -           | I             |
+| B             | Analista | Gerenciar tags, sendo essas conteúdos textuais livres, considerando regionalismo e palavras polissêmicas                                                                                             | 1      | Alta       | -           | III           |
+| C             | Analista | Tratar sinônimos de tags, para que a aplicação possa contemplar regionalismo nos textos das tags                                                                                                      | 2      | Alta       | B           | VI            |
+| D             | Analista | Registrar dados provenientes de portais de notícias                                                                                                                                                   | 2      | Média      | C           | VII e IV      |
+| F             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado  | 3      | Média      | D           | VII e VI      |
+| G             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando filtros referentes aos dados de um portal de notícias                                                        | 3      | Média      | D           | VII e VI      |
+| H             | Analista | Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços                                                  | 4      | Baixa      | -           | II            |
+| I             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           | VIII e IV     |
+| J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           | VII e VI      |
+| K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           | VII e VI      |
+| L             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
+
+<a href="/documentation/documentation.md" target="_blank">
+    <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
+        Acessar critério de Aprovação
+    </button>
+</a>
+
 
 <br>
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint1.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint2.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
+
+<br>
+
+## Board de Atividades
+
+Acesse o Board de atividades do Time para visualizar as atividades planejadas, em desenvolvimento e prontas.
+
+[Board de Atividades](https://github.com/orgs/Morpheus-Fatec/projects/1/views/1)
 
 <br>
 
 ## :page_with_curl: <a id="documentação"> Documentação </a>
 
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [docs](./documentation/).
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
 
 ### Estrutura da Documentação:
 - **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
@@ -122,6 +141,16 @@ Todo o material relacionado à documentação do projeto pode ser encontrado no 
 - **[Imagens](./documentation/images/)**: Contém imagens de utilização geral no projeto.
 
 <br>
+
+## :page_with_curl: Documentação
+
+Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
+
+### Estrutura da Documentação:
+- **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
+- **[API](./documentation/api/)**: Contém a especificação da API, exemplos de requisições e respostas, e guias de autenticação.
+- **[Manuais](./documentation/manuals/)**: Contém manuais do usuário, guias de instalação, configuração e resolução de problemas.
+
 
 ## :bookmark: <a id="tecnologias-utilizadas"> Tecnologias Utilizadas </a>
 > * [Java](https://www.java.com/pt-BR/) - Versão 21

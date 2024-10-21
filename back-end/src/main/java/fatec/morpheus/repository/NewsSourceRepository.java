@@ -8,4 +8,7 @@ import fatec.morpheus.entity.NewsSource;
 @Repository
 public interface NewsSourceRepository extends JpaRepository<NewsSource, Integer> {
 
+    boolean existsBySrcName(String srcName);
+    boolean existsByAddress(String address);
+    NewsSource findByCode(int code);
 }
