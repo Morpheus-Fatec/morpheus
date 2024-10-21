@@ -45,7 +45,7 @@ const app = Vue.createApp({
     methods: {
         newsLoad() {
             this.isLoading = true;
-            axios.get(`https://morpheus-api17.free.beeceptor.com/todos?page=${this.pagination.page}&items=${this.pagination.items}`)
+            axios.get(`http://localhost:8080/morpheus/News?page=${this.pagination.page}&itens=${this.pagination.items}`)
                 .then(response => {
                     const data = response.data;
                     this.newsList = [];

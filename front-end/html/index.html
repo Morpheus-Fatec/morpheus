@@ -25,12 +25,12 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">
-                            <i class="bi bi-newspaper"></i> Portais de Notícia
+                            <i class="bi bi-newspaper"></i> Portais de Notícias
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-geo-alt"></i> Noticias
+                        <a class="nav-link" href="newsFeed.html">
+                            <i class="bi bi-globe2"></i> Notícias
                         </a>
                     </li>
                     <li class="nav-item">
@@ -341,7 +341,6 @@
                                             </div>
                                         </td>
                                     </tr>
-
                                 </tbody>
                             </table>
                         </div>
@@ -394,8 +393,8 @@
                                         <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
                                         <select id="selectOption1" class="form-select"
                                             v-model="sourceNews.tags.movedAdd" multiple size="15">
-                                            <option v-for="tag in unselectedTags" :key="tag.tagCode"
-                                                :value="tag.tagCode">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCod"
+                                                :value="tag.tagCod">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>
@@ -420,7 +419,7 @@
                                         <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
                                         <select id="selectOption2" class="form-select"
                                             v-model="sourceNews.tags.movedRemove" multiple size="15">
-                                            <option v-for="tag in selectedTags" :key="tag.tagCode" :value="tag.tagCode">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCod" :value="tag.tagCod">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>
