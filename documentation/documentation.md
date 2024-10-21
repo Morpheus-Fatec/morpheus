@@ -98,3 +98,49 @@
 
 7. **Documentação**:
    - A documentação deve ser atualizada para refletir as funcionalidades relacionadas ao tratamento de sinônimos de tags.
+
+# Sprint 3:
+
+## <a id="tratar-sinonimos-de-tags">Tratar sinônimos de tags, para que a aplicação possa contemplar regionalismo nos textos das tags</a>
+
+### Critérios de aceitação:
+
+1. **Cadastro de Palavras**:
+   - O sistema deve permitir o cadastro de palavras que serão utilizadas como tags.
+
+2. **Relação de Sinônimos**:
+   - O sistema deve possibilitar a relação de cada palavra a uma lista de sinônimos, permitindo a inclusão de várias palavras associadas a uma única tag.
+
+3. **Geração de Tags**:
+   - Ao cadastrar uma tag, o sistema deve gerar automaticamente as tags correspondentes, substituindo as palavras pelos sinônimos cadastrados.
+
+4. **Interface de Usuário**:
+   - A interface deve permitir que os usuários visualizem e editem as relações de sinônimos de forma intuitiva.
+
+5. **Validação**:
+   - O sistema deve validar que as palavras e sinônimos cadastrados não sejam duplicados.
+
+6. **Performance**:
+   - O sistema deve gerar as tags sinônimas de forma rápida, mesmo com um grande volume de palavras e sinônimos cadastrados.
+
+7. **Documentação**:
+   - A documentação deve ser atualizada para refletir as funcionalidades relacionadas ao tratamento de sinônimos de tags.
+
+## <a id="registrar-dados-de-portais-de-noticias">Registrar dados provenientes de portais de notícias vinculando uma notícia ao seu devido autor e a data de sua publicação e registro</a>
+
+### Critérios de aceitação:
+
+1. **Coleta de Dados**:
+   - O sistema deve extrair os dados pertinentes da notícia a partir do conteúdo da página, incluindo título, conteúdo principal, autor e data de publicação, assegurando que apenas as informações relevantes sejam coletadas.
+
+2. **Armazenamento**:
+   - Os dados coletados devem ser armazenados em um banco de dados estruturado, com campos separados para título, conteúdo, autor e data.
+
+3. **Validação de Dados**:
+   - O sistema deve validar que o autor e a data estão no formato correto antes de armazenar as informações.
+
+4. **Performance**:
+   - O sistema deve ser capaz de registrar e acessar os dados de forma rápida e eficiente, mesmo com um grande volume de notícias.
+
+5. **Documentação**:
+   - A documentação deve ser atualizada para refletir as funcionalidades do sistema.
