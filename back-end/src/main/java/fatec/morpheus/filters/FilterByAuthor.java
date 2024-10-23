@@ -20,7 +20,7 @@ public class FilterByAuthor {
                                   .collect(Collectors.joining(", "));
 
         String sql = "SELECT " + 
-                     "a.new_aut_name "+
+                     "n.new_content "+
                      "FROM news n " + 
                      "LEFT JOIN news_author a "+
                      "ON a.new_aut_id = n.new_aut_cod "+
