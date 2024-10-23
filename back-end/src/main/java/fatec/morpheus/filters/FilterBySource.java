@@ -1,4 +1,4 @@
-package fatec.morpheus.service;
+package fatec.morpheus.filters;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
 @Service
-public class FilterToSourceService {
+public class FilterBySource {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -24,8 +24,8 @@ public class FilterToSourceService {
 
         Query query = entityManager.createNativeQuery(sql);
 
-        List<String> tags = query.getResultList();
+        List<String> notices = query.getResultList();
 
-        return tags;
+        return notices;
     }
 }
