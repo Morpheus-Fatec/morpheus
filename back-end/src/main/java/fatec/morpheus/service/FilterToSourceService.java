@@ -1,7 +1,6 @@
 package fatec.morpheus.service;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
 @Service
-public class FilterToSource {
+public class FilterToSourceService {
     @PersistenceContext
     private EntityManager entityManager;
 
