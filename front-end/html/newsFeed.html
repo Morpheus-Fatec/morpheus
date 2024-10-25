@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="../css/bootstrap.css">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css\bootstrap-icons-1.11.3\bootstrap-icons-1.11.3\font\bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
 </head>
 
 <body>
@@ -71,6 +75,42 @@
                     placeholder="Pesquisar" style="flex-grow: 1;">
             </div>
 
+            <!-- botão do Offcanvas -->
+            <div class="ms-10">
+                <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
+                    role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary">
+                    <i class="bi bi-filter"></i> Filtros
+                </button>
+            </div>
+
+
+            <!-- Estrutura do Offcanvas -->
+            <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+                aria-labelledby="offcanvasWithBothOptionsLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filtros</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <p>Filtros por portais</p>
+                    <div id="app" class="container mt-2">
+                        <div class="row">
+                          <idv class="col-md-15">
+                            <h7 class="mb-3">Selecione ou adicione um portal </h7>
+                            <select id="choices-select" class="form-select" multiple></select>
+                          </div>
+                        </div>
+                          <div class="col-md-15">
+                            <h7>Portais selecionados:</h7>
+                            <ul class="list-group">
+                              <li v-for="item in selectedItems" :key="item" class="list-group-item">
+                                {{ item }}
+                              </li>
+                            </ul>
+                        </div>
+                      </div>
+                </div>
+            </div>
 
             <div class="mt-3 d-flex justify-content-end align-items-center">
                 <div class="row g-3 align-items-center">
@@ -197,6 +237,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     <script src="../library/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
