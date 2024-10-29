@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import fatec.morpheus.entity.NewsReponse;
 import fatec.morpheus.service.NewsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,6 +24,12 @@ public class NewsFilterController {
     @Autowired
     private NewsService newsService;
 
+
+        @Operation(summary = "Filtro Notícias", description = "Retorna notícias relacionadas aos parâmetros a serem inseridos")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Notícias retornadas com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Termo especificado não encontrado"),
+    })
     @GetMapping("/search")
     public ResponseEntity<Map<String, Object>> buscarNoticiasComFiltros(
             @RequestParam(required = false) List<String> titles,

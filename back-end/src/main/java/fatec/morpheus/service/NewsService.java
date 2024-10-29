@@ -8,14 +8,16 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsReponse;
 import fatec.morpheus.entity.PaginatedNewsResponse;
+import fatec.morpheus.exception.CustomNotFoundException;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
 @Service
@@ -70,23 +72,30 @@ public class NewsService {
         return newsSourceRepository.existsByAddress(address);
     }
 
-    public Page<NewsReponse> buscarNoticiasComFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd, PageRequest pageRequest) {
-        Page<News> newsPage = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd),  pageRequest);
-
-        List<NewsReponse> newsResponses = newsPage.getContent().stream()
-                .map(news -> new NewsReponse(
-                        news.getNewsTitle(),
-                        news.getNewsContent(),
-                        news.getNewsRegistryDate(),
-                        getAuthorName(news),
-                        news.getSourceNews().getSrcName(),
-                        news.getSourceNews().getAddress(),
-                        news.getNewAddress()
-                ))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(newsResponses, pageRequest, newsPage.getTotalElements());
-    }
+    public Page<NewsReponse> buscarNoticiasComFiltros(
+        List<String> titles, List<String> contents, List<String> authors, 
+        List<String> portals, LocalDate dataStart, LocalDate dataEnd, 
+        PageRequest pageRequest) {
     
+    Page<News> newsPage = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd), pageRequest);
+
+    if (newsPage.getContent().isEmpty()) {
+        throw new CustomNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Termo Especificado Não encontrado."));
+    }
+
+    List<NewsReponse> newsResponses = newsPage.getContent().stream()
+            .map(news -> new NewsReponse(
+                    news.getNewsTitle(),
+                    news.getNewsContent(),
+                    news.getNewsRegistryDate(),
+                    getAuthorName(news),
+                    news.getSourceNews().getSrcName(),
+                    news.getSourceNews().getAddress(),
+                    news.getNewAddress()
+            ))
+            .collect(Collectors.toList());
+
+    return new PageImpl<>(newsResponses, pageRequest, newsPage.getTotalElements());
+}
     
 }
