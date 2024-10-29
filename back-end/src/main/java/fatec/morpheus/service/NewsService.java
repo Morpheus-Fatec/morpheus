@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,11 +13,9 @@ import org.springframework.stereotype.Service;
 
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsReponse;
-import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
-
 @Service
 public class NewsService {
 
@@ -71,48 +68,24 @@ public class NewsService {
         return newsSourceRepository.existsByAddress(address);
     }
 
-    // public List<NewsReponse> buscarNoticiasComFiltros(String titulo, String conteudo, String autor, String portal, LocalDate dataInicio, LocalDate dataFim) {
-    //     return newsRepository
-    //             .findAll(NewsSpecification.comFiltros(titulo, conteudo, autor, portal, dataInicio, dataFim)) // Chamada ajustada
-    //             .stream()
-    //             .map(news -> new NewsReponse( 
-    //                 news.getNewsTitle(),
-    //                 news.getNewsContent(),
-    //                 news.getNewsRegistryDate(),
-    //                 getAuthorName(news),
-    //                 news.getSourceNews().getSrcName(),
-    //                 news.getSourceNews().getAddress(),
-    //                 news.getNewAddress()
-    //             ))
-    //             .collect(Collectors.toList());
-    // }
-
-    public List<NewsReponse> buscarNoticiasComFiltros(String titulo, String conteudo, String autor, String portal, LocalDate dataInicio, LocalDate dataFim) {
-        return newsRepository
-                .findAll(NewsSpecification.comFiltros(titulo, conteudo, autor, portal, dataInicio, dataFim))
-                .stream()
-                .map(news -> {
-                    List<String> srcNames = news.getSourceNews().stream()
-                            .map(NewsSource::getSrcName) // Recupera o nome da fonte
-                            .distinct() // Remove duplicatas, se necessário
-                            .collect(Collectors.toList());
+    public List<NewsReponse> buscarNoticiasComFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd) {
+        List<News> noticias = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd));
     
-                    List<String> srcAddresses = news.getSourceNews().stream()
-                            .map(NewsSource::getAddress) // Recupera o endereço da fonte
-                            .distinct() // Remove duplicatas, se necessário
-                            .collect(Collectors.toList());
+        return noticias.stream()
+                .map(news -> {
+                    String srcName = news.getSourceNews().getSrcName();
+                    String srcAddress = news.getSourceNews().getAddress();
     
                     return new NewsReponse(
                         news.getNewsTitle(),
                         news.getNewsContent(),
                         news.getNewsRegistryDate(),
                         getAuthorName(news),
-                        srcNames,
-                        srcAddresses,
+                        srcName,
+                        srcAddress,
                         news.getNewAddress()
                     );
                 })
                 .collect(Collectors.toList());
     }
-    
 }

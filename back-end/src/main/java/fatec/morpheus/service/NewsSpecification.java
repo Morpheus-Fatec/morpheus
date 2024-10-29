@@ -2,6 +2,7 @@ package fatec.morpheus.service;
 
 import java.time.LocalDate;
 
+import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import fatec.morpheus.entity.News;
@@ -9,31 +10,49 @@ import jakarta.persistence.criteria.Predicate;
 
 public class NewsSpecification {
 
-    public static Specification<News> comFiltros(String titulo, String conteudo, String autor, String portal, LocalDate dataInicio, LocalDate dataFim) {
+    public static Specification<News> comFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-
-            if (titulo != null && !titulo.isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("newsTitle"), "%" + titulo + "%"));
+    
+            if (titles != null && !titles.isEmpty()) {
+                Predicate titlePredicate = criteriaBuilder.disjunction();
+                for (String title : titles) {
+                    titlePredicate = criteriaBuilder.or(titlePredicate, criteriaBuilder.like(root.get("newsTitle"), "%" + title + "%"));
+                }
+                predicate = criteriaBuilder.and(predicate, titlePredicate);
             }
-
-            if (conteudo != null && !conteudo.isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("newsContent"), "%" + conteudo + "%"));
+    
+            if (contents != null && !contents.isEmpty()) {
+                Predicate contentPredicate = criteriaBuilder.disjunction();
+                for (String content : contents) {
+                    contentPredicate = criteriaBuilder.or(contentPredicate, criteriaBuilder.like(root.get("newsContent"), "%" + content + "%"));
+                }
+                predicate = criteriaBuilder.and(predicate, contentPredicate);
             }
-
-            if (autor != null && !autor.isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("newsAuthor").get("autName"), "%" + autor + "%"));
+    
+            if (authors != null && !authors.isEmpty()) {
+                Predicate authorPredicate = criteriaBuilder.disjunction();
+                for (String author : authors) {
+                    authorPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.like(root.get("newsAuthor").get("autName"), "%" + author + "%"));
+                }
+                predicate = criteriaBuilder.and(predicate, authorPredicate);
             }
-
-            if (portal != null && !portal.isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("sourceNews").get("srcName"), "%" + portal + "%"));
+    
+            if (portals != null && !portals.isEmpty()) {
+                Predicate sourcePredicate = criteriaBuilder.disjunction();
+                for (String portal : portals) {
+                    sourcePredicate = criteriaBuilder.or(sourcePredicate, criteriaBuilder.like(root.get("sourceNews").get("srcName"), "%" + portal + "%"));
+                }
+                predicate = criteriaBuilder.and(predicate, sourcePredicate);
             }
-
-            if (dataInicio != null && dataFim != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.between(root.get("newsRegistryDate"), dataInicio, dataFim));
+    
+            if (dataStart != null && dataEnd != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.between(root.get("newsRegistryDate"), dataStart, dataEnd));
             }
-
+    
             return predicate;
         };
     }
+    
+
 }
