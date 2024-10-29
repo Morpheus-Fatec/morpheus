@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -68,25 +70,22 @@ public class NewsService {
         return newsSourceRepository.existsByAddress(address);
     }
 
-    public List<NewsReponse> buscarNoticiasComFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd) {
-        List<News> listNews = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd));
-    
-        return listNews.stream()
-        .map((News news) -> {
-            String srcName = news.getSourceNews().getSrcName();
-            String srcAddress = news.getSourceNews().getAddress();
+    public Page<NewsReponse> buscarNoticiasComFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd, PageRequest pageRequest) {
+        Page<News> newsPage = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd),  pageRequest);
 
-            return new NewsReponse(
-                news.getNewsTitle(),
-                news.getNewsContent(),
-                news.getNewsRegistryDate(),
-                getAuthorName(news),
-                srcName,
-                srcAddress,
-                news.getNewAddress()
-            );
-        })
-        .collect(Collectors.toList());
+        List<NewsReponse> newsResponses = newsPage.getContent().stream()
+                .map(news -> new NewsReponse(
+                        news.getNewsTitle(),
+                        news.getNewsContent(),
+                        news.getNewsRegistryDate(),
+                        getAuthorName(news),
+                        news.getSourceNews().getSrcName(),
+                        news.getSourceNews().getAddress(),
+                        news.getNewAddress()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(newsResponses, pageRequest, newsPage.getTotalElements());
     }
     
     
