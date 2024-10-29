@@ -17,22 +17,16 @@ public class NewsFilterController {
     @Autowired
     private NewsService newsService;
 
-
     @GetMapping("/search")
-    public ResponseEntity<List<NewsReponse>> searchNews(
-            @RequestParam(required = false) List<String> titles,
-            @RequestParam(required = false) List<String> contents,
-            @RequestParam(required = false) List<String> authors,
-            @RequestParam(required = false) List<String> portals,
-            @RequestParam(required = false) LocalDate dataStart,
-            @RequestParam(required = false) LocalDate dataEnd) {
-        
+    public ResponseEntity<List<NewsReponse>> getNoticias(
+        @RequestParam(required = false) List<String> titles,
+        @RequestParam(required = false) List<String> contents,
+        @RequestParam(required = false) List<String> authors,
+        @RequestParam(required = false) List<String> portals,
+        @RequestParam(required = false) LocalDate dataStart,
+        @RequestParam(required = false) LocalDate dataEnd) {
+    
         List<NewsReponse> noticias = newsService.buscarNoticiasComFiltros(titles, contents, authors, portals, dataStart, dataEnd);
-        
-        if (noticias.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
-        }
-        
-        return new ResponseEntity<>(noticias, HttpStatus.OK);
+        return ResponseEntity.ok(noticias);
     }
 }

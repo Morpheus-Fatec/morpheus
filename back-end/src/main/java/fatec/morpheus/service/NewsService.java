@@ -69,23 +69,25 @@ public class NewsService {
     }
 
     public List<NewsReponse> buscarNoticiasComFiltros(List<String> titles, List<String> contents, List<String> authors, List<String> portals, LocalDate dataStart, LocalDate dataEnd) {
-        List<News> noticias = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd));
+        List<News> listNews = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd));
     
-        return noticias.stream()
-                .map(news -> {
-                    String srcName = news.getSourceNews().getSrcName();
-                    String srcAddress = news.getSourceNews().getAddress();
-    
-                    return new NewsReponse(
-                        news.getNewsTitle(),
-                        news.getNewsContent(),
-                        news.getNewsRegistryDate(),
-                        getAuthorName(news),
-                        srcName,
-                        srcAddress,
-                        news.getNewAddress()
-                    );
-                })
-                .collect(Collectors.toList());
+        return listNews.stream()
+        .map((News news) -> {
+            String srcName = news.getSourceNews().getSrcName();
+            String srcAddress = news.getSourceNews().getAddress();
+
+            return new NewsReponse(
+                news.getNewsTitle(),
+                news.getNewsContent(),
+                news.getNewsRegistryDate(),
+                getAuthorName(news),
+                srcName,
+                srcAddress,
+                news.getNewAddress()
+            );
+        })
+        .collect(Collectors.toList());
     }
+    
+    
 }

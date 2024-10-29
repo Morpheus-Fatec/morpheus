@@ -33,7 +33,7 @@ public class NewsSpecification {
             if (authors != null && !authors.isEmpty()) {
                 Predicate authorPredicate = criteriaBuilder.disjunction();
                 for (String author : authors) {
-                    authorPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.like(root.get("newsAuthor").get("autName"), "%" + author + "%"));
+                    authorPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.like(root.join("newsAuthor").get("new_aut_name"), "%" + author + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, authorPredicate);
             }
@@ -41,7 +41,7 @@ public class NewsSpecification {
             if (portals != null && !portals.isEmpty()) {
                 Predicate sourcePredicate = criteriaBuilder.disjunction();
                 for (String portal : portals) {
-                    sourcePredicate = criteriaBuilder.or(sourcePredicate, criteriaBuilder.like(root.get("sourceNews").get("srcName"), "%" + portal + "%"));
+                    sourcePredicate = criteriaBuilder.or(sourcePredicate, criteriaBuilder.like(root.join("sourceNews").get("srcName"), "%" + portal + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, sourcePredicate);
             }
@@ -53,6 +53,7 @@ public class NewsSpecification {
             return predicate;
         };
     }
+    
     
 
 }
