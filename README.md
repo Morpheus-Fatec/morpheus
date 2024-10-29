@@ -98,13 +98,13 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 | B             | Analista | Gerenciar tags, sendo essas conteúdos textuais livres, considerando regionalismo e palavras polissêmicas                                                                                             | 1      | Alta       | -           | III           |
 | C             | Analista | Tratar sinônimos de tags, para que a aplicação possa contemplar regionalismo nos textos das tags                                                                                                      | 2      | Alta       | B           | VI            |
 | D             | Analista | Registrar dados provenientes de portais de notícias                                                                                                                                                   | 2      | Média      | C           | VII e IV      |
-| F             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado  | 3      | Média      | D           | VII e VI      |
-| G             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando filtros referentes aos dados de um portal de notícias                                                        | 3      | Média      | D           | VII e VI      |
-| H             | Analista | Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços                                                  | 4      | Baixa      | -           | II            |
-| I             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           | VIII e IV     |
-| J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           | VII e VI      |
-| K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           | VII e VI      |
-| L             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
+| E             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado  | 3      | Média      | D           | VII e VI      |
+| F             | Analista | Filtrar os dados de uma consulta de dados provenientes de portais de notícias, utilizando filtros referentes aos dados de um portal de notícias                                                        | 3      | Média      | D           | VII e VI      |
+| G             | Analista | Gerenciar fontes de dados provenientes de APIs (Interface de Programação de Aplicações) por meio de uma interface que me permita cadastrar endereços                                                  | 4      | Baixa      | -           | II            |
+| H             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           | VIII e IV     |
+| I             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           | VII e VI      |
+| J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           | VII e VI      |
+|              | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
 
 <a href="/documentation/documentation.md" target="_blank">
     <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
@@ -117,34 +117,30 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint2.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint3.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
 <br>
 
-## Board de Atividades
+## :clipboard: Board de Atividades
 
 Acesse o Board de atividades do Time para visualizar as atividades planejadas, em desenvolvimento e prontas.
 
-[Board de Atividades](https://github.com/orgs/Morpheus-Fatec/projects/1/views/1)
-
-<br>
-
-## :page_with_curl: <a id="documentação"> Documentação </a>
-
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
-
-### Estrutura da Documentação:
-- **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
-- **[API](./documentation/api/)**: Contém a especificação da API, exemplos de requisições e respostas, e guias de autenticação.
-- **[Manuais](./documentation/manuals/)**: Contém manuais do usuário, guias de instalação, configuração e resolução de problemas.
-- **[Imagens](./documentation/images/)**: Contém imagens de utilização geral no projeto.
+<a href="https://github.com/orgs/Morpheus-Fatec/projects/1/views/1" target="_blank">
+    <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
+        Board de Atividades
+    </button>
+</a>
 
 <br>
 
 ## :page_with_curl: Documentação
 
-Todo o material relacionado à documentação do projeto pode ser encontrado no diretório [documentação](./documentation/).
+<a href="./documentation/" target="_blank">
+    <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
+        Documentação do Projeto
+    </button>
+</a>
 
 ### Estrutura da Documentação:
 - **[Diagrams](./documentation/diagrams/)**: Contém os diagramas e esquemas do projeto, incluindo o Diagrama Entidade-Relacionamento (DER) e diagramas de arquitetura.
@@ -155,6 +151,7 @@ Todo o material relacionado à documentação do projeto pode ser encontrado no 
 ## :bookmark: <a id="tecnologias-utilizadas"> Tecnologias Utilizadas </a>
 > * [Java](https://www.java.com/pt-BR/) - Versão 21
 > * [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) - Versão ES6+
+> * [Bootstrap](https://getbootstrap.com/) - Versão 5.3.3
 > * [MySQL](https://www.mysql.com/) - Versão 8.0
 > * [JDBC MySQL](https://dev.mysql.com/downloads/connector/j/) - Versão 8.0.26
 > * [Maven](https://maven.apache.org/) - Versão 3.8.1
