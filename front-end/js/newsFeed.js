@@ -56,7 +56,8 @@ const app = Vue.createApp({
                             srcName: element.srcName,
                             scrAddress: element.srcAddress,
                             autName: element.autName,  
-                            newsRegistryDate: element.newsRegistryDate  
+                            newsRegistryDate: element.newsRegistryDate,
+                            srcURL: element.srcURL
                         };
                         this.newsList.push(itemAdd);
                     });
