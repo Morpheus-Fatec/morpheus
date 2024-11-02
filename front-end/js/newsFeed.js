@@ -39,6 +39,24 @@ const app = Vue.createApp({
                     }
             },
 
+            filters:{
+                portal:{
+                    items: [],
+                    selectItems: []
+                },
+
+                authors:{
+                    items: [],
+                    selectItems: []
+                },
+
+                date:{
+                    start: " ",
+                    end: " ",
+                }
+            },
+            sourceFilters:[]
+
         };
     },
 
@@ -64,6 +82,8 @@ const app = Vue.createApp({
                     this.pagination.totalElements = data.totalElements;
         
                     this.newsFilter();
+                    this.initChoices();
+                    this.populateFilterPortal();
                 })
                 .catch(error => {
                     this.newsMontedAlert('danger','Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde','Erro ao carregar notícias!');
@@ -72,6 +92,26 @@ const app = Vue.createApp({
                     this.isLoading = false;
                     });
 
+
+        },
+
+        srcLoad(){
+            axios.get('http://localhost:8080/morpheus/source')
+            .then(response => {
+                this.sourceFilters = [];
+     
+                response.data.forEach(portalNoticia => {
+
+                    const itemAdd = new Object();
+                    itemAdd.code = portalNoticia.code;
+                    itemAdd.name = portalNoticia.srcName;
+                    this.sourceFilters.push(itemAdd);
+                });
+           
+            })
+            .catch(error => {
+                this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
+            });
 
         },
 
@@ -128,9 +168,39 @@ const app = Vue.createApp({
             this.sourceNews.search.sort.order = this.sourceNews.search.sort.order === 'asc' ? 'desc' : 'asc';
             this.newsFilter();
         },
+
+        populateFilterPortal() {
+            const srcNames = [...new Set(this.newsList.map(element => element.srcName))];
+            this.filters.portal.items = srcNames;
+        },
+
+        initChoices() {
+            const choices = new Choices('#choices-select', {
+                removeItemButton: true,
+                addItems: true,
+                duplicateItemsAllowed: false,
+                paste: true,
+                editItems: true,
+                allowHTML: true
+            });
+        
+            // Limpa as opções existentes e adiciona as novas opções ao seletor
+            choices.clearStore();
+            this.sourceFilters.forEach(item => {
+                choices.setChoices([{ value: item.code, label: item.name }], 'value', 'label', false);
+            });
+        
+            // Evento para capturar as opções selecionadas ou adicionadas
+            choices.passedElement.element.addEventListener('change', (event) => {
+                // Captura apenas os valores dos itens selecionados
+                this.filters.portal.selectedItems = Array.from(event.target.selectedOptions).map(option => ({
+                    value: option.value,
+                    label: option.textContent
+                }));
+            });
     
     },
-
+    },
 
     
 
@@ -140,9 +210,10 @@ const app = Vue.createApp({
         }
     },
 
+
     mounted() {
         this.newsLoad();
-    }
+    },
 });
 
 app.mount('#app');
