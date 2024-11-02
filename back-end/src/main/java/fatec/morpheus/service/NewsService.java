@@ -71,7 +71,7 @@ public class NewsService {
     public Page<NewsReponse> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
         
-        Page<News> pageResult = newsRepository.findAll(NewsSpecification.comFiltros(request), pageable);
+        Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
         return pageResult.map(news -> {
             String srcName = news.getSourceNews().getSrcName();

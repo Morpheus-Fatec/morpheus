@@ -31,8 +31,8 @@ public class NewsFilterController {
     @PostMapping("/search")
     public ResponseEntity<Map<String, Object>> getNoticias(
         @RequestBody NewsSearchRequest request,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "1") int items) {
+        @RequestParam(defaultValue = "2") int page,
+        @RequestParam(defaultValue = "10") int items) {
 
         Page<NewsReponse> newsPage = newsService.findNewsWithFilter(request, page -1, items);
         

@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.Predicate;
 
 public class NewsSpecification {
 
-    public static Specification<News> comFiltros(NewsSearchRequest request) {
+    public static Specification<News> withFilter(NewsSearchRequest request) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
     
