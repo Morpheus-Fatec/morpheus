@@ -1,25 +1,23 @@
 package fatec.morpheus.service;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.DTO.NewsSearchRequest;
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsReponse;
 import fatec.morpheus.entity.PaginatedNewsResponse;
-import fatec.morpheus.exception.CustomNotFoundException;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
+
 @Service
 public class NewsService {
 
@@ -28,15 +26,13 @@ public class NewsService {
 
     @Autowired
     private NewsSourceRepository newsSourceRepository;
-    
+
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
-        
-        Page<News> newsPage = newsRepository.findAll(pageable); 
+        Page<News> newsPage = newsRepository.findAll(pageable);
         
         List<NewsReponse> responseDTOs = new ArrayList<>();
         
-
         for (News news : newsPage) {
             String newsTitle = news.getNewsTitle();
             String newsContent = news.getNewsContent();
@@ -52,7 +48,7 @@ public class NewsService {
         
         return new PaginatedNewsResponse(
             responseDTOs,
-            newsPage.getTotalPages(), 
+            newsPage.getTotalPages(),
             newsPage.getTotalElements()
         );
     }
@@ -64,7 +60,7 @@ public class NewsService {
         return null;
     }
 
-    public void saveNews(News newNew){
+    public void saveNews(News newNew) {
         newsRepository.save(newNew);
     }
 
@@ -72,30 +68,25 @@ public class NewsService {
         return newsSourceRepository.existsByAddress(address);
     }
 
-    public Page<NewsReponse> buscarNoticiasComFiltros(
-        List<String> titles, List<String> contents, List<String> authors, 
-        List<String> portals, LocalDate dataStart, LocalDate dataEnd, 
-        PageRequest pageRequest) {
-    
-    Page<News> newsPage = newsRepository.findAll(NewsSpecification.comFiltros(titles, contents, authors, portals, dataStart, dataEnd), pageRequest);
-
-    if (newsPage.getContent().isEmpty()) {
-        throw new CustomNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Termo Especificado Não encontrado."));
+    public Page<NewsReponse> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
+        
+        Page<News> pageResult = newsRepository.findAll(NewsSpecification.comFiltros(request), pageable);
+        
+        return pageResult.map(news -> {
+            String srcName = news.getSourceNews().getSrcName();
+            String srcAddress = news.getSourceNews().getAddress();
+            
+            return new NewsReponse(
+                news.getNewsTitle(),
+                news.getNewsContent(),
+                news.getNewsRegistryDate(),
+                getAuthorName(news),
+                srcName,
+                srcAddress,
+                news.getNewAddress()
+            );
+        });
     }
-
-    List<NewsReponse> newsResponses = newsPage.getContent().stream()
-            .map(news -> new NewsReponse(
-                    news.getNewsTitle(),
-                    news.getNewsContent(),
-                    news.getNewsRegistryDate(),
-                    getAuthorName(news),
-                    news.getSourceNews().getSrcName(),
-                    news.getSourceNews().getAddress(),
-                    news.getNewAddress()
-            ))
-            .collect(Collectors.toList());
-
-    return new PageImpl<>(newsResponses, pageRequest, newsPage.getTotalElements());
-}
     
 }
