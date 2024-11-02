@@ -8,13 +8,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NewsSearchRequest {
-    private List<String> textSearch;      
-    private List<String> sourcesOrigin;    
-    private List<String> titleSearch;      
+public class NewsSearchRequest {  
+    private int[] sourcesOrigin; 
+    private int[] author;  
+    private List<String> titleSearch;  
+    private List<String> textSearch;    
     private LocalDate dateStart;           
     private LocalDate dateEnd;             
-    private List<String> author;           
-
+  
 }
 
