@@ -17,6 +17,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CustomNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCustomNotFound(CustomNotFoundException ex) { 
+        return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(UniqueConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleUniqueConstraint(UniqueConstraintViolationException ex) {
         return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.CONFLICT);
