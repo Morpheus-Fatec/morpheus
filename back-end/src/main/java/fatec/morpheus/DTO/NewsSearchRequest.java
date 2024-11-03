@@ -19,7 +19,9 @@ public class NewsSearchRequest {
     private List<String> titleSearch;  
     private List<String> textSearch;    
     private LocalDate dateStart;           
-    private LocalDate dateEnd;             
+    private LocalDate dateEnd;
+    private int totalPages;  
+    private long totalElements;               
   
 }
 
