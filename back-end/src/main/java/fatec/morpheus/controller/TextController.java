@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fatec.morpheus.DTO.TextDTO;
 import fatec.morpheus.entity.Synonymous;
 import fatec.morpheus.entity.Text;
+import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.service.SynonymousService;
 import fatec.morpheus.service.TextService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,9 +57,8 @@ public class TextController {
     public ResponseEntity<Text> getTextById(@PathVariable Integer id) {
         return textService.findTextById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NotFoundException(id, "Texto"));
     }
-
 
     @Operation(summary = "Metodo para listar todos os textos com seus sinonimos", description = "Lista todos os textos")
     @ApiResponses(value = {
