@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fatec.morpheus.entity.Tag;
+import fatec.morpheus.entity.Text;
+import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,7 +62,8 @@ public class TagController {
     @GetMapping("/tagName/{name}")
     public ResponseEntity<Tag> getTagByName(@PathVariable String name){
         Optional<Tag> tag = tagService.tagFindByName(name);
-        return tag.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return tag.map(ResponseEntity::ok)
+                  .orElseThrow(() -> new NotFoundException(name, "tag"));
     }
 
     @Operation(summary= "", description = "Busca uma tag pelo ID")
@@ -71,7 +74,7 @@ public class TagController {
     @GetMapping("/{id}")
     public ResponseEntity<Tag> getTagById(@PathVariable Integer id) {
         Optional<Tag> tag = tagService.tagFindById(id);
-        return tag.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return tag.map(ResponseEntity::ok).orElseThrow(() -> new NotFoundException(id, "Tag"));
     }
     
     @Operation(summary= "", description = "Atualiza uma tag")
