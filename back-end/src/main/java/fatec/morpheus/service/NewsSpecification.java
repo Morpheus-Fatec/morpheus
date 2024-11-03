@@ -41,7 +41,7 @@ public class NewsSpecification {
             if (request.getDateStart() != null && request.getDateEnd() != null) {
                 predicate = criteriaBuilder.and(predicate, 
                     criteriaBuilder.between(root.get("newsRegistryDate"), request.getDateStart(), request.getDateEnd()));
-            }
+            } 
 
             return predicate;
         };
