@@ -15,7 +15,7 @@ public class NewsSpecification {
             if (request.getTitleSearch() != null && !request.getTitleSearch().isEmpty()) {
                 Predicate titlePredicate = criteriaBuilder.disjunction();
                 for (String title : request.getTitleSearch()) {
-                    titlePredicate = criteriaBuilder.or(titlePredicate, criteriaBuilder.like(root.get("newsTitle"), "%" + title + "%"));
+                    titlePredicate = criteriaBuilder.or(titlePredicate, criteriaBuilder.like(root.get("new_title"), "%" + title + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, titlePredicate);
             }
@@ -23,29 +23,29 @@ public class NewsSpecification {
             if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
                 Predicate contentPredicate = criteriaBuilder.disjunction();
                 for (String content : request.getTextSearch()) {
-                    contentPredicate = criteriaBuilder.or(contentPredicate, criteriaBuilder.like(root.get("newsContent"), "%" + content + "%"));
+                    contentPredicate = criteriaBuilder.or(contentPredicate, criteriaBuilder.like(root.get("new_content"), "%" + content + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, contentPredicate);
             }
     
-            if (request.getAuthor() != null && !request.getAuthor().isEmpty()) {
+            if (request.getAuthor().length != 0) {
                 Predicate authorPredicate = criteriaBuilder.disjunction();
-                for (String authorName : request.getAuthor()) {
-                    authorPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.like(root.join("newsAuthor").get("new_aut_name"), "%" + authorName + "%")); // Ajuste para o campo correto
+                for (int authorId : request.getAuthor()) {
+                    authorPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.equal(root.join("newsAuthor").get("new_aut_id"), authorId));
                 }
                 predicate = criteriaBuilder.and(predicate, authorPredicate);
             }
     
-            if (request.getSourcesOrigin() != null && !request.getSourcesOrigin().isEmpty()) {
+            if (request.getSourcesOrigin().length !=0) {
                 Predicate sourcePredicate = criteriaBuilder.disjunction();
-                for (String sourceName : request.getSourcesOrigin()) {
-                    sourcePredicate = criteriaBuilder.or(sourcePredicate, criteriaBuilder.like(root.join("sourceNews").get("srcName"), "%" + sourceName + "%")); // Ajuste para o campo correto
+                for (int sourceId : request.getSourcesOrigin()) {
+                    sourcePredicate = criteriaBuilder.or(sourcePredicate, criteriaBuilder.equal(root.join("sourceNews").get("code"), sourceId));
                 }
                 predicate = criteriaBuilder.and(predicate, sourcePredicate);
             }
     
             if (request.getDateStart() != null && request.getDateEnd() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.between(root.get("newsRegistryDate"), request.getDateStart(), request.getDateEnd()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.between(root.get("src_registry_date"), request.getDateStart(), request.getDateEnd()));
             }
     
             return predicate;
