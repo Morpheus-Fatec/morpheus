@@ -9,6 +9,8 @@ import fatec.morpheus.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 
 import java.util.HashMap;
@@ -29,17 +31,12 @@ public class NewsFilterController {
     })
     
     @PostMapping("/search")
-    public ResponseEntity<Map<String, Object>> getNoticias(
-        @RequestBody NewsSearchRequest request,
-        @RequestParam(defaultValue = "2") int page,
-        @RequestParam(defaultValue = "10") int items) {
-
-        Page<NewsReponse> newsPage = newsService.findNewsWithFilter(request, page -1, items);
+    public ResponseEntity<Map<String, Object>> getNews(
+        @RequestBody @Valid NewsSearchRequest request,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "50") int items) {
         
-        Map<String, Object> response = new HashMap<>();
-        response.put("news", newsPage.getContent());
-        response.put("totalItems", newsPage.getTotalElements());
-        response.put("totalPages", newsPage.getTotalPages());
+        Map<String, Object> response = newsService.findNewsWithFilter(request, page - 1, items);
         
         return ResponseEntity.ok(response);
     }

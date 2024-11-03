@@ -2,7 +2,12 @@ package fatec.morpheus.service;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,12 +73,12 @@ public class NewsService {
         return newsSourceRepository.existsByAddress(address);
     }
 
-    public Page<NewsReponse> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
+    public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
         
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
-        return pageResult.map(news -> {
+        List<NewsReponse> newsResponses = pageResult.stream().map(news -> {
             String srcName = news.getSourceNews().getSrcName();
             String srcAddress = news.getSourceNews().getAddress();
             
@@ -81,12 +86,21 @@ public class NewsService {
                 news.getNewsTitle(),
                 news.getNewsContent(),
                 news.getNewsRegistryDate(),
-                getAuthorName(news),
+                news.getNewsAuthor().getAutName(),
                 srcName,
                 srcAddress,
                 news.getNewAddress()
             );
-        });
+        }).collect(Collectors.toList());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("news", newsResponses);   
+        response.put("totalPages", pageResult.getTotalPages());   
+        response.put("totalElements", pageResult.getTotalElements());
+        
+        return response;
     }
     
+    
+
 }
