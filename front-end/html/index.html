@@ -320,7 +320,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="tag in tags.filtered" :key="tag.id">
+                                    <tr v-for="tag in tags.filtered" :key="tag.code">
                                         <td>
                                             <span v-if="!tag.isEditing">{{ tag.tagName }}</span>
                                             <input v-if="tag.isEditing" v-model="tag.tagName" @blur="tagSave(tag)"
@@ -393,8 +393,8 @@
                                         <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
                                         <select id="selectOption1" class="form-select"
                                             v-model="sourceNews.tags.movedAdd" multiple size="15">
-                                            <option v-for="tag in unselectedTags" :key="tag.tagCod"
-                                                :value="tag.tagCod">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCode"
+                                                :value="tag.tagCode">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>
@@ -419,7 +419,7 @@
                                         <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
                                         <select id="selectOption2" class="form-select"
                                             v-model="sourceNews.tags.movedRemove" multiple size="15">
-                                            <option v-for="tag in selectedTags" :key="tag.tagCod" :value="tag.tagCod">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCode" :value="tag.tagCode">
                                                 {{ tag.tagName }}
                                             </option>
                                         </select>
@@ -566,7 +566,7 @@
                                         <tr v-if="regionalism.filtered.length === 0">
                                             <td colspan="2" class="text-center">Sem palavras encontradas</td>
                                         </tr>
-                                        <tr v-for="word in regionalism.filtered" :key="word.id">
+                                        <tr v-for="word in regionalism.filtered" :key="word.code">
                                             <td><span>{{ word.content }}</span></td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group">
@@ -606,11 +606,11 @@
                                     </div>
                                     <form>
                                         <div class="form-check" v-for="word in regionalism.wordSelected.filtered"
-                                            :key="word.id">
-                                            <input class="form-check-input" type="checkbox" :id="'word' + word.id"
+                                            :key="word.code">
+                                            <input class="form-check-input" type="checkbox" :id="'word' + word.code"
                                                 :value="word" :checked="isSynonymSelected(word)"
-                                                @change="toggleSynonym(word.id)" />
-                                            <label class="form-check-label" :for="'word' + word.id">
+                                                @change="toggleSynonym(word.code)" />
+                                            <label class="form-check-label" :for="'word' + word.code">
                                                 {{ word.content }}
                                             </label>
                                         </div>
