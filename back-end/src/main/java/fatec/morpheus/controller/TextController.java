@@ -72,8 +72,8 @@ public class TextController {
             return ResponseEntity.notFound().build();
         } else {
             List<TextDTO> textDTOs = texts.stream().map(text -> {
-                List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCod());
-                return new TextDTO(text.getTextDescription(), text.getTextCod(), synonyms);
+                List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCode());
+                return new TextDTO(text.getTextDescription(), text.getTextCode(), synonyms);
             }).collect(Collectors.toList());
             return ResponseEntity.ok(textDTOs);
         }
@@ -138,8 +138,8 @@ public class TextController {
         }
     
         Synonymous synonymous = new Synonymous();
-        synonymous.setTextCod(text1.getTextCod());
-        synonymous.setSynGroup(text2.getTextCod());
+        synonymous.setTextCod(text1.getTextCode());
+        synonymous.setSynGroup(text2.getTextCode());
     
         synonymousService.saveSynonymous(synonymous);
     
