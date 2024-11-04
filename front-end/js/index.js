@@ -332,7 +332,7 @@ const app = Vue.createApp({
             this.sourceNews.tags.movedAdd = [];
         },
         tagsForSourceNewsRemove() {
-            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCod => !this.sourceNews.tags.movedRemove.includes(tagCod));
+            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCode => !this.sourceNews.tags.movedRemove.includes(tagCode));
             this.sourceNews.tags.movedRemove = [];
         },
         tagsForSourceNewsCreateTag() {
@@ -394,7 +394,7 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tags.all = response.data.map(tag => ({
-                        tagCod: tag.tagCod,
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                 })
@@ -431,7 +431,7 @@ const app = Vue.createApp({
             tag.isSubmitted = true;
             if (tag.tagName) {
                 axios
-                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCod)}`, {
+                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCode)}`, {
                         tagName: tag.tagName
                     })
                     .then(response => {
@@ -453,7 +453,7 @@ const app = Vue.createApp({
         },
         tagConfirmDelete() {
             this.tags.delete.modal.hide();
-            const code = this.tags.delete.tagSelected.tagCod;
+            const code = this.tags.delete.tagSelected.tagCode;
             const endpoint = `http://localhost:8080/morpheus/tag/${code}`;
 
             axios.delete(endpoint)
@@ -736,7 +736,7 @@ const app = Vue.createApp({
     computed: {
         selectedTags() {
             return this.tags.all
-                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.selectedQuery ||
                         tag.tagName.toLowerCase().includes(this.tags.search.selectedQuery.toLowerCase());
@@ -746,7 +746,7 @@ const app = Vue.createApp({
         unselectedTags() {
   
             return this.tags.all
-                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.query ||
                         tag.tagName.toLowerCase().includes(this.tags.search.query.toLowerCase());
