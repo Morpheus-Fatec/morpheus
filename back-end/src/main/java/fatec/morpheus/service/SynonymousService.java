@@ -25,11 +25,11 @@ public class SynonymousService {
 
     @Transactional
     public void deleteRelationById(Integer textCod) {
-        synonymousRepository.deleteByTextCod(textCod);
+        synonymousRepository.deleteByText_TextCode(textCod);
         synonymousRepository.deleteBySynGroup(textCod);
     }
 
     public List<Synonymous> findByTextCodOrSynGroup(Integer textCod) {
-        return synonymousRepository.findByTextCodOrSynGroup(textCod, textCod);
+        return synonymousRepository.findByTextCodeOrSynGroup(textCod, textCod);
     }
 }

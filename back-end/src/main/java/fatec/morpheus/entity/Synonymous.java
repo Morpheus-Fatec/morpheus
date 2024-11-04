@@ -23,7 +23,7 @@ public class Synonymous {
 
     @Id
     @Column(name = "text_cod")
-    private int textCod;
+    private int textCode;
 
     @Id
     @Column(name = "syn_group")

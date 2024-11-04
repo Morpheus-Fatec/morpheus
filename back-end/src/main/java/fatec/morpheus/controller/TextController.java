@@ -96,7 +96,7 @@ public class TextController {
     
                     for (Integer synonymId : request.getSynonymIds()) {
                         Synonymous synonymous = new Synonymous();
-                        synonymous.setTextCod(id);
+                        synonymous.setTextCode(id);
                         synonymous.setSynGroup(synonymId);
                         synonymousService.saveSynonymous(synonymous);
                     }
@@ -138,7 +138,7 @@ public class TextController {
         }
     
         Synonymous synonymous = new Synonymous();
-        synonymous.setTextCod(text1.getTextCode());
+        synonymous.setTextCode(text1.getTextCode());
         synonymous.setSynGroup(text2.getTextCode());
     
         synonymousService.saveSynonymous(synonymous);
