@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaginatedNewsResponse {
-    private List<NewsReponse> news;
+public class PaginatedNewsResponse<T> {
+    private List<T> news;
     private int totalPages;
     private long totalElements;
 }
