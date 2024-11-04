@@ -597,7 +597,7 @@ const app = Vue.createApp({
                     words.forEach(word => {
                         let item = new Object();
                         item.content = word.content;
-                        item.id = word.id;
+                        item.code = word.code;
                         item.synonyms = word.synonyms;
                         this.regionalism.words.push(item);
                     });
@@ -656,7 +656,7 @@ const app = Vue.createApp({
         },
         saveWord() {
             this.isLoading = true;
-            const idWord = this.regionalism.wordSelected.word.id;
+            const idWord = this.regionalism.wordSelected.word.code;
             axios.put(`http://localhost:8080/texts/${idWord}`, {
                 synonymIds: this.regionalism.wordSelected.synonyms,
                 textoDescription: this.regionalism.wordSelected.word.content
@@ -695,7 +695,7 @@ const app = Vue.createApp({
                 });
         },
         isSynonymSelected(word) {
-            return this.regionalism.wordSelected.synonyms.includes(word.id);
+            return this.regionalism.wordSelected.synonyms.includes(word.code);
         },
         toggleSynonym(id) {
             const index = this.regionalism.wordSelected.synonyms.indexOf(id);
