@@ -81,6 +81,7 @@
                 </select>
                 <input type="text" class="form-control ms-2" v-model="news.search.query" @input="newsFilter"
                     placeholder="Pesquisar" style="flex-grow: 1;">
+<<<<<<< HEAD
 
                 <!-- botão do Offcanvas -->
                 <div class="col-auto ms-5">
@@ -90,6 +91,18 @@
                     </button>
                 </div>
             </div>
+=======
+
+                <!-- botão do Offcanvas -->
+                <div class="ms-10">
+                    <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
+                        role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary">
+                        <i class="bi bi-filter"></i> Filtros
+                    </button>
+                </div>
+            </div>
+
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
 
             <!-- Estrutura do Offcanvas -->
@@ -101,6 +114,7 @@
                 </div>
                 <div class="offcanvas-body">
                     <p>Filtros por portais</p>
+<<<<<<< HEAD
                     <div id="app" class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
@@ -146,8 +160,29 @@
                     </div>
             
                     <button type="button" class="btn btn-primary w-100" @click="filterData">Filtrar</button>
+=======
+                    <div id="app" class="container mt-2">
+                        <div class="row">
+                            <div class="col-md-15">
+                                <h7 class="mb-3">Selecione ou adicione um portal</h7>
+                                <select id="choices-select" class="form-select" multiple></select>
+                            </div>
+                        </div>
+                        <div class="col-md-15">
+                            <h7>Portais selecionados:</h7>
+                            <ul class="list-group">
+                                <!-- Exibe o label dos itens selecionados -->
+                                <li v-for="item in filters.portal.selectedItems" :key="item.value"
+                                    class="list-group-item">
+                                    {{ item.name }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 </div>
             </div>
+
 
             <div class="mt-3 d-flex justify-content-end align-items-center">
                 <div class="row g-3 align-items-center">

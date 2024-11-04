@@ -38,17 +38,27 @@ const app = Vue.createApp({
                 }
             },
 
+<<<<<<< HEAD
             filters: {
                 portal: {
+=======
+            filters:{
+                portal:{
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                     items: [],
                     selectItems: []
                 },
 
+<<<<<<< HEAD
                 authors: {
+=======
+                authors:{
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                     items: [],
                     selectItems: []
                 },
 
+<<<<<<< HEAD
                 date: {
                     dateRange: '',
                     dateWrite: '', 
@@ -65,6 +75,14 @@ const app = Vue.createApp({
             sourceFilters: [],
             authorFilters: [],
             tagFilters: [],
+=======
+                date:{
+                    start: " ",
+                    end: " ",
+                }
+            },
+            sourceFilters:[]
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
         };
     },
@@ -92,7 +110,13 @@ const app = Vue.createApp({
                     this.pagination.totalElements = data.totalElements;
 
                     this.newsFilter();
+<<<<<<< HEAD
                              })
+=======
+                    this.initChoices();
+                    this.populateFilterPortal();
+                })
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 .catch(error => {
                     throw error;
                     this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao carregar notícias!');
@@ -102,6 +126,7 @@ const app = Vue.createApp({
                 });
         },
 
+<<<<<<< HEAD
         srcLoad() {
             axios.get('http://localhost:8080/morpheus/source')
                 .then(response => {
@@ -144,6 +169,28 @@ const app = Vue.createApp({
                     this.rootMontedAlert('danger', 'tag');
                 })
         },
+=======
+        srcLoad(){
+            axios.get('http://localhost:8080/morpheus/source')
+            .then(response => {
+                this.sourceFilters = [];
+     
+                response.data.forEach(portalNoticia => {
+
+                    const itemAdd = new Object();
+                    itemAdd.code = portalNoticia.code;
+                    itemAdd.name = portalNoticia.srcName;
+                    this.sourceFilters.push(itemAdd);
+                });
+           
+            })
+            .catch(error => {
+                this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
+            });
+
+        },
+
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
         newsFilter() {
             const query = this.news.search.query.toLowerCase();
@@ -198,6 +245,7 @@ const app = Vue.createApp({
             this.newsFilter();
         },
 
+<<<<<<< HEAD
         initChoices() {
             if (this.sourceFilters.length) {
                 const choices = new Choices('#choices-select', {
@@ -223,11 +271,21 @@ const app = Vue.createApp({
 
         initChoicesAuthors(){
             const choicesAuthors = new Choices('#choices-select-authors', {
+=======
+        populateFilterPortal() {
+            const srcNames = [...new Set(this.newsList.map(element => element.srcName))];
+            this.filters.portal.items = srcNames;
+        },
+
+        initChoices() {
+            const choices = new Choices('#choices-select', {
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 removeItemButton: true,
                 addItems: true,
                 duplicateItemsAllowed: false,
                 paste: true,
                 editItems: true,
+<<<<<<< HEAD
                 allowHTML: true,
             });
 
@@ -306,6 +364,30 @@ const app = Vue.createApp({
 
         }
     },
+=======
+                allowHTML: true
+            });
+        
+            // Limpa as opções existentes e adiciona as novas opções ao seletor
+            choices.clearStore();
+            this.sourceFilters.forEach(item => {
+                choices.setChoices([{ value: item.code, label: item.name }], 'value', 'label', false);
+            });
+        
+            // Evento para capturar as opções selecionadas ou adicionadas
+            choices.passedElement.element.addEventListener('change', (event) => {
+                // Captura apenas os valores dos itens selecionados
+                this.filters.portal.selectedItems = Array.from(event.target.selectedOptions).map(option => ({
+                    value: option.value,
+                    label: option.textContent
+                }));
+            });
+    
+    },
+    },
+
+    
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
     computed: {
         filteredNews() {
@@ -313,14 +395,18 @@ const app = Vue.createApp({
         }
     },
 
+
     mounted() {
     
         this.newsLoad();
+<<<<<<< HEAD
         this.srcLoad();
         this.authorLoad();
         this.initDatePicker();
 
 
+=======
+>>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
     },
 });
 
