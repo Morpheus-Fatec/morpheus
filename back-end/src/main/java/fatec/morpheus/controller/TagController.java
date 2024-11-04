@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fatec.morpheus.entity.Tag;
-import fatec.morpheus.entity.Text;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
