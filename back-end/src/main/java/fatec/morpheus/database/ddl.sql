@@ -22,7 +22,7 @@ CREATE TABLE Map_source (
 
 create table Tag(
 	tag_cod int auto_increment primary key,
-    tag_name char(20) unique
+    tag_name char(50) unique
 );
 
 create table Source_tag(
@@ -37,7 +37,6 @@ create table Source_tag(
 create table News(
 	new_cod int auto_increment,
 	new_title char(70),
-   
 	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	new_aut_cod int,
     new_src_cod int,
@@ -47,12 +46,6 @@ create table News(
     primary key (new_cod)
 );
 
-create table News_tag(
-	new_cod int,
-	src_tag_cod int,
-	foreign key (new_cod) REFERENCES News(new_cod),
-	foreign key (src_tag_cod) REFERENCES Source_tag(src_tag_cod)
-);
 
 CREATE TABLE News_author (
     new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
