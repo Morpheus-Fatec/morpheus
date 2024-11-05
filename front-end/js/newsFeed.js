@@ -57,7 +57,11 @@ const app = Vue.createApp({
                     items: [],
                     selectItems: []
                 },
-                tags: {
+                tagsTitle: {
+                    items: [],
+                    selectItems: [],
+                },
+                tagsText: {
                     items: [],
                     selectItems: [],
                 }
@@ -96,7 +100,6 @@ const app = Vue.createApp({
                     this.newsFilter();
                 })
                 .catch(error => {
-                    throw error;
                     this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao carregar notícias!');
                 })
                 .finally(() => {
@@ -118,7 +121,7 @@ const app = Vue.createApp({
         },
 
         authorLoad() {
-            axios.get('https://morpheus-api21.free.beeceptor.com/todos')
+            axios.get('https://morpheus-api22.free.beeceptor.com/todos')
                 .then(response => {
                     this.authorFilters = response.data.map(author => ({
                         code: author.code,
@@ -131,7 +134,6 @@ const app = Vue.createApp({
                 });
         },
 
-
         tagsLoad() {
             this.tagFilters = [];
             axios.get('http://localhost:8080/morpheus/tag')
@@ -140,7 +142,8 @@ const app = Vue.createApp({
                         tagCod: tag.tagCod,
                         tagName: tag.tagName
                     }));
-                    this.initChoicesTags();
+                    this.choicesTagsText();
+                    this.choicesTagsTitle();
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'tag');
@@ -199,6 +202,7 @@ const app = Vue.createApp({
             this.news.search.sort.order = this.news.search.sort.order === 'asc' ? 'desc' : 'asc';
             this.newsFilter();
         },
+
         initChoices() {
             if (this.sourceFilters.length) {
                 const choices = new Choices('#choices-select', {
@@ -246,8 +250,8 @@ const app = Vue.createApp({
             });
         },
 
-        initChoicesTags(selector) {
-            const choicesTags = new Choices(selector, {
+        choicesTagsTitle() {
+            const choicesTagsTitle = new Choices('#choices-tags-title', {
                 removeItemButton: true,
                 addItems: true,
                 duplicateItemsAllowed: false,
@@ -255,42 +259,54 @@ const app = Vue.createApp({
                 editItems: true,
                 allowHTML: true,
             });
-        
-            choicesTags.clearStore();
-        
+            choicesTagsTitle.clearStore();
             this.tagFilters.forEach(item => {
-                choicesTags.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+                choicesTagsTitle.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
             });
-        
-            choicesTags.passedElement.element.addEventListener('change', (event) => {
-                this.filters.tags.selectItems = Array.from(event.target.selectedOptions).map(option => option.textContent);
+
+            choicesTagsTitle.passedElement.element.addEventListener('change', (event) => {
+                this.filters.tagsTitle.selectItems = Array.from(event.target.selectedOptions).map(option => option.textContent);
             });
         },
-        
+
+        choicesTagsText() {
+            const choicesTagsText = new Choices('#choices-tags-text', {
+                removeItemButton: true,
+                addItems: true,
+                duplicateItemsAllowed: false,
+                paste: true,
+                editItems: true,
+                allowHTML: true,
+            });
+            choicesTagsText.clearStore();
+            this.tagFilters.forEach(item => {
+                choicesTagsText.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+            });
+
+            choicesTagsText.passedElement.element.addEventListener('change', (event) => {
+                this.filters.tagsText.selectItems = Array.from(event.target.selectedOptions).map(option => option.textContent);
+            });
+        },
 
         insertionTitle() {
-            const choice = new Choices('#choices-tags-remove-button', {
+            const choicesTitle = new Choices('#choices-title-remove-button', {
                 removeItemButton: true,
                 delimiter: ','
             });
-            choice.passedElement.element.addEventListener('change', () => {
-                this.searchTitle = choice.getValue(true);
+            choicesTitle.passedElement.element.addEventListener('change', () => {
+                this.searchTitle = choicesTitle.getValue(true);
             });
         },
-
 
         insertionText() {
-            const choice = new Choices('#choices-text-remove-button', {
+            const choicesText = new Choices('#choices-text-remove-button', {
                 removeItemButton: true,
                 delimiter: ','
             });
-            choice.passedElement.element.addEventListener('change', () => {
-                this.searchText = choice.getValue(true);
+            choicesText.passedElement.element.addEventListener('change', () => {
+                this.searchText = choicesText.getValue(true);
             });
-
         },
-
-
 
         initDatePicker() {
             flatpickr("#dateRange", {
@@ -312,34 +328,30 @@ const app = Vue.createApp({
                         this.filters.date.dateRange = `${this.formatDate(selectedDates[0])} até ${this.formatDate(selectedDates[1])}`;
                         this.filters.date.dateInit = this.formatDate(selectedDates[0]);
                         this.filters.date.dateFinal = this.formatDate(selectedDates[1]);
-                        this.filters.date.dateWrite = this.filters.date.dateRange; // Atualiza o modelo de entrada
-                        this.filterData(); // Chame filterData após a seleção de datas
+                        this.filters.date.dateWrite = this.filters.date.dateRange;
                     } else {
                         this.filters.date.dateRange = '';
-                        this.filters.date.dateWrite = ''; // Limpa o campo se menos de duas datas forem selecionadas
+                        this.filters.date.dateWrite = '';
                     }
                 }
             });
         },
+
         formatDate(date) {
-            // Exemplo de formatação de data
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            return date.toLocaleDateString('pt-BR', options); // Formatação para o padrão brasileiro
+            return date.toLocaleDateString('pt-BR', options);
         },
 
-
         filterData() {
-            console.log(this.tagFilters)
 
-            const combinedTitleSearch = [
-                ...this.filters.tags.selectItems,
+            let combinedTitleSearch = [
+                ...this.filters.tagsTitle.selectItems,
                 ...this.searchTitle
             ];
-            const combinedTextSearch = [
-                ...this.filters.tags.selectItems,
+            let combinedTextSearch = [
+                ...this.filters.tagsText.selectItems,
                 ...this.searchText
             ];
-
 
             const dataFilter = {
                 textSearch: combinedTextSearch,
@@ -350,7 +362,7 @@ const app = Vue.createApp({
                 author: this.filters.authors.selectItems.map(item => item.value),
             };
 
-            axios.post('https://morpheus-api21.free.beeceptor.com/todos', dataFilter)
+            axios.post('https://morpheus-api22.free.beeceptor.com/todos', dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.filters.portal.selectItems = data.sourcesOrigin || this.filters.portal.selectItems;
@@ -360,11 +372,9 @@ const app = Vue.createApp({
                     combinedTextSearch = data.textSearch;
                     combinedTitleSearch = data.titleSearch;
                 })
-
                 .catch(error => {
                     console.error('Erro:', error);
                 });
-
         }
     },
 
@@ -374,17 +384,14 @@ const app = Vue.createApp({
         }
     },
 
-
     mounted() {
         this.newsLoad();
         this.srcLoad();
         this.authorLoad();
         this.tagsLoad();
         this.initDatePicker();
-        this.textInsertionTitle();
         this.insertionText();
-        this.initChoicesTags('#choices-select-tags'); // Filtro por título
-        this.initChoicesTags('#choices-select-tags-text'); // Filtro por texto
+        this.insertionTitle();
 
     },
 });
