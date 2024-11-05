@@ -37,53 +37,37 @@ const app = Vue.createApp({
                     desc: 'Por favor, preencha todos os campos obrigatórios.'
                 }
             },
-
-<<<<<<< HEAD
             filters: {
                 portal: {
-=======
-            filters:{
-                portal:{
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                     items: [],
                     selectItems: []
                 },
 
-<<<<<<< HEAD
                 authors: {
-=======
-                authors:{
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                     items: [],
                     selectItems: []
                 },
-
-<<<<<<< HEAD
                 date: {
                     dateRange: '',
-                    dateWrite: '', 
-                    dateInit:'',
-                    dateFinal:''
+                    dateWrite: '',
+                    dateInit: '',
+                    dateFinal: ''
                 },
-
                 title: {
                     items: [],
                     selectItems: []
                 },
+                tags: {
+                    items: [],
+                    selectItems: [],
+                }
             },
 
             sourceFilters: [],
             authorFilters: [],
             tagFilters: [],
-=======
-                date:{
-                    start: " ",
-                    end: " ",
-                }
-            },
-            sourceFilters:[]
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
-
+            searchTitle: [],
+            searchText: [],
         };
     },
 
@@ -110,13 +94,7 @@ const app = Vue.createApp({
                     this.pagination.totalElements = data.totalElements;
 
                     this.newsFilter();
-<<<<<<< HEAD
-                             })
-=======
-                    this.initChoices();
-                    this.populateFilterPortal();
                 })
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 .catch(error => {
                     throw error;
                     this.newsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao carregar notícias!');
@@ -125,8 +103,6 @@ const app = Vue.createApp({
                     this.isLoading = false;
                 });
         },
-
-<<<<<<< HEAD
         srcLoad() {
             axios.get('http://localhost:8080/morpheus/source')
                 .then(response => {
@@ -134,7 +110,7 @@ const app = Vue.createApp({
                         code: portalNoticia.code,
                         name: portalNoticia.srcName
                     }));
-                    this.initChoices(); 
+                    this.initChoices();
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'portal:Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
@@ -142,19 +118,19 @@ const app = Vue.createApp({
         },
 
         authorLoad() {
-            axios.get('https://morpheus-api20.free.beeceptor.com/todos')
+            axios.get('https://morpheus-api21.free.beeceptor.com/todos')
                 .then(response => {
                     this.authorFilters = response.data.map(author => ({
                         code: author.code,
                         name: author.name
                     }));
-                    this.initChoicesAuthors(); 
+                    this.initChoicesAuthors();
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'autor');
                 });
         },
-  
+
 
         tagsLoad() {
             this.tagFilters = [];
@@ -164,33 +140,12 @@ const app = Vue.createApp({
                         tagCod: tag.tagCod,
                         tagName: tag.tagName
                     }));
+                    this.initChoicesTags();
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'tag');
                 })
         },
-=======
-        srcLoad(){
-            axios.get('http://localhost:8080/morpheus/source')
-            .then(response => {
-                this.sourceFilters = [];
-     
-                response.data.forEach(portalNoticia => {
-
-                    const itemAdd = new Object();
-                    itemAdd.code = portalNoticia.code;
-                    itemAdd.name = portalNoticia.srcName;
-                    this.sourceFilters.push(itemAdd);
-                });
-           
-            })
-            .catch(error => {
-                this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
-            });
-
-        },
-
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
         newsFilter() {
             const query = this.news.search.query.toLowerCase();
@@ -244,8 +199,6 @@ const app = Vue.createApp({
             this.news.search.sort.order = this.news.search.sort.order === 'asc' ? 'desc' : 'asc';
             this.newsFilter();
         },
-
-<<<<<<< HEAD
         initChoices() {
             if (this.sourceFilters.length) {
                 const choices = new Choices('#choices-select', {
@@ -256,10 +209,10 @@ const app = Vue.createApp({
                     editItems: true,
                     allowHTML: true
                 });
-  
+
                 choices.clearStore();
                 choices.setChoices(this.sourceFilters, 'code', 'name', false);
-  
+
                 choices.passedElement.element.addEventListener('change', (event) => {
                     this.filters.portal.selectItems = Array.from(event.target.selectedOptions).map(option => ({
                         value: option.value,
@@ -269,27 +222,17 @@ const app = Vue.createApp({
             }
         },
 
-        initChoicesAuthors(){
+        initChoicesAuthors() {
             const choicesAuthors = new Choices('#choices-select-authors', {
-=======
-        populateFilterPortal() {
-            const srcNames = [...new Set(this.newsList.map(element => element.srcName))];
-            this.filters.portal.items = srcNames;
-        },
-
-        initChoices() {
-            const choices = new Choices('#choices-select', {
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 removeItemButton: true,
                 addItems: true,
                 duplicateItemsAllowed: false,
                 paste: true,
                 editItems: true,
-<<<<<<< HEAD
                 allowHTML: true,
             });
 
-           choicesAuthors.clearStore();
+            choicesAuthors.clearStore();
 
             this.authorFilters.forEach(item => {
                 choicesAuthors.setChoices([{ value: item.code, label: item.name }], 'value', 'label', false);
@@ -297,11 +240,56 @@ const app = Vue.createApp({
 
             choicesAuthors.passedElement.element.addEventListener('change', (event) => {
                 this.filters.authors.selectItems = Array.from(event.target.selectedOptions).map(option => ({
-                        value: option.value,
-                        label: option.textContent
-                    }));       
+                    value: option.value,
+                    label: option.textContent
+                }));
             });
         },
+
+        initChoicesTags(selector) {
+            const choicesTags = new Choices(selector, {
+                removeItemButton: true,
+                addItems: true,
+                duplicateItemsAllowed: false,
+                paste: true,
+                editItems: true,
+                allowHTML: true,
+            });
+        
+            choicesTags.clearStore();
+        
+            this.tagFilters.forEach(item => {
+                choicesTags.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+            });
+        
+            choicesTags.passedElement.element.addEventListener('change', (event) => {
+                this.filters.tags.selectItems = Array.from(event.target.selectedOptions).map(option => option.textContent);
+            });
+        },
+        
+
+        insertionTitle() {
+            const choice = new Choices('#choices-tags-remove-button', {
+                removeItemButton: true,
+                delimiter: ','
+            });
+            choice.passedElement.element.addEventListener('change', () => {
+                this.searchTitle = choice.getValue(true);
+            });
+        },
+
+
+        insertionText() {
+            const choice = new Choices('#choices-text-remove-button', {
+                removeItemButton: true,
+                delimiter: ','
+            });
+            choice.passedElement.element.addEventListener('change', () => {
+                this.searchText = choice.getValue(true);
+            });
+
+        },
+
 
 
         initDatePicker() {
@@ -341,53 +329,44 @@ const app = Vue.createApp({
 
 
         filterData() {
+            console.log(this.tagFilters)
+
+            const combinedTitleSearch = [
+                ...this.filters.tags.selectItems,
+                ...this.searchTitle
+            ];
+            const combinedTextSearch = [
+                ...this.filters.tags.selectItems,
+                ...this.searchText
+            ];
+
+
             const dataFilter = {
-                textSearch: [],
+                textSearch: combinedTextSearch,
                 sourcesOrigin: this.filters.portal.selectItems.map(item => item.value),
-                titleSearch: [],
+                titleSearch: combinedTitleSearch,
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal,
                 author: this.filters.authors.selectItems.map(item => item.value),
             };
 
-            axios.post('https://morpheus-api20.free.beeceptor.com/todos', dataFilter)
+            axios.post('https://morpheus-api21.free.beeceptor.com/todos', dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.filters.portal.selectItems = data.sourcesOrigin || this.filters.portal.selectItems;
                     this.filters.authors.selectItems = data.author || this.filters.authors.selectItems;
                     this.filters.date.dateInit = data.dateStart || this.filters.date.dateInit;
                     this.filters.date.dateFinal = data.dateEnds || this.filters.date.dateFinal;
-      })
+                    combinedTextSearch = data.textSearch;
+                    combinedTitleSearch = data.titleSearch;
+                })
+
                 .catch(error => {
                     console.error('Erro:', error);
                 });
 
         }
     },
-=======
-                allowHTML: true
-            });
-        
-            // Limpa as opções existentes e adiciona as novas opções ao seletor
-            choices.clearStore();
-            this.sourceFilters.forEach(item => {
-                choices.setChoices([{ value: item.code, label: item.name }], 'value', 'label', false);
-            });
-        
-            // Evento para capturar as opções selecionadas ou adicionadas
-            choices.passedElement.element.addEventListener('change', (event) => {
-                // Captura apenas os valores dos itens selecionados
-                this.filters.portal.selectedItems = Array.from(event.target.selectedOptions).map(option => ({
-                    value: option.value,
-                    label: option.textContent
-                }));
-            });
-    
-    },
-    },
-
-    
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
 
     computed: {
         filteredNews() {
@@ -397,16 +376,16 @@ const app = Vue.createApp({
 
 
     mounted() {
-    
         this.newsLoad();
-<<<<<<< HEAD
         this.srcLoad();
         this.authorLoad();
+        this.tagsLoad();
         this.initDatePicker();
+        this.textInsertionTitle();
+        this.insertionText();
+        this.initChoicesTags('#choices-select-tags'); // Filtro por título
+        this.initChoicesTags('#choices-select-tags-text'); // Filtro por texto
 
-
-=======
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
     },
 });
 

@@ -81,8 +81,6 @@
                 </select>
                 <input type="text" class="form-control ms-2" v-model="news.search.query" @input="newsFilter"
                     placeholder="Pesquisar" style="flex-grow: 1;">
-<<<<<<< HEAD
-
                 <!-- botão do Offcanvas -->
                 <div class="col-auto ms-5">
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
@@ -91,20 +89,6 @@
                     </button>
                 </div>
             </div>
-=======
-
-                <!-- botão do Offcanvas -->
-                <div class="ms-10">
-                    <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
-                        role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary">
-                        <i class="bi bi-filter"></i> Filtros
-                    </button>
-                </div>
-            </div>
-
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
-
-
             <!-- Estrutura do Offcanvas -->
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
@@ -114,21 +98,40 @@
                 </div>
                 <div class="offcanvas-body">
                     <p>Filtros por portais</p>
-<<<<<<< HEAD
                     <div id="app" class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
                                 <h6 class="mb-3 fs-6">Selecione os portais:</h6>
                                 <select id="choices-select" class="form-select" multiple></select>
                             </div>
+                        </div>
+                    </div>
+                    <p>Filtros por título</p>
+                    <div class="card mb-3">
+                        <div class="card-body">
                             <div class="col-md-15">
-                                <h6>Portais selecionados:</h6>
-                                <ul class="list-group">
-                                    <li v-for="item in filters.portal.selectItems" :key="item.value"
-                                        class="list-group-item">
-                                        {{ item.label }}
-                                    </li>
-                                </ul>
+                                <h6 class="mb-3 fs-6">Selecione as tags:</h6>
+                                <select id="choices-select-tags" class="form-select" multiple></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="choices-tags-remove-button" class="form-label">Adicione opções:</label>
+                                <input id="choices-tags-remove-button" class="form-control"
+                                    placeholder="Digite algo e pressione Enter">
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>Filtros por texto</p>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="col-md-15">
+                                <h6 class="mb-3 fs-6">Selecione as tags:</h6>
+                                <select id="choices-select-tags-text" class="form-select" multiple></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="choices-text-remove-button" class="form-label">Adicione opções:</label>
+                                <input id="choices-text-remove-button" class="form-control"
+                                    placeholder="Digite algo e pressione Enter">
                             </div>
                         </div>
                     </div>
@@ -138,15 +141,6 @@
                             <div class="col-md-15">
                                 <h6 class="mb-3 fs-6">Selecione os autores:</h6>
                                 <select id="choices-select-authors" class="form-select" multiple></select>
-                            </div>
-                            <div class="col-md-15">
-                                <h6>Autores selecionados:</h6>
-                                <ul class="list-group-author">
-                                    <li v-for="authors in filters.authors.selectItems" :key="authors.value"
-                                        class="list-group-item">
-                                        {{ authors.label }}
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>
@@ -158,28 +152,8 @@
                             </div>
                         </div>
                     </div>
-            
+
                     <button type="button" class="btn btn-primary w-100" @click="filterData">Filtrar</button>
-=======
-                    <div id="app" class="container mt-2">
-                        <div class="row">
-                            <div class="col-md-15">
-                                <h7 class="mb-3">Selecione ou adicione um portal</h7>
-                                <select id="choices-select" class="form-select" multiple></select>
-                            </div>
-                        </div>
-                        <div class="col-md-15">
-                            <h7>Portais selecionados:</h7>
-                            <ul class="list-group">
-                                <!-- Exibe o label dos itens selecionados -->
-                                <li v-for="item in filters.portal.selectedItems" :key="item.value"
-                                    class="list-group-item">
-                                    {{ item.name }}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
->>>>>>> 4604398506257bb7deb9f9bc55ad94e31323a5d5
                 </div>
             </div>
 
