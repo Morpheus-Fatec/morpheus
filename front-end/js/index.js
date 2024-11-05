@@ -635,7 +635,7 @@ const app = Vue.createApp({
         },
         filterWordsSynonyms() {
             const query = this.regionalism.wordSelected.search.toLowerCase();
-            const selectedWordId = this.regionalism.wordSelected.word.id;
+            const selectedWordId = this.regionalism.wordSelected.word.code;
 
             this.regionalism.wordSelected.filtered = this.regionalism.words
                 .filter(word =>
@@ -714,7 +714,7 @@ const app = Vue.createApp({
         },
         confirmDeleteWord() {
             this.isLoading = true;
-            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.id}`)
+            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.code}`)
                 .then(response => {
                     this.alertRegionalism("Palavra deletada com sucesso", "success");
                 })
