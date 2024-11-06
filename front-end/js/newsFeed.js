@@ -121,7 +121,7 @@ const app = Vue.createApp({
         },
 
         authorLoad() {
-            axios.get('https://morpheus-api22.free.beeceptor.com/todos')
+            axios.get('https://morpheus-api23.free.beeceptor.com/todos')
                 .then(response => {
                     this.authorFilters = response.data.map(author => ({
                         code: author.code,
@@ -355,28 +355,49 @@ const app = Vue.createApp({
 
             const dataFilter = {
                 textSearch: combinedTextSearch,
-                sourcesOrigin: this.filters.portal.selectItems.map(item => item.value),
+                sourcesOrigin: this.filters.portal.selectItems.map(item => parseInt(item.value, 10)),
                 titleSearch: combinedTitleSearch,
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal,
-                author: this.filters.authors.selectItems.map(item => item.value),
+                author: this.filters.authors.selectItems.map(item => parseInt(item.value, 10)),
             };
 
-            axios.post('https://morpheus-api22.free.beeceptor.com/todos', dataFilter)
+            axios.post('https://morpheus-api23.free.beeceptor.com/todos', dataFilter)
                 .then(response => {
+
                     const data = response.data;
-                    this.filters.portal.selectItems = data.sourcesOrigin || this.filters.portal.selectItems;
-                    this.filters.authors.selectItems = data.author || this.filters.authors.selectItems;
-                    this.filters.date.dateInit = data.dateStart || this.filters.date.dateInit;
-                    this.filters.date.dateFinal = data.dateEnds || this.filters.date.dateFinal;
-                    combinedTextSearch = data.textSearch;
-                    combinedTitleSearch = data.titleSearch;
+                    this.newsList = [];
+                    data.news.forEach(element => {
+                        const itemAdd = {
+                            newsTitle: element.newsTitle,
+                            newsContent: element.newsContent,
+                            srcName: element.srcName,
+                            scrAddress: element.srcAddress,
+                            autName: element.autName,
+                            newsRegistryDate: element.newsRegistryDate,
+                            srcURL: element.srcURL
+                        };
+                        this.newsList.push(itemAdd);
+                    });
+                    this.pagination.totalPages = data.totalPages;
+                    this.pagination.totalElements = data.totalElements;
+
+                    this.newsFilter();
+                
                 })
                 .catch(error => {
                     console.error('Erro:', error);
                 });
+
+                const offcanvasElement = document.getElementById('offcanvasWithBothOptions');
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                
+                if (offcanvasInstance) {
+                    offcanvasInstance.hide();
         }
     },
+    
+},
 
     computed: {
         filteredNews() {

@@ -90,11 +90,11 @@
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filtros</h5>
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
-                    <p>Filtros por portais</p>
+                    <p><b>Filtros por portais</b></p>
                     <div id="app" class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
@@ -103,35 +103,37 @@
                             </div>
                         </div>
                     </div>
-                    <p>Filtros por título</p>
+                    <p><b>Filtros por título</b></p>
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
                                 <h6 class="mb-3 fs-6">Selecione as tags:</h6>
                                 <select id="choices-tags-title" class="form-select" multiple></select>
                             </div>
+                            <br>
                             <div class="mb-3">
-                                <label for="choices-title-remove-button" class="form-label">Adicione opções:</label>
+                                <label for="choices-title-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
                                 <input id="choices-title-remove-button" class="form-control"
                                     placeholder="Digite algo e pressione Enter">
                             </div>
                         </div>
                     </div>
-                    <p>Filtros por texto</p>
+                    <p><b>Filtros por texto</b></p>
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
                                 <h6 class="mb-3 fs-6">Selecione as tags:</h6>
                                 <select id="choices-tags-text" class="form-select" multiple></select>
                             </div>
+                            <br>
                             <div class="mb-3">
-                                <label for="choices-text-remove-button" class="form-label">Adicione opções:</label>
+                                <label for="choices-text-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
                                 <input id="choices-text-remove-button" class="form-control"
                                     placeholder="Digite algo e pressione Enter">
                             </div>
                         </div>
                     </div>
-                    <p>Filtros por autor</p>
+                    <p><b>Filtros por autor</b></p>
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="col-md-15">
@@ -148,7 +150,8 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary w-100" @click="filterData">Filtrar</button>
+                    
+                    <button type="button" class="btn btn-primary w-100"  @click="filterData"><i class="bi bi-filter"></i>Filtrar</button>
                 </div>
             </div>
 
