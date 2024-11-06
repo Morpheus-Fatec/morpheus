@@ -418,7 +418,8 @@ const app = Vue.createApp({
                     })
                     .then(response => {
                         this.tagsLoad();
-                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.sourceNews.formData.sourceSelected.name, 'Tag salva com sucesso');
+                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.tags.insert.content, 'Tag salva com sucesso');
+                        this.tags.insert.content = "";
                     })
                     .catch(error => {
                         this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
@@ -684,7 +685,7 @@ const app = Vue.createApp({
                 textDescription: this.regionalism.insertWord
             })
                 .then(response => {
-                    this.regionalism.insert = "";
+                    this.regionalism.insertWord = "";
                     this.getWordsRegionalism();
                     this.alertRegionalism("Cadastro realizado com sucesso", "success");
                 })
