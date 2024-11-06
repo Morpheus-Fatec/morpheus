@@ -499,6 +499,11 @@ const app = Vue.createApp({
                         this.sourceNews.formData.sourceSelected.map.body = data.body || this.sourceNews.formData.sourceSelected.map.body;
                         this.sourceNews.formData.sourceSelected.map.title = data.title || this.sourceNews.formData.sourceSelected.map.title;
                         this.sourceNews.formData.sourceSelected.map.date = data.date || this.sourceNews.formData.sourceSelected.map.date;
+                        this.sourceNews.automaticMap.map.url = "";
+                        this.sourceNews.automaticMap.map.title = "";
+                        this.sourceNews.automaticMap.map.body = "";
+                        this.sourceNews.automaticMap.map.date = "";
+                        this.sourceNews.automaticMap.map.author = "";
 
                         this.newsMontedAlert('success', 'Foi realizado com sucesso a busca pelo mapeamento automático, para salvar o novo mapeamento clique em salvar.', 'Mapeamento realizado com sucesso.');
                     })
@@ -686,6 +691,7 @@ const app = Vue.createApp({
             })
                 .then(response => {
                     this.regionalism.insertWord = "";
+
                     this.getWordsRegionalism();
                     this.alertRegionalism("Cadastro realizado com sucesso", "success");
                 })
@@ -733,6 +739,25 @@ const app = Vue.createApp({
         cancelDeleteWord() {
             this.regionalism.modal.show();
             this.regionalism.delete.modal.hide();
+        },
+        clearInvalidFeedback() {
+            if (this.sourceNews.automaticMap.isSubmitted && !this.sourceNews.automaticMap.map.body) {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
+        },
+        submitForm() {
+            this.sourceNews.automaticMap.isSubmitted = true;  
+    
+            if (this.sourceNews.automaticMap.map.body) {
+                axios.post('http://localhost:8080/morpheus/source/mapping', payload)
+                    .then(response => {
+                        this.sourceNews.automaticMap.map.body = "";  
+                    })
+                    .catch(error => {
+                    });
+            } else {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
         }
     },
     computed: {
