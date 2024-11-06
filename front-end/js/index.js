@@ -364,6 +364,7 @@ const app = Vue.createApp({
                 })
                 .finally(final => {
                     this.sourceNews.tags.modal.hide();
+                    this.newsLoad();
                 });
         },
 
