@@ -68,15 +68,12 @@ public class TextController {
     @GetMapping
     public ResponseEntity<List<TextDTO>> getAllTexts() {
         List<Text> texts = textService.findAllTexts();
-        if (texts.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<TextDTO> textDTOs = texts.stream().map(text -> {
-                List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCode());
-                return new TextDTO(text.getTextDescription(), text.getTextCode(), synonyms);
-            }).collect(Collectors.toList());
-            return ResponseEntity.ok(textDTOs);
-        }
+        
+        List<TextDTO> textDTOs = texts.stream().map(text -> {
+            List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCode());
+            return new TextDTO(text.getTextDescription(), text.getTextCode(), synonyms);
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(textDTOs);
     }
 
 
