@@ -16,6 +16,8 @@ import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +72,10 @@ public class ScrapingService {
                 List<String> tagsAndVariations = findVariation(source.getSource().getCode());
 
                 Map<String, String> tagsClass = Map.of(
-                    "content", source.getBody(),
-                    "title", source.getTitle(),
-                    "date", source.getDate(),
-                    "author", source.getAuthor(),
+                    "content", sanitizeSelector(source.getBody()),
+                    "title", sanitizeSelector(source.getTitle()),
+                    "date", sanitizeSelector(source.getDate()),
+                    "author", sanitizeSelector(source.getAuthor()),
                     "urlNoticiaSalva", portalUrl
                 );
 
@@ -130,6 +132,20 @@ public class ScrapingService {
 
             String title = newsPage.select(tagsClass.get("title")).text();
             String datePublished = newsPage.select(tagsClass.get("date")).text();
+            String firstDate = datePublished.split(" ")[0];
+
+            News news = new News();
+
+            if (firstDate.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                String[] dateParts = firstDate.split("/");
+                String formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                Date publishedDate = Date.valueOf(formattedDate);
+                news.setNewsRegistryDate(publishedDate);
+            } else {
+                LocalDate today = LocalDate.now();
+                Date sqlDate = Date.valueOf(today);
+                news.setNewsRegistryDate(sqlDate);
+            }
 
             String authorName = newsPage.select(tagsClass.get("author")).text();
 
@@ -156,7 +172,6 @@ public class ScrapingService {
                 newsAuthor = newsAuthorRepository.save(newsAuthor);
             }
 
-            News news = new News();
             news.setNewsTitle(title);
             news.setNewsContent(contentString);
             news.setNewAddress(newsUrl);
@@ -183,6 +198,16 @@ public class ScrapingService {
     private List<String> findVariation(int newsSourceCode){
         List<String> tagsAndVariations = adaptedTagsService.findVariation(newsSourceCode);
         return tagsAndVariations;
+    }
+
+    private String sanitizeSelector(String selector) {
+        if (selector == null) {
+            return "";
+        }
+
+        return selector.trim()
+            .replaceAll("^\\.+\\s*", ".") 
+            .replaceAll("\\s+", ""); 
     }
 
 }
