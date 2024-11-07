@@ -471,6 +471,17 @@ const app = Vue.createApp({
                 });
         },
         automaticMapOpen() {
+            this.automaticMap ={
+                map : {
+                author: null,
+                body: null,
+                title: null,
+                url: null,
+                date: null
+                },
+                modal:null
+            };
+            this.sourceNews.automaticMap.isSubmitted = false;
             const modalElement = this.$refs.automaticMapModal;
             this.sourceNews.automaticMap.modal = new bootstrap.Modal(modalElement);
             this.sourceNews.automaticMap.modal.show();
