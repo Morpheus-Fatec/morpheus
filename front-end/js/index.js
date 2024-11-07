@@ -658,7 +658,7 @@ const app = Vue.createApp({
             this.regionalism.wordSelected.filtered = this.regionalism.words
                 .filter(word =>
                     word.content.toLowerCase().includes(query) &&
-                    word.id !== selectedWordId
+                    word.code !== selectedWordId
                 )
                 .sort((a, b) => {
                     const result = a.content.toLowerCase().localeCompare(b.content.toLowerCase());
