@@ -142,9 +142,7 @@ public class ScrapingService {
                 Date publishedDate = Date.valueOf(formattedDate);
                 news.setNewsRegistryDate(publishedDate);
             } else {
-                LocalDate today = LocalDate.now();
-                Date sqlDate = Date.valueOf(today);
-                news.setNewsRegistryDate(sqlDate);
+                return;
             }
 
             String authorName = newsPage.select(tagsClass.get("author")).text();
