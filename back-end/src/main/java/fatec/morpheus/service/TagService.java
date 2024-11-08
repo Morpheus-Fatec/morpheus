@@ -73,11 +73,11 @@ public class TagService {
 
         String sql = "select t.tag_cod, tag_name, (select count(nt.new_cod) " +
                 "from news_tag nt " +
-                "inner join source_tag st on st.tag_cod = nt.src_tag_cod " +
-                "where st.src_tag_cod in "+inClause+" ) as quant " +
+                "inner join source_tag st on st.src_tag_cod = nt.src_tag_cod " +
+                "where st.src_cod in "+inClause+" ) as quant " +
                 "from source_tag st " +
                 "inner join tag t on t.tag_cod = st.tag_cod " +
-                "where st.src_tag_cod in "+inClause;
+                "where st.src_cod in "+inClause;
         Query query = entityManager.createNativeQuery(sql);
         return query.getResultList();
     }
