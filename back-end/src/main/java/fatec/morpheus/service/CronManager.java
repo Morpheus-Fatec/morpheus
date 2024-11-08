@@ -25,11 +25,10 @@ public class CronManager {
     @Autowired
     private ScrapingService scrapingService;    
 
-    // Injetando a expressão cron inicial a partir do arquivo de configuração
-    @Value("${cron.expression:0 * * * * *}") // Valor padrão: a cada minuto
+    @Value("${cron.expression:0 * * * * *}")
     private String cronExpression;
 
-    @Value("${cron.timeZone:America/Sao_Paulo}") // Valor padrão: a cada minuto
+    @Value("${cron.timeZone:America/Sao_Paulo}")
     private String cronTimeZone;
 
     public CronManager() {
@@ -37,52 +36,39 @@ public class CronManager {
         ((ThreadPoolTaskScheduler) taskScheduler).initialize();
     }
 
-    // Método para iniciar a tarefa cron
     @PostConstruct
     public void startCronTask() {
         scheduledTask = taskScheduler.schedule(this::runTask, getTrigger());
         logger.info("Tarefa cron iniciada com a expressão: " + cronExpression);
     }
 
-    // Método para atualizar a expressão cron e reiniciar a tarefa
     public void updateCron(String newCron) {
         this.cronExpression = newCron;
         if (scheduledTask != null) {
-            scheduledTask.cancel(false);  // Cancela a tarefa anterior
+            scheduledTask.cancel(false);
         }
     }
 
-    // Método para parar o cron
     public void stopCronTask() {
         if (scheduledTask != null && !scheduledTask.isCancelled()) {
-            scheduledTask.cancel(false);  // Cancela a tarefa cron se estiver rodando
+            scheduledTask.cancel(false);
             logger.info("Tarefa cron parada.");
         } else {
             logger.info("Nenhuma tarefa cron ativa para parar.");
         }
     }
 
-    // Tarefa executada pelo cron
     private void runTask() {
         scrapingService.getSearch();
         logger.info("Executando a tarefa com o cron: " + cronExpression);
     }
 
-    // Obtém o Trigger com base na expressão cron
-//    private Trigger getTrigger() {
-//        return triggerContext -> {
-//            CronTrigger cronTrigger = new CronTrigger(cronExpression);
-//            return cronTrigger.nextExecutionTime(triggerContext).toInstant();
-//        };
     private Trigger getTrigger() {
         return triggerContext -> {
-            // Cria o CronTrigger com a cron expression
             CronTrigger cronTrigger = new CronTrigger(cronExpression,TimeZone.getTimeZone(cronTimeZone));
 
-            // Obtém a próxima execução de acordo com o contexto do trigger
             Date nextExecution = Date.from(Objects.requireNonNull(cronTrigger.nextExecution(triggerContext)));
 
-            // Converte para Instant (evitando o uso de toInstant de Date diretamente)
             return nextExecution.toInstant();
         };
     }
