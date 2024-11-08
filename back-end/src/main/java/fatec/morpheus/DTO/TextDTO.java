@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TextDTO {
     private String content;
-    private Integer id;
+    private Integer code;
     private List<Integer> synonyms;
 }

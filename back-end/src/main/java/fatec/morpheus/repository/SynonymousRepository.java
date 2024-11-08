@@ -9,7 +9,7 @@ import fatec.morpheus.entity.Synonymous;
 
 @Repository
 public interface SynonymousRepository extends JpaRepository<Synonymous, fatec.morpheus.entity.SynonymousId> {
-    void deleteByTextCod(Integer textCod);
+    void deleteByText_TextCode(Integer textCode);
     void deleteBySynGroup(Integer synGroup);
-    List<Synonymous> findByTextCodOrSynGroup(Integer textCod, Integer synGroup);
+    List<Synonymous> findByTextCodeOrSynGroup(Integer textCode, Integer synGroup);
 }
