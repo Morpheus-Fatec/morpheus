@@ -27,7 +27,7 @@ public class Tag{
     @Column(name = "tag_cod")
     private Integer tagCod;
 
-    @Column(name = "tag_name", length = 50, unique = true)
+    @Column(name = "tag_name", length = 255, unique = true)
     private String tagName;
 
 }

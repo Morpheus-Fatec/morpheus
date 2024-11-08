@@ -22,7 +22,7 @@ CREATE TABLE Map_source (
 
 create table Tag(
 	tag_cod int auto_increment primary key,
-    tag_name char(50) unique
+    tag_name char(255) unique
 );
 
 create table Source_tag(
