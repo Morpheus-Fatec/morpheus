@@ -16,4 +16,11 @@ public class NotFoundException extends RuntimeException {
                 message + " com id " + id, 
                 new ArrayList<>());
         }
+
+        public NotFoundException(String name, String message) {
+            this.errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND, 
+                message + " com palavra " + name, 
+                new ArrayList<>());
+        }
 }
