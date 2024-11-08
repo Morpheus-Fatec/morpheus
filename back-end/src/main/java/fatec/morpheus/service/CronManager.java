@@ -15,7 +15,10 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class CronManager {
@@ -59,9 +62,20 @@ public class CronManager {
     }
 
     private void runTask() {
-        scrapingService.getSearch();
-        logger.info("Executando a tarefa com o cron: " + cronExpression);
+        long timeout = Long.parseLong(System.getProperty("cron.timeout", "5000"));
+
+        try{
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scrapingService.getSearch());
+
+            future.get(timeout, TimeUnit.MILLISECONDS);
+            logger.info("Tarefa cron executada com sucesso.");
+        } catch (TimeoutException e) {
+            logger.warn("Tarefa cron excedeu o tempo limite de execução.");
+        } catch (Exception e) {
+            logger.error("Erro ao executar tarefa cron.", e);
+        }
     }
+        
 
     private Trigger getTrigger() {
         return triggerContext -> {
