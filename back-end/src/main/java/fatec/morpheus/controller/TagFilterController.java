@@ -2,6 +2,9 @@ package fatec.morpheus.controller;
 
 import fatec.morpheus.DTO.TagDTO;
 import fatec.morpheus.service.TagService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +20,11 @@ public class TagFilterController {
 
     @Autowired
     private TagService tagService;
-
+    @Operation(summary = "Metodo para filtrar tags e quantidade de notícias por portais", description = "Filtra tags e quantidade de notícias")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tags filtradas com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao filtrar tags"),
+    })
     @PostMapping("/search")
     public ResponseEntity<?> filterTags(@RequestBody List<String> newsSource) {
         if (newsSource == null || newsSource.isEmpty()) {
