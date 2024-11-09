@@ -19,7 +19,6 @@ CREATE TABLE Map_source (
     FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );
 
-
 create table Tag(
 	tag_cod int auto_increment primary key,
     tag_name char(255) unique
@@ -32,6 +31,11 @@ create table Source_tag(
     primary key (src_tag_cod),
 	foreign key (src_cod) REFERENCES Source(src_cod),
 	foreign key (tag_cod) REFERENCES Tag(tag_cod)
+);
+
+CREATE TABLE News_author (
+    new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
+    new_aut_name VARCHAR(500)
 );
 
 create table News(
@@ -47,11 +51,6 @@ create table News(
     primary key (new_cod)
 );
 
-
-CREATE TABLE News_author (
-    new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
-    new_aut_name VARCHAR(500)
-);
 
 create table Text(
     text_cod int auto_increment,

@@ -11,17 +11,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class NewsSearchRequest {
-    private List<String> textSearch;      
-    private List<Integer> sourcesOrigin;    
-    private List<String> titleSearch;      
+@AllArgsConstructor
+public class NewsSearchRequest {  
+    private List<Integer> sourcesOrigin; 
+    private List<Integer> author;  
+    private List<String> titleSearch;  
+    private List<String> textSearch;    
     private LocalDate dateStart;           
-    private LocalDate dateEnd;             
-    private List<Integer> author;
-    private int totalPages;
-    private long totalElements;           
-
+    private LocalDate dateEnd;
+    private int totalPages;  
+    private long totalElements;               
+  
 }
 
