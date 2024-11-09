@@ -121,11 +121,11 @@ const app = Vue.createApp({
         },
 
         authorLoad() {
-            axios.get('https://morpheus-api23.free.beeceptor.com/todos')
+            axios.get('http://localhost:8080/morpheus/authors')
                 .then(response => {
                     this.authorFilters = response.data.map(author => ({
-                        code: author.code,
-                        name: author.name
+                        autId: author.autId,
+                        name: author.autName
                     }));
                     this.initChoicesAuthors();
                 })
@@ -239,7 +239,7 @@ const app = Vue.createApp({
             choicesAuthors.clearStore();
 
             this.authorFilters.forEach(item => {
-                choicesAuthors.setChoices([{ value: item.code, label: item.name }], 'value', 'label', false);
+                choicesAuthors.setChoices([{ value: item.autId, label: item.autName }], 'value', 'label', false);
             });
 
             choicesAuthors.passedElement.element.addEventListener('change', (event) => {
@@ -359,7 +359,7 @@ const app = Vue.createApp({
                 titleSearch: combinedTitleSearch,
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal,
-                author: this.filters.authors.selectItems.map(item => parseInt(item.value, 10)),
+                author: this.filters.authors.selectItems.map(item => parseInt(item.autId, 10)),
             };
 
             axios.post('https://morpheus-api23.free.beeceptor.com/todos', dataFilter)
