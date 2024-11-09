@@ -36,13 +36,11 @@ public class CronController {
         this.cronManager = cronManager;
     }
 
-    // Método GET para retornar as propriedades atuais
     @GetMapping("/properties")
     public ResponseEntity<CronProperties> getProperties() {
         try {
             Properties properties = new Properties();
 
-            // Carrega o arquivo application.properties do classpath
             try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties")) {
                 if (inputStream == null) {
                     logger.error("Arquivo application.properties não encontrado.");
@@ -52,14 +50,13 @@ public class CronController {
                 properties.load(inputStream);
             }
 
-            // Preenche o objeto CronProperties com os valores das propriedades
             CronProperties cronProperties = new CronProperties();
             cronProperties.setTimeZone(properties.getProperty("cron.timeZone"));
             cronProperties.setActive(Boolean.parseBoolean(properties.getProperty("cron.active")));
             cronProperties.setFrequency(properties.getProperty("cron.frequency"));
             cronProperties.setTime(properties.getProperty("cron.time"));
+            cronProperties.setTimeout(properties.getProperty("cron.timeout"));
 
-            // Retorna o objeto com as propriedades para o front-end
             return ResponseEntity.ok(cronProperties);
 
         } catch (IOException e) {
