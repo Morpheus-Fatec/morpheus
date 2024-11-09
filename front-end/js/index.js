@@ -518,7 +518,7 @@ const app = Vue.createApp({
                     this.cron.hour = parts[0];
                     this.cron.minute = parts[1];
                     this.cron.timeZone = config.timeZone;
-                    this.cron.timeout = config.timeout;
+                    this.cron.timeout = config.timeout / 1000;
                 })
                 .catch(error => {
                     this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron.');
@@ -554,7 +554,7 @@ const app = Vue.createApp({
                 frequency: this.cron.periodice,
                 time: this.cron.hour + ':' + this.cron.minute,
                 timeZone: this.cron.timeZone,
-                timeout: this.cron.timeout,
+                timeout: this.cron.timeout * 1000,
                 active: this.cron.active.toString()
             };
 
