@@ -70,14 +70,13 @@ public class TagService {
         String inClause = "("+String.join(",", newsSource.stream()
                 .map(source -> "'" + source + "'")
                 .toArray(String[]::new))+")";
-
-        String sql = "select t.tag_cod, tag_name, (select count(nt.new_cod) " +
-                "from news_tag nt " +
-                "inner join source_tag st on st.src_tag_cod = nt.src_tag_cod " +
-                "where st.src_cod in "+inClause+" ) as quant " +
-                "from source_tag st " +
-                "inner join tag t on t.tag_cod = st.tag_cod " +
-                "where st.src_cod in "+inClause;
+        
+        String sql = "SELECT t.tag_name, t.tag_cod, COUNT(n.new_cod) AS quant "+
+                "FROM tag t "+
+                "INNER JOIN source_tag st ON t.tag_cod = st.tag_cod "+
+                "LEFT JOIN news n ON n.new_content LIKE CONCAT('%', t.tag_name, '%') "+
+                "WHERE st.src_cod in"+inClause+
+                " GROUP BY t.tag_name, t.tag_cod";
         Query query = entityManager.createNativeQuery(sql);
         return query.getResultList();
     }
