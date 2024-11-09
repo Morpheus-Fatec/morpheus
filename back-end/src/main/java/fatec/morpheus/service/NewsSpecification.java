@@ -22,12 +22,14 @@ public class NewsSpecification {
                 predicate = criteriaBuilder.and(predicate, titlePredicate);
             }
     
-            Predicate textPredicate = criteriaBuilder.conjunction();
             if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
+                System.out.println("Entrou no textSearch" + request.getTextSearch().size());
+                Predicate textPredicate = criteriaBuilder.disjunction();
                 for (String text : request.getTextSearch()) {
                     textPredicate = criteriaBuilder.or(textPredicate,
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("newsContent")), "%" + text.toLowerCase() + "%"));
                 }
+                predicate = criteriaBuilder.and(predicate, textPredicate);
             }
     
             if (request.getAuthor() != null && !request.getAuthor().isEmpty()) {
