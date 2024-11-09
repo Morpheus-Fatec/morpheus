@@ -1,7 +1,14 @@
 package fatec.morpheus.controller;
 
-import fatec.morpheus.entity.CronProperties;
-import fatec.morpheus.service.CronManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.TimeZone;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.TimeZone;
+import fatec.morpheus.entity.CronProperties;
+import fatec.morpheus.service.CronManager;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -68,20 +69,14 @@ public class CronController {
 
     @PostMapping("/update")
     public ResponseEntity<String> updateProperties(@RequestBody CronProperties configRequest) {
-        System.out.println("Entrou: ResponseEntity");
         logger.info("Solicitação recebida: {}", configRequest);
         try {
-            System.out.println("Entrou: ResponseEntity, try");
-            // Caminho externo do arquivo de propriedades (fora do JAR)
             Path externalPropertiesFile = Paths.get("back-end/src/main/resources/application.properties");
 
-            // Se o arquivo externo não existir, cria uma cópia do arquivo original
             if (Files.notExists(externalPropertiesFile)) {
-                System.out.println("Entrou: ResponseEntity, condicional");
                 logger.info("Arquivo externo de propriedades não encontrado. Criando uma cópia.");
                 Files.createDirectories(externalPropertiesFile.getParent());
                 try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-                System.out.println("Entrou: ResponseEntity, try dentro da condicional");
                     if (inputStream != null) {
                         Files.copy(inputStream, externalPropertiesFile);
                     }
@@ -90,45 +85,39 @@ public class CronController {
 
             Properties properties = new Properties();
 
-            // Carrega o arquivo de propriedades externo
             try (InputStream inputStream = Files.newInputStream(externalPropertiesFile)) {
                 properties.load(inputStream);
             }
 
-            // Valida o time zone
             if (!isValidTimeZone(configRequest.getTimeZone())) {
                 logger.error("Fuso horário inválido: {}", configRequest.getTimeZone());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Fuso horário inválido: " + configRequest.getTimeZone());
             }
 
-            // Converte a frequência e o horário para expressão cron
             String cronExpression = convertToCronExpression(configRequest.getFrequency(), configRequest.getTime());
             if (cronExpression == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Valor de frequência inválido: " + configRequest.getFrequency());
             }
 
-            // Atualiza as propriedades
             properties.setProperty("cron.expression", cronExpression);
             properties.setProperty("cron.timeZone", configRequest.getTimeZone());
             properties.setProperty("cron.active", String.valueOf(configRequest.isActive()));
             properties.setProperty("cron.frequency", configRequest.getFrequency());
             properties.setProperty("cron.time", configRequest.getTime());
+            properties.setProperty("cron.timeout", configRequest.getTimeout());
+            
 
-            // Loga as propriedades antes de salvar
             logger.info("Propriedades antes da gravação: {}", properties);
 
-            // Salva as novas propriedades no arquivo externo
             try (OutputStream outputStream = Files.newOutputStream(externalPropertiesFile)) {
                 properties.store(outputStream, "Atualizado pelo Spring Boot");
             }
 
-            // Atualiza a expressão cron no CronManager
             cronManager.updateCron(cronExpression);
             logger.info("Tarefa cron atualizada com a expressão: {}", cronExpression);
 
-            // Ativa ou desativa o cron com base no status 'active'
             if (configRequest.isActive()) {
                 cronManager.startCronTask();
                 logger.info("Tarefa cron iniciada.");
@@ -146,11 +135,10 @@ public class CronController {
         }
     }
 
-    // Método que converte a frequência e o horário para expressão cron
     private String convertToCronExpression(String frequency, String time) {
         String[] timeParts = time.split(":");
         if (timeParts.length != 2) {
-            return null; // Retorna nulo se o formato do horário não estiver correto
+            return null;
         }
         String hour = timeParts[0];
         String minute = timeParts[1];
@@ -160,11 +148,10 @@ public class CronController {
             case "hourly" -> "0 0 * * * ?";
             case "weekly" -> String.format("0 %s %s ? * MON", minute, hour);
             case "monthly" -> String.format("0 %s %s 1 * ?", minute, hour);
-            default -> null; // Retorna nulo para frequência inválida
+            default -> null;
         };
     }
 
-    // Método que valida se o time zone é válido
     private boolean isValidTimeZone(String timeZone) {
         String[] availableZoneIds = TimeZone.getAvailableIDs();
         for (String zoneId : availableZoneIds) {
