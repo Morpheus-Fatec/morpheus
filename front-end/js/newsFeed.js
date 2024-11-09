@@ -359,10 +359,10 @@ const app = Vue.createApp({
                 titleSearch: combinedTitleSearch,
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal,
-                author: this.filters.authors.selectItems.map(item => parseInt(item.autId, 10)),
+                author: this.filters.authors.selectItems.map(item => parseInt(item.value, 10)),
             };
 
-            axios.post('https://morpheus-api23.free.beeceptor.com/todos', dataFilter)
+            axios.post('http://localhost:8080/morpheus/NewsFilter/search', dataFilter)
                 .then(response => {
 
                     const data = response.data;
