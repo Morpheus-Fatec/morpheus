@@ -7,6 +7,7 @@ const app = Vue.createApp({
                 periodice: "",
                 hour: "",
                 timeZone: "",
+                timeout: "",
                 isSubmited: false,
                 alert: {
                     show: false,
@@ -517,6 +518,7 @@ const app = Vue.createApp({
                     this.cron.hour = parts[0];
                     this.cron.minute = parts[1];
                     this.cron.timeZone = config.timeZone;
+                    this.cron.timeout = config.timeout;
                 })
                 .catch(error => {
                     this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron.');
@@ -541,16 +543,18 @@ const app = Vue.createApp({
         },
         cronSalvarConfiguracao() {
             this.cron.isSubmited = true;
-            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone)) {
+            
+                if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '')) { 
                 this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron.');
                 return;
             }
 
-            this.isLoading = true;
+            this.isLoading = true;  
             const payload = {
                 frequency: this.cron.periodice,
                 time: this.cron.hour + ':' + this.cron.minute,
                 timeZone: this.cron.timeZone,
+                timeout: this.cron.timeout,
                 active: this.cron.active.toString()
             };
 
