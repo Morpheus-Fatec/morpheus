@@ -1,6 +1,15 @@
 package fatec.morpheus.service;
 
-import fatec.morpheus.controller.CronController;
+import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +20,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.Objects;
-import java.util.TimeZone;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import fatec.morpheus.controller.CronController;
 
 @Service
 public class CronManager {
@@ -26,7 +28,7 @@ public class CronManager {
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> scheduledTask;
     @Autowired
-    private ScrapingService scrapingService;    
+    private ScrapingService scrapingService;
 
     @Value("${cron.expression:0 * * * * *}")
     private String cronExpression;
