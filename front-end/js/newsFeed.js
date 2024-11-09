@@ -125,7 +125,7 @@ const app = Vue.createApp({
                 .then(response => {
                     this.authorFilters = response.data.map(author => ({
                         autId: author.autId,
-                        name: author.autName
+                        autName: author.autName
                     }));
                     this.initChoicesAuthors();
                 })
