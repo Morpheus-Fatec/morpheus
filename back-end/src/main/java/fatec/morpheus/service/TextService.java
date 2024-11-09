@@ -48,7 +48,7 @@ public class TextService {
     public List<Integer> findSynonymsByTextId(Integer textId) {
         List<Synonymous> synonyms = synonymousService.findByTextCodOrSynGroup(textId);
         return synonyms.stream()
-                .map(s -> s.getTextCod() == textId ? s.getSynGroup() : s.getTextCod())
+                .map(s -> s.getTextCode() == textId ? s.getSynGroup() : s.getTextCode())
                 .collect(Collectors.toList());
     }
 

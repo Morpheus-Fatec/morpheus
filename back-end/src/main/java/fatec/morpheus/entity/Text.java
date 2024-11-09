@@ -21,7 +21,7 @@ public class Text {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "text_cod")
-    private Integer textCod;
+    private Integer textCode;
 
     @Column(name = "text_description", length = 255, unique = true)
     private String textDescription;
