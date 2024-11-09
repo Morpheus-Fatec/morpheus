@@ -549,7 +549,7 @@ const app = Vue.createApp({
                 return;
             }
 
-            this.isLoading = true;  
+            this.isLoading = true;
             const payload = {
                 frequency: this.cron.periodice,
                 time: this.cron.hour + ':' + this.cron.minute,
