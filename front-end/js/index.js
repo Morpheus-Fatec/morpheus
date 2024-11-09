@@ -565,16 +565,31 @@ const app = Vue.createApp({
                 this.cronMontedAlert('danger', 'O valor mínimo permitido para o timeout é 1 segundo.', 'Erro de validação');
             }
         },
+        validateTimeoutInput(event) {
+            const value = event.target.value;
+            if (value < 1) {
+                this.cron.timeout = 1;
+            } else if (value > 15) {
+                this.cron.timeout = 15;
+            } else {
+                this.cron.timeout = value;
+            }
+        },
         cronSalvarConfiguracao() {
-            this.cron.isSubmited = true;
-
             this.cronValidateTimeout();
-            
-                if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '')) { 
+        
+            if (this.cron.timeout > 15 || this.cron.timeout < 1) {
+                this.cronMontedAlert('danger', 'O valor do timeout deve estar entre 1 e 15 segundos.', 'Erro de validação');
+                return;
+            }
+        
+            this.cron.isSubmited = true;
+        
+            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '' || this.cron.timeout > 15 || this.cron.timeout < 1)) { 
                 this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron.');
                 return;
             }
-
+        
             this.isLoading = true;
             const payload = {
                 frequency: this.cron.periodice,
@@ -583,13 +598,13 @@ const app = Vue.createApp({
                 timeout: this.cron.timeout * 1000,
                 active: this.cron.active.toString()
             };
-
+        
             axios.post('http://localhost:8080/morpheus/config/update', payload)
                 .then(response => {
                     const offcanvasElement = this.$refs.offcanvas;
                     const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (bsOffcanvas) {
-                        bsOffcanvas.hide();
+                        bsOffcanvas.hide(); // Esta linha fecha a janela
                     }
                     this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso.', 'Configuração salva com sucesso.');
                 })
