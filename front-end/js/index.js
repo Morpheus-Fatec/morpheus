@@ -325,7 +325,6 @@ const app = Vue.createApp({
             this.sourceNews.tags.modal.show();
             this.sourceNews.tags.newsSelected = news;
             this.sourceNews.tags.selected = news.tags;
-           
 
         },
         tagsForSourceNewsAdd() {
@@ -352,10 +351,8 @@ const app = Vue.createApp({
                 tagCodes: this.sourceNews.tags.selected,
                 map: this.sourceNews.tags.newsSelected.map,
                 type: 1
-
             };
 
-     
             axios.put(endpoint, payload)
                 .then(response => {
                     this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
@@ -500,7 +497,6 @@ const app = Vue.createApp({
                     body: this.sourceNews.automaticMap.map.body,
                     date: this.sourceNews.automaticMap.map.date,
                     author: this.sourceNews.automaticMap.map.author
-
                 };
 
 
@@ -525,6 +521,7 @@ const app = Vue.createApp({
                     });
             }
         },
+
         cronLoad() {
             this.isLoading = true;
             axios.get('http://localhost:8080/morpheus/config/properties')
@@ -559,8 +556,19 @@ const app = Vue.createApp({
                 this.cron.minute = 0;
             }
         },
+        cronValidateTimeout(){
+            if (this.cron.timeout > 15) {
+                this.cron.timeout = 15;
+                this.cronMontedAlert('danger', 'O valor máximo permitido para o timeout é 15 segundos.', 'Erro de validação');
+            } else if (this.cron.timeout < 1) {
+                this.cron.timeout = 1;
+                this.cronMontedAlert('danger', 'O valor mínimo permitido para o timeout é 1 segundo.', 'Erro de validação');
+            }
+        },
         cronSalvarConfiguracao() {
             this.cron.isSubmited = true;
+
+            this.cronValidateTimeout();
             
                 if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '')) { 
                 this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron.');
