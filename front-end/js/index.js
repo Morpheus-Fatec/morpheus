@@ -333,7 +333,7 @@ const app = Vue.createApp({
             this.sourceNews.tags.movedAdd = [];
         },
         tagsForSourceNewsRemove() {
-            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCod => !this.sourceNews.tags.movedRemove.includes(tagCod));
+            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCode => !this.sourceNews.tags.movedRemove.includes(tagCode));
             this.sourceNews.tags.movedRemove = [];
         },
         tagsForSourceNewsCreateTag() {
@@ -365,6 +365,7 @@ const app = Vue.createApp({
                 })
                 .finally(final => {
                     this.sourceNews.tags.modal.hide();
+                    this.newsLoad();
                 });
         },
 
@@ -395,7 +396,7 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tags.all = response.data.map(tag => ({
-                        tagCod: tag.tagCod,
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                 })
@@ -418,7 +419,8 @@ const app = Vue.createApp({
                     })
                     .then(response => {
                         this.tagsLoad();
-                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.sourceNews.formData.sourceSelected.name, 'Tag salva com sucesso');
+                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.tags.insert.content, 'Tag salva com sucesso');
+                        this.tags.insert.content = "";
                     })
                     .catch(error => {
                         this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
@@ -432,7 +434,7 @@ const app = Vue.createApp({
             tag.isSubmitted = true;
             if (tag.tagName) {
                 axios
-                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCod)}`, {
+                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCode)}`, {
                         tagName: tag.tagName
                     })
                     .then(response => {
@@ -454,7 +456,7 @@ const app = Vue.createApp({
         },
         tagConfirmDelete() {
             this.tags.delete.modal.hide();
-            const code = this.tags.delete.tagSelected.tagCod;
+            const code = this.tags.delete.tagSelected.tagCode;
             const endpoint = `http://localhost:8080/morpheus/tag/${code}`;
 
             axios.delete(endpoint)
@@ -470,6 +472,17 @@ const app = Vue.createApp({
                 });
         },
         automaticMapOpen() {
+            this.automaticMap ={
+                map : {
+                author: null,
+                body: null,
+                title: null,
+                url: null,
+                date: null
+                },
+                modal:null
+            };
+            this.sourceNews.automaticMap.isSubmitted = false;
             const modalElement = this.$refs.automaticMapModal;
             this.sourceNews.automaticMap.modal = new bootstrap.Modal(modalElement);
             this.sourceNews.automaticMap.modal.show();
@@ -498,6 +511,11 @@ const app = Vue.createApp({
                         this.sourceNews.formData.sourceSelected.map.body = data.body || this.sourceNews.formData.sourceSelected.map.body;
                         this.sourceNews.formData.sourceSelected.map.title = data.title || this.sourceNews.formData.sourceSelected.map.title;
                         this.sourceNews.formData.sourceSelected.map.date = data.date || this.sourceNews.formData.sourceSelected.map.date;
+                        this.sourceNews.automaticMap.map.url = "";
+                        this.sourceNews.automaticMap.map.title = "";
+                        this.sourceNews.automaticMap.map.body = "";
+                        this.sourceNews.automaticMap.map.date = "";
+                        this.sourceNews.automaticMap.map.author = "";
 
                         this.newsMontedAlert('success', 'Foi realizado com sucesso a busca pelo mapeamento automático, para salvar o novo mapeamento clique em salvar.', 'Mapeamento realizado com sucesso.');
                     })
@@ -601,7 +619,7 @@ const app = Vue.createApp({
                     words.forEach(word => {
                         let item = new Object();
                         item.content = word.content;
-                        item.id = word.id;
+                        item.code = word.code;
                         item.synonyms = word.synonyms;
                         this.regionalism.words.push(item);
                     });
@@ -639,12 +657,12 @@ const app = Vue.createApp({
         },
         filterWordsSynonyms() {
             const query = this.regionalism.wordSelected.search.toLowerCase();
-            const selectedWordId = this.regionalism.wordSelected.word.id;
+            const selectedWordId = this.regionalism.wordSelected.word.code;
 
             this.regionalism.wordSelected.filtered = this.regionalism.words
                 .filter(word =>
                     word.content.toLowerCase().includes(query) &&
-                    word.id !== selectedWordId
+                    word.code !== selectedWordId
                 )
                 .sort((a, b) => {
                     const result = a.content.toLowerCase().localeCompare(b.content.toLowerCase());
@@ -660,7 +678,7 @@ const app = Vue.createApp({
         },
         saveWord() {
             this.isLoading = true;
-            const idWord = this.regionalism.wordSelected.word.id;
+            const idWord = this.regionalism.wordSelected.word.code;
             axios.put(`http://localhost:8080/texts/${idWord}`, {
                 synonymIds: this.regionalism.wordSelected.synonyms,
                 textoDescription: this.regionalism.wordSelected.word.content
@@ -687,7 +705,8 @@ const app = Vue.createApp({
                 textDescription: this.regionalism.insertWord
             })
                 .then(response => {
-                    this.regionalism.insert = "";
+                    this.regionalism.insertWord = "";
+
                     this.getWordsRegionalism();
                     this.alertRegionalism("Cadastro realizado com sucesso", "success");
                 })
@@ -699,7 +718,7 @@ const app = Vue.createApp({
                 });
         },
         isSynonymSelected(word) {
-            return this.regionalism.wordSelected.synonyms.includes(word.id);
+            return this.regionalism.wordSelected.synonyms.includes(word.code);
         },
         toggleSynonym(id) {
             const index = this.regionalism.wordSelected.synonyms.indexOf(id);
@@ -718,7 +737,7 @@ const app = Vue.createApp({
         },
         confirmDeleteWord() {
             this.isLoading = true;
-            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.id}`)
+            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.code}`)
                 .then(response => {
                     this.alertRegionalism("Palavra deletada com sucesso", "success");
                 })
@@ -735,12 +754,31 @@ const app = Vue.createApp({
         cancelDeleteWord() {
             this.regionalism.modal.show();
             this.regionalism.delete.modal.hide();
+        },
+        clearInvalidFeedback() {
+            if (this.sourceNews.automaticMap.isSubmitted && !this.sourceNews.automaticMap.map.body) {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
+        },
+        submitForm() {
+            this.sourceNews.automaticMap.isSubmitted = true;  
+    
+            if (this.sourceNews.automaticMap.map.body) {
+                axios.post('http://localhost:8080/morpheus/source/mapping', payload)
+                    .then(response => {
+                        this.sourceNews.automaticMap.map.body = "";  
+                    })
+                    .catch(error => {
+                    });
+            } else {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
         }
     },
     computed: {
         selectedTags() {
             return this.tags.all
-                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.selectedQuery ||
                         tag.tagName.toLowerCase().includes(this.tags.search.selectedQuery.toLowerCase());
@@ -750,7 +788,7 @@ const app = Vue.createApp({
         unselectedTags() {
   
             return this.tags.all
-                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.query ||
                         tag.tagName.toLowerCase().includes(this.tags.search.query.toLowerCase());
