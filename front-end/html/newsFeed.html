@@ -8,21 +8,10 @@
     <link rel="stylesheet" href="../css/bootstrap.css">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css\bootstrap-icons-1.11.3\bootstrap-icons-1.11.3\font\bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
-        rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="../css/introjs.min.css">
 </head>
 
-<body>
+<body id="aplication">
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
@@ -36,7 +25,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.html">
+                        <a class="nav-link active" aria-current="page" href="#">
                             <i class="bi bi-newspaper"></i> Portais de Notícias
                         </a>
                     </li>
@@ -45,250 +34,728 @@
                             <i class="bi bi-globe2"></i> Notícias
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" @click="startUserGuide(1)" style="cursor: pointer;">
+                            <i class="bi bi-question-circle"></i> Guia de Uso
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                    </li>
                 </ul>
             </div>
         </div>
-        </div>
     </nav>
-    <div id="app">
 
-        <div class="container">
-            <div v-if="isLoading" class="overlay">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+    <div class="container">
+        <div v-if="isLoading" class="overlay">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
-            <div class="page-title d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-globe2" style="font-size: 30px; color: #004c8a;"></i>
-                    <h1 class="ms-2 mb-0">Notícias</h1>
-                </div>
+        </div>
+        <div class="page-title d-flex justify-content-between align-items-center" :class="{ hidden: !isVisible }">
+            <div data-intro="Bem-vindo! Esta é a tela inicial da Aplicação Morpheus" data-step="1" class="d-flex align-items-center">
+                <i class="bi bi-newspaper" style="font-size: 30px; color: #004c8a;"></i>
+                <h1 class="ms-2 mb-0">Portais de Notícia</h1>
             </div>
-            <div class="alert alert-dismissible fade show" :class="`alert-${root.alert.type}`" role="alert"
-                v-if="root.alert.show">
-                <strong>{{root.alert.titleError}}</strong>
-                <br>
-                {{root.alert.desc}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            <button type="button" class="btn btn-primary btn-sm" @click="toggleVisibility">
+                <i :class="isVisible ? 'bi bi-arrows-fullscreen' : 'bi bi-fullscreen-exit'"></i>
+            </button>
+        </div>
+
+        <div class="alert alert-dismissible fade show" :class="`alert-${root.formData.alert.type}`" role="alert"
+            v-if="root.formData.alert.show">
+            <strong>{{root.formData.alert.titleError}}</strong>
+            <br>
+            {{root.formData.alert.desc}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+
+        <div :class="{ hidden: !isVisible }">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button data-intro="Aqui é possível abrir a tela para cadastrar uma nova fonte de dados baseada em portal de notícias." data-step="8" type="button" @click="newsStartCreated" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Cadastrar
+                </button>
+                <button data-intro="Aqui é possível abrir a tela para gerenciar as tags" data-step="20" type="button" @click="tagsOpenMananger" class="btn btn-primary">
+                    <i class="bi bi-tags"></i> Gerenciar Tags
+                </button>
+                <button type="button"  @click="regionalismOpen" class="btn btn-primary">
+                    <i class="bi bi-geo-alt"></i> Regionalismo
+                </button>
+                <button type="button" data-bs-toggle="offcanvas" data-bs-target="#configuracao-cron" role="button"
+                    aria-controls="offcanvasExample" class="btn btn-primary">
+                    <i class="bi bi-tools"></i> Configurações
+                </button>
             </div>
 
-            <div class="mt-3 d-flex">
-                <select class="form-select" v-model="news.search.field" @change="newsFilter" style="width: auto;">
-                    <option value="newsTitle">Título</option>
-                    <option value="newsContent">Conteúdo</option>
+            <div data-intro="Aqui é possível definir filtros de busca dinâmica a serem buscados na aplicação" data-step="2" class="mt-3 d-flex">
+                <select class="form-select" v-model="this.sourceNews.search.field" @change="newsUpdateSearch"
+                    style="width: auto;">
+                    <option value="name">Nome</option>
+                    <option value="address">Endereço</option>
                 </select>
-                <input type="text" class="form-control ms-2" v-model="news.search.query" @input="newsFilter"
+                <input type="text" class="form-control ms-2" v-model="this.sourceNews.search.query" @input="newsFilter"
                     placeholder="Pesquisar" style="flex-grow: 1;">
-                <div class="col-auto ms-5">
-                    <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
-                        role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary">
-                        <i class="bi bi-filter"></i> Filtros
-                    </button>
-                </div>
-            </div>
-
-            <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
-                aria-labelledby="offcanvasWithBothOptionsLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <p><b>Filtros por portais</b></p>
-                    <div id="app" class="card mb-3">
-                        <div class="card-body">
-                            <div class="col-md-15">
-                                <h6 class="mb-3 fs-6">Selecione os portais:</h6>
-                                <select id="choices-select" class="form-select" multiple></select>
-                            </div>
-                        </div>
-                    </div>
-                    <p><b>Filtros por título</b></p>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="col-md-15">
-                                <h6 class="mb-3 fs-6">Selecione as tags:</h6>
-                                <select id="choices-tags-title" class="form-select" multiple></select>
-                            </div>
-                            <br>
-                            <div class="mb-3">
-                                <label for="choices-title-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
-                                <input id="choices-title-remove-button" class="form-control"
-                                    placeholder="Digite algo e pressione Enter">
-                            </div>
-                        </div>
-                    </div>
-                    <p><b>Filtros por texto</b></p>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="col-md-15">
-                                <h6 class="mb-3 fs-6">Selecione as tags:</h6>
-                                <select id="choices-tags-text" class="form-select" multiple></select>
-                            </div>
-                            <br>
-                            <div class="mb-3">
-                                <label for="choices-text-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
-                                <input id="choices-text-remove-button" class="form-control"
-                                    placeholder="Digite algo e pressione Enter">
-                            </div>
-                        </div>
-                    </div>
-                    <p><b>Filtros por autor</b></p>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="col-md-15">
-                                <h6 class="mb-3 fs-6">Selecione os autores:</h6>
-                                <select id="choices-select-authors" class="form-select" multiple></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h6>Selecione um intervalo de datas:</h6>
-                                <input type="text" id="dateRange" class="form-control" readonly v-model="dateWrite">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="button" class="btn btn-primary w-100"  @click="filterData"><i class="bi bi-filter"></i>Filtrar</button>
-                </div>
-            </div>
-
-            <div class="mt-3 d-flex justify-content-end align-items-center">
-                <div class="row g-3 align-items-center">
-                    <div class="col-auto">
-                        <label for="inputPassword6" class="col-form-label text-secondary">Número de itens por
-                            página</label>
-                    </div>
-                    <div class="col-auto">
-                        <select class="form-select" v-model="pagination.items" @change="changePage(pagination.page)"
-                            style="width: auto;">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                </div>
-
-                <nav aria-label="Page navigation example" class="ms-3">
-                    <ul class="pagination justify-content-end mb-0">
-                        <li :class="['page-item', { disabled: pagination.page == 1 }]">
-                            <a @click="changePage(pagination.page - 1)" class="page-link" href="#">
-                                <i class="bi bi-caret-left-fill"></i>
-                            </a>
-                        </li>
-                        <div v-for="p in pagination.totalPages">
-                            <li v-if="p<4 || p>pagination.totalPages-3"
-                                :class="['page-item', { active: pagination.page == p }]" :key="p">
-                                <a @click="changePage(p)" class="page-link" href="#">{{ p }}</a>
-                            </li>
-                            <li v-if="p==Math.floor(pagination.totalPages / 2) && pagination.totalPages>5"
-                                :class="['page-item', { active: pagination.page == p }]" :key="p">
-                                <a class="page-link" href="#"> ... </a>
-                            </li>
-                        </div>
-                        <li :class="['page-item', { disabled: pagination.page == pagination.totalPages }]">
-                            <a @click="changePage(pagination.page + 1)" class="page-link" href="#">
-                                <i class="bi bi-caret-right-fill"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-
-            <div v-if="news && news.filtered && news.filtered.length > 0" class="table-container">
-                <table class="table table-bordered mt-2">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width: 10%;">Título
-                                <button class="btn btn-icon" @click="newsToggleSort('newsTitle')">
-                                    <i :class="news.search.sort.order != 'asc' 
-                                               ? 'bi bi-arrow-down-circle-fill' 
-                                               : 'bi bi-arrow-up-circle-fill'"></i>
-                                </button>
-                            </th>
-                            <th scope="col" style="width: 5%;">Conteúdo
-                                <button class="btn btn-icon" @click="newsToggleSort('newsContent')">
-                                    <i :class="news.search.sort.order != 'asc' 
-                                           ? 'bi bi-arrow-down-circle-fill' 
-                                           : 'bi bi-arrow-up-circle-fill'"></i>
-                                </button>
-                            </th>
-                            <th scope="col" style="width: 15%;">Portal
-                                <button class="btn btn-icon" @click="newsToggleSort('srcName')">
-                                    <i :class="news.search.sort.order != 'asc' 
-                                           ? 'bi bi-arrow-down-circle-fill' 
-                                           : 'bi bi-arrow-up-circle-fill'"></i>
-                                </button>
-                            </th>
-                            <th scope="col" style="width: 50%;">Endereço</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="news in news.filtered" :key="news.newsTitle">
-                            <td>{{ news.newsTitle }}</td>
-                            <td>{{ news.newsContent.slice(0,100) }}
-                                <span v-if="news.newsContent.length > 100"
-                                    @click="openModal(news.newsContent, news.newsTitle, news.autName, news.newsRegistryDate)"
-                                    style="cursor: pointer; color: blue;">...</span>
-                            </td>
-                            <td style="text-align: center;">
-                                <a :href="news.scrAddress" target="_blank"
-                                    style="text-decoration: underline; color: blue;">
-                                    {{ news.srcName }}
-                                </a>
-                            </td>
-                            <td style="text-align: center;">
-                                <div class="btn-group" role="group" aria-label="Basic example">
-                                    <a :href="news.srcURL" target="_blank" rel="noopener noreferrer">
-                                        <button class="btn btn-outline-primary btn-sm" title="srcURL">
-                                            <i class="bi bi-link"></i>
-                                        </button>
-                                    </a>
-
-                                </div>
-
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div v-else class="alert alert-primary" role="alert">
-                Nenhuma notícia encontrada
             </div>
         </div>
 
-        <!-- Modal de conteúdo -->
-        <div class="modal fade" id="content" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="table-container">
+            <table data-intro="Aqui são exibidos todos os dados, já considerando os filtros da busca viva" data-step="3" class="table table-bordered mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            Nome
+                            <button class="btn btn-icon" @click="newsToggleSort('name')">
+                                <i data-intro="Aqui é possível mudar a ordenação dos valores na tabela" data-step="4" :class="sourceNews.search.sort.order != 'asc' 
+                                         ? 'bi bi-arrow-down-circle-fill' 
+                                         : 'bi bi-arrow-up-circle-fill'"></i>
+                            </button>
+                        </th>
+                        <th scope="col">
+                            Endereço
+                            <button class="btn btn-icon" @click="newsToggleSort('address')">
+                                <i :class="sourceNews.search.sort.order != 'asc' 
+                                         ? 'bi bi-arrow-down-circle-fill' 
+                                         : 'bi bi-arrow-up-circle-fill'"></i>
+                            </button>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="news in this.sourceNews.filtered" :key="news.code">
+                        <td>{{ news.name }}</td>
+                        <td>{{ news.address }}</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button class="btn btn-outline-primary btn-sm" title="Tags"
+                                    @click="tagsForSourceNewsOpen(news)">
+                                    <i class="bi bi-tags"></i> <span class="badge"
+                                        :class="news.tags.length === 0 ? 'bg-danger' : 'bg-secondary'">{{
+                                        news.tags.length }}</span>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" title="Editar"
+                                    @click="newsStartEdit(news)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" title="Excluir" @click="newsDelete(news)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+            ref="sourceNewsFormModal">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="TituloModalLongoExemplo">{{ modalContent.title }}</h5>
+                    <div class="modal-header" data-intro="Aqui é possível cadastrar fontes de dados baseadas em portais de notícia." data-step="9">
+                        <h5 class="modal-title" v-if="sourceNews.formData.action=='create'" id="createModalLabel">
+                            Cadastrar Portal de Noticias</h5>
+                        <h5 class="modal-title" v-if="sourceNews.formData.action!='create'" id="createModalLabel">Editar
+                            Portal de Noticias</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        {{ modalContent.content }}
-                        <br><br>
-                        <p><strong>Autor:</strong> {{ modalContent.author }}</p>
-                        <p><strong>Data de Registro:</strong> {{ modalContent.data }}</p>
+                        <div class="alert alert-dismissible fade show"
+                            :class="`alert-${sourceNews.formData.alert.type}`" role="alert"
+                            v-if="sourceNews.formData.alert.show">
+                            <strong>{{sourceNews.formData.alert.titleError}}</strong>
+                            <br>
+                            {{sourceNews.formData.alert.desc}}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Fechar"></button>
+                        </div>
+                        <form data-intro="Você pode cadastrar um valor para o nome do portal e outro para o endereço, o valor do endereço deve ser único" data-step="11" @submit.prevent="newsSave">
+                            <div class="mb-3">
+                                <label for="newsName" class="form-label">Nome:</label>
+                                <input type="text" class="form-control" id="newsName"
+                                    v-model="sourceNews.formData.sourceSelected.name"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.name }"
+                                    required>
+                                <div class="invalid-feedback">Este campo é obrigatório.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newsAddress" class="form-label">Endereço:</label>
+                                <input type="text" class="form-control" id="newsAddress"
+                                    v-model="sourceNews.formData.sourceSelected.address" @keyup.enter="newsSave"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.address }">
+                                <div class="invalid-feedback">Este campo é obrigatório.</div>
+                            </div>
+                        </form>
+                        <div class="card">
+                            <div data-intro="Os dados do mapeamento automático devem ser retornados nessa tela, contendo as informações do elemento que será mapeado, os valores podem também ser cadastrados manualmente" data-step="22" class="card-header d-flex justify-content-between align-items-center">
+                              Mapeamento
+                              <button data-intro="Aqui é possível acessar o recurso de Mapeamento Automático." data-step="12" type="button" @click="automaticMapOpen" class="btn btn-info">
+                                <i class="bi bi-lightbulb"></i> Buscar Mapeamento Automático
+                              </button>
+                            </div>
+                            <div class="card-body">
+                              <form @submit.prevent="newsSave">
+                                <div class="mb-3">
+                                  <label for="titulo" class="form-label">Título</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="titulo"
+                                    v-model="sourceNews.formData.sourceSelected.map.title"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.title }"
+                                    placeholder="Digite a classe da tag que contém o título"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="noticia" class="form-label">Notícia</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="noticia"
+                                    v-model="sourceNews.formData.sourceSelected.map.body"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.body }"
+                                    placeholder="Digite a classe da tag que contém a notícia"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="autor" class="form-label">Autor</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="autor"
+                                    v-model="sourceNews.formData.sourceSelected.map.author"
+                                    placeholder="Digite a classe da tag que contém o nome do autor"
+                                  >
+                                </div>
+                                <div class="mb-3">
+                                  <label for="data" class="form-label">Data</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="data"
+                                    v-model="sourceNews.formData.sourceSelected.map.date"
+                                    :class="{ 'is-invalid': sourceNews.formData.isSubmitted && !sourceNews.formData.sourceSelected.map.date }"
+                                    placeholder="Digite a classe da tag que contém a data"
+                                    required
+                                  >
+                                  <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="closeModal">Fechar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button data-intro="Para salvar todos os dados referentes a fonte de dados basta clicar em salvar" data-step="23" type="button" class="btn btn-primary" @click="newsSave">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
+            ref="sourceNewsDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{this.sourceNews.delete.sourceSelected.name}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="newsConfirmDelete()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="tagsModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+            ref="tagsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 data-intro="Aqui é possível gerenciar todas as tags do sistema" data-step="30" class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Gerenciar Tags</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-dismissible fade show" :class="`alert-${tags.alert.type}`" role="alert"
+                            v-if="tags.alert.show">
+                            <strong>{{tags.alert.titleError}}</strong>
+                            <br>
+                            {{tags.alert.desc}}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Fechar"></button>
+                        </div>
+                        <div class="mt-3 d-flex">
+                            <input type="text" class="form-control ms-2" v-model="tags.search.query"
+                                placeholder="Pesquisar" @input="tagsFilter" style="flex-grow: 1;">
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-bordered mt-2">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="w-75">
+                                            Nome
+                                            <button class="btn btn-icon"></button>
+                                        </th>
+                                        <th scope="col" class="w-25 text-center">
+                                            <button v-if="!tags.insert.active" class="btn btn-outline-primary btn-sm"
+                                                title="Adicionar" @click="tags.insert.active = true">
+                                                <i class="bi bi-plus"></i> Adicionar
+                                            </button>
+                                        </th>
+                                    </tr>
+                                    <tr v-if="tags.insert.active">
+                                        <td>
+                                            <input type="text" v-model="tags.insert.content" placeholder="Conteúdo"
+                                                class="form-control"
+                                                :class="{ 'is-invalid': tags.insert.isSubmitted && !tags.insert.content }" />
+                                            <div class="invalid-feedback">O conteúdo não pode ser vazio.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-outline-primary btn-sm" title="Adicionar"
+                                                @click="tagCreate()">
+                                                <i class="bi bi-floppy"></i> Salvar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="tag in tags.filtered" :key="tag.id">
+                                        <td>
+                                            <span v-if="!tag.isEditing">{{ tag.tagName }}</span>
+                                            <input v-if="tag.isEditing" v-model="tag.tagName" @blur="tagSave(tag)"
+                                                @keyup.enter="tagSave(tag)" type="text" class="form-control"
+                                                :class="{ 'is-invalid': tag.isSubmitted && !tag.tagName }" />
+                                            <div class="invalid-feedback">O conteúdo não pode ser vazio.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-outline-success btn-sm" title="Salvar"
+                                                    @click="tagEdit(tag)">
+                                                    <i :class="tag.isEditing ? 'bi bi-floppy' : 'bi bi-pencil'"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm" @click="tagDelete(tag)"
+                                                    title="Excluir">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
+            ref="tagsDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{this.tags.delete.tagSelected.tagName}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="tagConfirmDelete()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+            ref="tagsForSourceNewsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Definir Tags</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control mb-2"
+                                                placeholder="Buscar tags disponíveis..." v-model="tags.search.query">
+                                        </div>
+                                        <button type="button" class="btn btn-success w-100"
+                                            @click="tagsForSourceNewsCreateTag()"
+                                            v-if="unselectedTags.length === 0 && tags.search.query != '' && tags.search.query != null">
+                                            <i class="bi bi-plus-circle"></i> Cadastrar Tag
+                                        </button>
+                                        <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
+                                        <select id="selectOption1" class="form-select"
+                                            v-model="sourceNews.tags.movedAdd" multiple size="15">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCod"
+                                                :value="tag.tagCod">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-success w-100" @click="tagsForSourceNewsAdd()"
+                                        :disabled="sourceNews.tags.movedAdd.length === 0">
+                                        <i class="bi bi-arrow-right-circle"></i> Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control mb-2"
+                                                placeholder="Buscar tags selecionadas..."
+                                                v-model="tags.search.selectedQuery">
+                                            <button v-if="selectedTags.length === 0 && tags.search.selected"
+                                                class="btn btn-primary ms-2" @click="registerNewTag">
+                                                Cadastrar Tag
+                                            </button>
+                                        </div>
+                                        <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
+                                        <select id="selectOption2" class="form-select"
+                                            v-model="sourceNews.tags.movedRemove" multiple size="15">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCod" :value="tag.tagCod">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-danger w-100"
+                                        @click="tagsForSourceNewsRemove()"
+                                        :disabled="sourceNews.tags.movedRemove.length === 0">
+                                        <i class="bi bi-arrow-left-circle"></i> Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="tagsForSourceNewsSave()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="configuracao-cron"
+            aria-labelledby="configuracaoCronLabel" ref="offcanvas">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="configuracaoCronLabel">Configuração do Cron</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="alert alert-dismissible fade show" :class="`alert-${cron.alert.type}`" role="alert"
+                    v-if="cron.alert.show">
+                    <strong>{{cron.alert.titleError}}</strong>
+                    <br>
+                    {{cron.alert.desc}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                <div class="form-check form-switch mt-3">
+                    <input class="form-check-input" type="checkbox" id="switchAtivarCron" v-model="cron.active">
+                    <label class="form-check-label" for="switchAtivarCron">Ativar Cron</label>
+                </div>
+
+                <div v-if="cron.active" class="active-fields">
+                    <label for="periodicidade" class="form-label mt-3">Periodicidade:</label>
+                    <select class="form-select" id="periodicidade" v-model="cron.periodice"
+                        :class="{'is-invalid': cron.isSubmited && !cron.periodice}">
+                        <option value="">Escolha uma opção</option>
+                        <option value="Daily">Diário</option>
+                        <option value="Weekly">Semanal</option>
+                        <option value="Monthly">Mensal</option>
+                    </select>
+                    <div v-if="cron.isSubmited && !cron.periodice">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+
+                    <label for="hora" class="form-label mt-3">Hora:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="hora" v-model="cron.hour" min="0" max="23"
+                            placeholder="HH" @input="cronValidateHour"
+                            :class="{'is-invalid': cron.isSubmited && !cron.hour}" />
+                        <span class="input-group-text">:</span>
+                        <input type="number" class="form-control" id="minuto" v-model="cron.minute" min="0" max="59"
+                            placeholder="MM" @input="cronValidateMinute"
+                            :class="{'is-invalid': cron.isSubmited && !cron.minute}" />
+                    </div>
+                    <div v-if="cron.isSubmited && (!cron.hour || !cron.minute)">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+
+                    <label for="fuso-horario" class="form-label mt-3">Fuso Horário:</label>
+                    <select class="form-select" id="fuso-horario" v-model="cron.timeZone"
+                        :class="{'is-invalid': cron.isSubmited && !cron.timeZone}">
+                        <option value="">Escolha um fuso horário</option>
+                        <option value="America/Noronha">Fernando de Noronha (UTC-2)</option>
+                        <option value="America/Belem">Belém (UTC-3)</option>
+                        <option value="America/Fortaleza">Fortaleza (UTC-3)</option>
+                        <option value="America/Recife">Recife (UTC-3)</option>
+                        <option value="America/Araguaina">Araguaína (UTC-3)</option>
+                        <option value="America/Maceio">Maceió (UTC-3)</option>
+                        <option value="America/Bahia">Bahia (UTC-3)</option>
+                        <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+                        <option value="America/Campo_Grande">Campo Grande (UTC-4)</option>
+                        <option value="America/Cuiaba">Cuiabá (UTC-4)</option>
+                        <option value="America/Porto_Velho">Porto Velho (UTC-4)</option>
+                        <option value="America/Boa_Vista">Boa Vista (UTC-4)</option>
+                        <option value="America/Manaus">Manaus (UTC-4)</option>
+                        <option value="America/Eirunepe">Eirunepé (UTC-5)</option>
+                        <option value="America/Rio_Branco">Rio Branco (UTC-5)</option>
+                    </select>
+                    <div v-if="cron.isSubmited && !cron.timeZone">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-success mt-3" @click="cronSalvarConfiguracao">Salvar</button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+            ref="regionalismModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-geo-alt"></i> Gerenciar
+                            Regionalismo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="regionalism.alert.active" :class="['alert', `alert-${regionalism.alert.class}`]"
+                            role="alert">
+                            {{ regionalism.alert.message }}
+                        </div>
+                        <div v-if="!regionalism.wordSelected.available">
+                            <div class="mt-3 d-flex">
+                                <input type="text" class="form-control ms-2" v-model="regionalism.search"
+                                    placeholder="Pesquisar" @input="filterWords" style="flex-grow: 1;">
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-bordered mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="w-75">Conteudo</th>
+                                            <th scope="col" class="w-25 text-center">
+                                                <button v-if="!regionalism.insert"
+                                                    class="btn btn-outline-primary btn-sm" title="Adicionar"
+                                                    @click="regionalism.insert = true">
+                                                    <i class="bi bi-plus"></i> Adicionar
+                                                </button>
+                                            </th>
+                                        </tr>
+                                        <tr v-if="regionalism.insert">
+                                            <td>
+                                                <input type="text" v-model="regionalism.insertWord"
+                                                    placeholder="Conteudo" class="form-control" />
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-primary btn-sm" title="Adicionar"
+                                                    @click="addWord()">
+                                                    <i class="bi bi-save"></i> Salvar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="regionalism.filtered.length === 0">
+                                            <td colspan="2" class="text-center">Sem palavras encontradas</td>
+                                        </tr>
+                                        <tr v-for="word in regionalism.filtered" :key="word.id">
+                                            <td><span>{{ word.content }}</span></td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <button data-intro="Aqui é possível editar os dados referentes ao portal de notícias." data-step="7" class="btn btn-outline-success btn-sm" title="Editar"
+                                                        @click="editWord(word)">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm" title="Excluir"
+                                                        @click="deleteWord(word)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div v-if="regionalism.wordSelected.available">
+                            <div class="mb-3">
+                                <label for="inputContent" class="form-label">Conteúdo</label>
+                                <input type="text" id="inputContent" class="form-control ms-2"
+                                    v-model="regionalism.wordSelected.word.content"
+                                    placeholder="Digite o conteúdo da palavra" style="flex-grow: 1;">
+                            </div>
+                            <!-- Card para os checkboxes -->
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    Sinônimos
+                                </div>
+                                <div class="card-body">
+                                    <div class="mt-3 d-flex">
+                                        <input type="text" class="form-control ms-2"
+                                            v-model="regionalism.wordSelected.search" placeholder="Pesquisar"
+                                            @input="filterWordsSynonyms" style="flex-grow: 1;">
+                                    </div>
+                                    <form>
+                                        <div class="form-check" v-for="word in regionalism.wordSelected.filtered"
+                                            :key="word.id">
+                                            <input class="form-check-input" type="checkbox" :id="'word' + word.id"
+                                                :value="word" :checked="isSynonymSelected(word)"
+                                                @change="toggleSynonym(word.id)" />
+                                            <label class="form-check-label" :for="'word' + word.id">
+                                                {{ word.content }}
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" v-if="regionalism.wordSelected.available">
+                        <button type="button" class="btn btn-secondary"
+                            @click="regionalism.wordSelected.available = false">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="saveWord()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="regionalismDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" ref="regionalismDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{regionalism.delete.wordSelected.content}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="cancelDeleteWord()">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="confirmDeleteWord()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+      <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="automaticMapModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 data-intro="Aqui é possível buscar o Mapeamento de um portal utilizando uma notícia de exemplo vamos explicar cada elemento" data-step="13" class="modal-title" id="createModalLabel"><i class="bi bi-lightbulb"></i> Mapeamento Automático</h5>
+                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ajuda sobre como usar este formulário">
+                            <i class="bi bi-question-circle"></i>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="newsSave">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newsUrl" class="form-label">URL:</label>
+                                        <input
+                                            data-intro="Aqui deve ser inserida um notícia de exemplo pertencente ao portal que você deseja mapear." data-step="14"
+                                            type="text"
+                                            class="form-control"
+                                            id="newsUrl"
+                                            v-model="sourceNews.automaticMap.map.url"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.url }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+                                    <iframe data-intro="Aqui será carregada uma miniatura da notícia, você pode copiar o contéudo dos elementos que deseja mapear." data-step="15" :src="sourceNews.automaticMap.map.url" class="w-100" height="300" frameborder="0"></iframe>
+                                </div>
+        
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newsTitle" class="form-label">Título:</label>
+                                        <input
+                                            data-intro="Aqui você deve copiar o valor referente ao título da notícia" data-step="16"
+                                            type="text"
+                                            class="form-control"
+                                            id="newsTitle"
+                                            v-model="sourceNews.automaticMap.map.title"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.title }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsBody" class="form-label">Notícia:</label>
+                                        <textarea
+                                            data-intro="Aqui você deve copiar parte do texto que contem o corpo da notícia" data-step="17"
+                                            class="form-control"
+                                            id="newsBody"
+                                            v-model="sourceNews.automaticMap.map.body"
+                                            rows="4"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.body }"
+                                            required
+                                        ></textarea>
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsDate" class="form-label">Data:</label>
+                                        <input
+                                            data-intro="Aqui você deve copiar o valor referente a data, no formato: dd/mm/aaaa" data-step="18"
+                                            type="text"
+                                            class="form-control"
+                                            id="newsDate"
+                                            v-model="sourceNews.automaticMap.map.date"
+                                            :class="{ 'is-invalid': sourceNews.automaticMap.isSubmitted && !sourceNews.automaticMap.map.date }"
+                                            required
+                                        >
+                                        <div class="invalid-feedback">Este campo é obrigatório.</div>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="newsAuthor" class="form-label">Autor:</label>
+                                        <input
+                                            data-intro="Aqui você deve copiar o valor referente ao autor da notícia, esse campo não é obrigatório" data-step="19"
+                                            type="text"
+                                            class="form-control"
+                                            id="newsAuthor"
+                                            v-model="sourceNews.automaticMap.map.author"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="automaticMapExecute">Executar</button>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
+
     <script src="../library/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
     <script src="../library/axios.js"></script>
-    <script src="../js/newsFeed.js"></script>
+    <script src="../js/index.js"></script>
+    <script src="../js/popper.min.js"></script>
+    <script src="../js/intro.min.js"></script>
 </body>
 
 </html>
