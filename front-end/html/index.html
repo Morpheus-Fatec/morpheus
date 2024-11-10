@@ -448,6 +448,7 @@
                 <h5 class="offcanvas-title" id="configuracaoCronLabel">Configuração do Cron</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
             </div>
+
             <div class="offcanvas-body">
                 <div class="alert alert-dismissible fade show" :class="`alert-${cron.alert.type}`" role="alert"
                     v-if="cron.alert.show">
@@ -456,6 +457,7 @@
                     {{cron.alert.desc}}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
                 </div>
+
                 <div class="form-check form-switch mt-3">
                     <input class="form-check-input" type="checkbox" id="switchAtivarCron" v-model="cron.active">
                     <label class="form-check-label" for="switchAtivarCron">Ativar Cron</label>
@@ -511,9 +513,15 @@
                     <div v-if="cron.isSubmited && !cron.timeZone">
                         <span class="text-danger">Este campo é obrigatório.</span>
                     </div>
+
+                <label for="timeout" class="form-label mt-3">Timeout (em segundos): </label>
+                <input type="number" class="form-control" id="timeout" v-model="cron.timeout" min="1" max="15" @input="validateTimeoutInput" :class="{'is-invalid': cron.isSubmited && !cron.timeout}" />
+                <div v-if="cron.isSubmited && !cron.timeout">
+                    <span class="text-danger">Este campo é obrigatório.</span>
                 </div>
 
                 <button class="btn btn-success mt-3" @click="cronSalvarConfiguracao">Salvar</button>
+                </div>
             </div>
         </div>
 

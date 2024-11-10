@@ -7,6 +7,7 @@ const app = Vue.createApp({
                 periodice: "",
                 hour: "",
                 timeZone: "",
+                timeout: "",
                 isSubmited: false,
                 alert: {
                     show: false,
@@ -324,7 +325,6 @@ const app = Vue.createApp({
             this.sourceNews.tags.modal.show();
             this.sourceNews.tags.newsSelected = news;
             this.sourceNews.tags.selected = news.tags;
-           
 
         },
         tagsForSourceNewsAdd() {
@@ -351,10 +351,8 @@ const app = Vue.createApp({
                 tagCodes: this.sourceNews.tags.selected,
                 map: this.sourceNews.tags.newsSelected.map,
                 type: 1
-
             };
 
-     
             axios.put(endpoint, payload)
                 .then(response => {
                     this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
@@ -499,7 +497,6 @@ const app = Vue.createApp({
                     body: this.sourceNews.automaticMap.map.body,
                     date: this.sourceNews.automaticMap.map.date,
                     author: this.sourceNews.automaticMap.map.author
-
                 };
 
 
@@ -524,6 +521,7 @@ const app = Vue.createApp({
                     });
             }
         },
+
         cronLoad() {
             this.isLoading = true;
             axios.get('http://localhost:8080/morpheus/config/properties')
@@ -535,6 +533,7 @@ const app = Vue.createApp({
                     this.cron.hour = parts[0];
                     this.cron.minute = parts[1];
                     this.cron.timeZone = config.timeZone;
+                    this.cron.timeout = config.timeout / 1000;
                 })
                 .catch(error => {
                     this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron.');
@@ -557,27 +556,55 @@ const app = Vue.createApp({
                 this.cron.minute = 0;
             }
         },
+        cronValidateTimeout(){
+            if (this.cron.timeout > 15) {
+                this.cron.timeout = 15;
+                this.cronMontedAlert('danger', 'O valor máximo permitido para o timeout é 15 segundos.', 'Erro de validação');
+            } else if (this.cron.timeout < 1) {
+                this.cron.timeout = 1;
+                this.cronMontedAlert('danger', 'O valor mínimo permitido para o timeout é 1 segundo.', 'Erro de validação');
+            }
+        },
+        validateTimeoutInput(event) {
+            const value = event.target.value;
+            if (value < 1) {
+                this.cron.timeout = 1;
+            } else if (value > 15) {
+                this.cron.timeout = 15;
+            } else {
+                this.cron.timeout = value;
+            }
+        },
         cronSalvarConfiguracao() {
+            this.cronValidateTimeout();
+        
+            if (this.cron.timeout > 15 || this.cron.timeout < 1) {
+                this.cronMontedAlert('danger', 'O valor do timeout deve estar entre 1 e 15 segundos.', 'Erro de validação');
+                return;
+            }
+        
             this.cron.isSubmited = true;
-            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone)) {
+        
+            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '' || this.cron.timeout > 15 || this.cron.timeout < 1)) { 
                 this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron.');
                 return;
             }
-
+        
             this.isLoading = true;
             const payload = {
                 frequency: this.cron.periodice,
                 time: this.cron.hour + ':' + this.cron.minute,
                 timeZone: this.cron.timeZone,
+                timeout: this.cron.timeout * 1000,
                 active: this.cron.active.toString()
             };
-
+        
             axios.post('http://localhost:8080/morpheus/config/update', payload)
                 .then(response => {
                     const offcanvasElement = this.$refs.offcanvas;
                     const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (bsOffcanvas) {
-                        bsOffcanvas.hide();
+                        bsOffcanvas.hide(); // Esta linha fecha a janela
                     }
                     this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso.', 'Configuração salva com sucesso.');
                 })
