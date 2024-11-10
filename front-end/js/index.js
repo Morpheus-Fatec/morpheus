@@ -823,12 +823,12 @@ const app = Vue.createApp({
                     position: 'right'
                   },
                   {
-                    element: '.editTagsSource:first-of-type',
+                    element: '#editTagsSource',
                     intro: 'Aqui é possível gerenciar as tags vinculadas a uma fonte de dados, sendo o numero exibido nesse botão o resultado total de tags vinculadas, caso não existam tags vínculadas o botão fica em vermelho, pois isso indica que a fonte de dados nunca terá dados salvos',
                     position: 'bottom'
                   },
                   {
-                    element: '.removeTagsSource:first-of-type',
+                    element: '#removeTagsSource',
                     intro: 'Aqui é possível excluir uma fonte de dados',
                     position: 'top'
                   },
