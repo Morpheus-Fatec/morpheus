@@ -7,6 +7,7 @@ const app = Vue.createApp({
                 periodice: "",
                 hour: "",
                 timeZone: "",
+                timeout: "",
                 isSubmited: false,
                 alert: {
                     show: false,
@@ -324,7 +325,6 @@ const app = Vue.createApp({
             this.sourceNews.tags.modal.show();
             this.sourceNews.tags.newsSelected = news;
             this.sourceNews.tags.selected = news.tags;
-           
 
         },
         tagsForSourceNewsAdd() {
@@ -332,7 +332,7 @@ const app = Vue.createApp({
             this.sourceNews.tags.movedAdd = [];
         },
         tagsForSourceNewsRemove() {
-            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCod => !this.sourceNews.tags.movedRemove.includes(tagCod));
+            this.sourceNews.tags.selected = this.sourceNews.tags.selected.filter(tagCode => !this.sourceNews.tags.movedRemove.includes(tagCode));
             this.sourceNews.tags.movedRemove = [];
         },
         tagsForSourceNewsCreateTag() {
@@ -351,10 +351,8 @@ const app = Vue.createApp({
                 tagCodes: this.sourceNews.tags.selected,
                 map: this.sourceNews.tags.newsSelected.map,
                 type: 1
-
             };
 
-     
             axios.put(endpoint, payload)
                 .then(response => {
                     this.rootMontedAlert('success', 'Foi salvo com sucesso as tags do portal: ' + this.sourceNews.tags.newsSelected.name, 'Tags salvas com sucesso');
@@ -364,6 +362,7 @@ const app = Vue.createApp({
                 })
                 .finally(final => {
                     this.sourceNews.tags.modal.hide();
+                    this.newsLoad();
                 });
         },
 
@@ -394,7 +393,7 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tags.all = response.data.map(tag => ({
-                        tagCod: tag.tagCod,
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                 })
@@ -417,7 +416,8 @@ const app = Vue.createApp({
                     })
                     .then(response => {
                         this.tagsLoad();
-                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.sourceNews.formData.sourceSelected.name, 'Tag salva com sucesso');
+                        this.tagsMontedAlert('success', 'Foi salvo com sucesso a tag: ' + this.tags.insert.content, 'Tag salva com sucesso');
+                        this.tags.insert.content = "";
                     })
                     .catch(error => {
                         this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar salvar!');
@@ -431,7 +431,7 @@ const app = Vue.createApp({
             tag.isSubmitted = true;
             if (tag.tagName) {
                 axios
-                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCod)}`, {
+                    .put(`http://localhost:8080/morpheus/tag/${Number(tag.tagCode)}`, {
                         tagName: tag.tagName
                     })
                     .then(response => {
@@ -453,7 +453,7 @@ const app = Vue.createApp({
         },
         tagConfirmDelete() {
             this.tags.delete.modal.hide();
-            const code = this.tags.delete.tagSelected.tagCod;
+            const code = this.tags.delete.tagSelected.tagCode;
             const endpoint = `http://localhost:8080/morpheus/tag/${code}`;
 
             axios.delete(endpoint)
@@ -469,6 +469,17 @@ const app = Vue.createApp({
                 });
         },
         automaticMapOpen() {
+            this.automaticMap ={
+                map : {
+                author: null,
+                body: null,
+                title: null,
+                url: null,
+                date: null
+                },
+                modal:null
+            };
+            this.sourceNews.automaticMap.isSubmitted = false;
             const modalElement = this.$refs.automaticMapModal;
             this.sourceNews.automaticMap.modal = new bootstrap.Modal(modalElement);
             this.sourceNews.automaticMap.modal.show();
@@ -486,7 +497,6 @@ const app = Vue.createApp({
                     body: this.sourceNews.automaticMap.map.body,
                     date: this.sourceNews.automaticMap.map.date,
                     author: this.sourceNews.automaticMap.map.author
-
                 };
 
 
@@ -497,6 +507,11 @@ const app = Vue.createApp({
                         this.sourceNews.formData.sourceSelected.map.body = data.body || this.sourceNews.formData.sourceSelected.map.body;
                         this.sourceNews.formData.sourceSelected.map.title = data.title || this.sourceNews.formData.sourceSelected.map.title;
                         this.sourceNews.formData.sourceSelected.map.date = data.date || this.sourceNews.formData.sourceSelected.map.date;
+                        this.sourceNews.automaticMap.map.url = "";
+                        this.sourceNews.automaticMap.map.title = "";
+                        this.sourceNews.automaticMap.map.body = "";
+                        this.sourceNews.automaticMap.map.date = "";
+                        this.sourceNews.automaticMap.map.author = "";
 
                         this.newsMontedAlert('success', 'Foi realizado com sucesso a busca pelo mapeamento automático, para salvar o novo mapeamento clique em salvar.', 'Mapeamento realizado com sucesso.');
                     })
@@ -506,6 +521,7 @@ const app = Vue.createApp({
                     });
             }
         },
+
         cronLoad() {
             this.isLoading = true;
             axios.get('http://localhost:8080/morpheus/config/properties')
@@ -517,6 +533,7 @@ const app = Vue.createApp({
                     this.cron.hour = parts[0];
                     this.cron.minute = parts[1];
                     this.cron.timeZone = config.timeZone;
+                    this.cron.timeout = config.timeout / 1000;
                 })
                 .catch(error => {
                     this.cronMontedAlert('danger', 'Houve uma indisponibilidade no sistema tente novamente mais tarde.', 'Erro ao carregar dados do cron.');
@@ -539,27 +556,55 @@ const app = Vue.createApp({
                 this.cron.minute = 0;
             }
         },
+        cronValidateTimeout(){
+            if (this.cron.timeout > 15) {
+                this.cron.timeout = 15;
+                this.cronMontedAlert('danger', 'O valor máximo permitido para o timeout é 15 segundos.', 'Erro de validação');
+            } else if (this.cron.timeout < 1) {
+                this.cron.timeout = 1;
+                this.cronMontedAlert('danger', 'O valor mínimo permitido para o timeout é 1 segundo.', 'Erro de validação');
+            }
+        },
+        validateTimeoutInput(event) {
+            const value = event.target.value;
+            if (value < 1) {
+                this.cron.timeout = 1;
+            } else if (value > 15) {
+                this.cron.timeout = 15;
+            } else {
+                this.cron.timeout = value;
+            }
+        },
         cronSalvarConfiguracao() {
+            this.cronValidateTimeout();
+        
+            if (this.cron.timeout > 15 || this.cron.timeout < 1) {
+                this.cronMontedAlert('danger', 'O valor do timeout deve estar entre 1 e 15 segundos.', 'Erro de validação');
+                return;
+            }
+        
             this.cron.isSubmited = true;
-            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone)) {
+        
+            if (this.cron.active && (!this.cron.periodice || this.cron.hour === '' || this.cron.minute === '' || !this.cron.timeZone || this.cron.timeZone === '' || this.cron.timeout === '' || this.cron.timeout > 15 || this.cron.timeout < 1)) { 
                 this.cronMontedAlert('danger', 'Por favor, preencha todos os campos obrigatórios.', 'Erro ao salvar o cron.');
                 return;
             }
-
+        
             this.isLoading = true;
             const payload = {
                 frequency: this.cron.periodice,
                 time: this.cron.hour + ':' + this.cron.minute,
                 timeZone: this.cron.timeZone,
+                timeout: this.cron.timeout * 1000,
                 active: this.cron.active.toString()
             };
-
+        
             axios.post('http://localhost:8080/morpheus/config/update', payload)
                 .then(response => {
                     const offcanvasElement = this.$refs.offcanvas;
                     const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (bsOffcanvas) {
-                        bsOffcanvas.hide();
+                        bsOffcanvas.hide(); // Esta linha fecha a janela
                     }
                     this.rootMontedAlert('success', 'Configuração do Cron salva com sucesso.', 'Configuração salva com sucesso.');
                 })
@@ -597,7 +642,7 @@ const app = Vue.createApp({
                     words.forEach(word => {
                         let item = new Object();
                         item.content = word.content;
-                        item.id = word.id;
+                        item.code = word.code;
                         item.synonyms = word.synonyms;
                         this.regionalism.words.push(item);
                     });
@@ -635,12 +680,12 @@ const app = Vue.createApp({
         },
         filterWordsSynonyms() {
             const query = this.regionalism.wordSelected.search.toLowerCase();
-            const selectedWordId = this.regionalism.wordSelected.word.id;
+            const selectedWordId = this.regionalism.wordSelected.word.code;
 
             this.regionalism.wordSelected.filtered = this.regionalism.words
                 .filter(word =>
                     word.content.toLowerCase().includes(query) &&
-                    word.id !== selectedWordId
+                    word.code !== selectedWordId
                 )
                 .sort((a, b) => {
                     const result = a.content.toLowerCase().localeCompare(b.content.toLowerCase());
@@ -656,7 +701,7 @@ const app = Vue.createApp({
         },
         saveWord() {
             this.isLoading = true;
-            const idWord = this.regionalism.wordSelected.word.id;
+            const idWord = this.regionalism.wordSelected.word.code;
             axios.put(`http://localhost:8080/texts/${idWord}`, {
                 synonymIds: this.regionalism.wordSelected.synonyms,
                 textoDescription: this.regionalism.wordSelected.word.content
@@ -683,7 +728,8 @@ const app = Vue.createApp({
                 textDescription: this.regionalism.insertWord
             })
                 .then(response => {
-                    this.regionalism.insert = "";
+                    this.regionalism.insertWord = "";
+
                     this.getWordsRegionalism();
                     this.alertRegionalism("Cadastro realizado com sucesso", "success");
                 })
@@ -695,7 +741,7 @@ const app = Vue.createApp({
                 });
         },
         isSynonymSelected(word) {
-            return this.regionalism.wordSelected.synonyms.includes(word.id);
+            return this.regionalism.wordSelected.synonyms.includes(word.code);
         },
         toggleSynonym(id) {
             const index = this.regionalism.wordSelected.synonyms.indexOf(id);
@@ -714,7 +760,7 @@ const app = Vue.createApp({
         },
         confirmDeleteWord() {
             this.isLoading = true;
-            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.id}`)
+            axios.delete(`http://localhost:8080/texts/${this.regionalism.delete.wordSelected.code}`)
                 .then(response => {
                     this.alertRegionalism("Palavra deletada com sucesso", "success");
                 })
@@ -731,12 +777,208 @@ const app = Vue.createApp({
         cancelDeleteWord() {
             this.regionalism.modal.show();
             this.regionalism.delete.modal.hide();
+        },
+        clearInvalidFeedback() {
+            if (this.sourceNews.automaticMap.isSubmitted && !this.sourceNews.automaticMap.map.body) {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
+        },
+        submitForm() {
+            this.sourceNews.automaticMap.isSubmitted = true;  
+    
+            if (this.sourceNews.automaticMap.map.body) {
+                axios.post('http://localhost:8080/morpheus/source/mapping', payload)
+                    .then(response => {
+                        this.sourceNews.automaticMap.map.body = "";  
+                    })
+                    .catch(error => {
+                    });
+            } else {
+                this.sourceNews.automaticMap.isSubmitted = false;
+            }
+        },
+        startUserGuide(guide) {
+            const vm = this;
+            let stepsGuide = [];
+            if(guide == 'main'){
+                stepsGuide = [
+                {
+                    element: '#titleSources',
+                    intro: 'Aqui você pode gerenciar todas as fontes de dados utilizadas para alimentar a base de notícias.',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#searchElements',
+                    intro: 'Aqui você pode pesquisar usando uma busca viva por um portal de notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#optionsSearch',
+                    intro: 'Aqui é possível selecionar um campo a sua escolha para utilizar na filtragem de dados',
+                    position: 'top'
+                  },
+                  {
+                    element: '#allSources',
+                    intro: 'Aqui ficam exibidos todos as fontes de dados resultantes da pesquisa',
+                    position: 'right'
+                  },
+                  {
+                    element: '#editTagsSource',
+                    intro: 'Aqui é possível gerenciar as tags vinculadas a uma fonte de dados, sendo o numero exibido nesse botão o resultado total de tags vinculadas, caso não existam tags vínculadas o botão fica em vermelho, pois isso indica que a fonte de dados nunca terá dados salvos',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#removeTagsSource',
+                    intro: 'Aqui é possível excluir uma fonte de dados',
+                    position: 'top'
+                  },
+                  {
+                    element: '#btnCreateSource',
+                    intro: 'Aqui é possível realizar o cadastro de uma nova fonte de dados',
+                    position: 'right'
+                  },
+                  {
+                    element: '#btnManTags',
+                    intro: 'Aqui é possível realizar o gerenciamento das tags usadas no sistema',
+                    position: 'right'
+                  },
+                  {
+                    element: '#btnManRegionalism',
+                    intro: 'Aqui é possível realizar o gerenciamento dos termos usados no regionalismo',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#btnConfig',
+                    intro: 'Aqui é possível ajustar as configurações técnicas do sistema como ajuste do cron',
+                    position: 'top'
+                  }
+                ]
+            }
+
+            if(guide == 'sources'){
+                stepsGuide = [
+                {
+                    element: '#titleSourcesModal',
+                    intro: 'Aqui você pode editar ou cadastrar fontes de dados',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#nameSourcesModal',
+                    intro: 'o campo novo representa o nome pelo qual a fonte de dados será representada dentro do sistema, esse campo é livre porem deve ser único',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#addresSourcesModal',
+                    intro: 'O campo endereço representa a URL dessa fonte de dados, deve-se cadastrar o endereço mais especifico possível, isso para otimizar todo o funcionamento do armazenamento de notícias, Importante destacar que somente notícias que tiverem dentro do seu endereço o próprio endereço da fonte de dados, que podem ser consideradas para analise de conteúdo',
+                    position: 'left'
+                  },
+                  {
+                    element: '#mapAutSourcerModal',
+                    intro: 'Aqui estão disponíveis para configuração o mapeamento, são dados referentes a como a fonte de dados organiza cada parte da notícia, de modo que o sistema consiga buscar os dados com mais precisão',
+                    position: 'top'
+                  },
+                  {
+                    element: '#btnMapAutSourcerModal',
+                    intro: 'Aqui é possível abrir a funcionalidade de mapeamento automático',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#titleMapAutModal',
+                    intro: 'Aqui é possível realizar a ação de mapear automaticamente um porta de notícias',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#urlMapAutModal',
+                    intro: 'Primeiramente você deve colar aqui uma notícia utilizada no portal de notícias pertencente a fonte que você deseja cadastrar',
+                    position: 'right'
+                  },
+                  {
+                    element: '#frameMapAutModal',
+                    intro: 'uma miniatura da notícia ira carregar na sequência, permitindo com que você copie cada dado da notícia, importante destacar que a miniatura é apenas uma ferramenta facilitadora podendo você copiar as informações diretamente da página.',
+                    position: 'right'
+                  },
+                  {
+                    element: '#titleInputMapAutModal',
+                    intro: 'Insira aqui o título presente na notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#bodyMapAutModal',
+                    intro: 'Insira parte do corpo da notícia, não é preciso inserir a notícia inteira',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#dateMapAutModal',
+                    intro: 'Insira aqui a data presente na notícia, utilizar no formato dd/mm/aaaa',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#authorMapAutModal',
+                    intro: 'Insira aqui os autores presentes na notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#mapAutSourcerModal',
+                    intro: 'Os dados devem ser exibidos aqui de maneira automática, podendo também ser editado livremente.',
+                    position: 'top'
+                  },
+                ]
+            }
+
+            let modalElement = this.$refs.sourceNewsFormModal;
+            const createModal = new bootstrap.Modal(modalElement);
+            modalElement = this.$refs.automaticMapModal;
+            const automaticMapModal = new bootstrap.Modal(modalElement);
+
+            const mD = this.sourceNews.formData.modal;
+
+            introJs().setOptions({
+                steps: stepsGuide,
+                nextLabel: 'Próximo',
+                prevLabel: 'Anterior',
+                skipLabel: '<i class="fa fa-times"></i>',
+                doneLabel: 'Concluir'
+              })
+              .onchange(async function(element) {
+                if(guide == 'sources'){
+                    const stepIndex = this._currentStep;
+                    if (stepIndex == '5') {
+                        mD.hide();
+                        await showModal(automaticMapModal);
+                    }
+                    if (stepIndex == '6') {
+                        vm.sourceNews.automaticMap.map.url = '../assets/newsExample.html';
+                    }
+                    if (stepIndex == '8') {
+                        vm.sourceNews.automaticMap.map.body ="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum nisi at felis commodo, ut";
+                    }
+                    if (stepIndex == '9') {
+                        vm.sourceNews.automaticMap.map.date ="05/11/2024";
+                    }
+                    if (stepIndex == '10') {
+                        vm.sourceNews.automaticMap.map.author ="João Silva";
+                    }
+                    if (stepIndex == '12') {
+                        automaticMapModal.hide();
+                        showModal(vm.sourceNews.formData.modal);
+                    }
+                }
+              })
+              .start();
+
+              function showModal(modal) {
+                return new Promise((resolve) => {
+                    modal.show();
+                    modal._element.addEventListener('shown.bs.modal', resolve, { once: true });
+                });
+            }
         }
     },
+    
     computed: {
         selectedTags() {
             return this.tags.all
-                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.selectedQuery ||
                         tag.tagName.toLowerCase().includes(this.tags.search.selectedQuery.toLowerCase());
@@ -746,7 +988,7 @@ const app = Vue.createApp({
         unselectedTags() {
   
             return this.tags.all
-                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCod))
+                .filter(tag => !this.sourceNews.tags.selected.includes(tag.tagCode))
                 .filter(tag => {
                     return !this.tags.search.query ||
                         tag.tagName.toLowerCase().includes(this.tags.search.query.toLowerCase());

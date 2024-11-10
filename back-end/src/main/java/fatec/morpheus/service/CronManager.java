@@ -1,6 +1,15 @@
 package fatec.morpheus.service;
 
-import fatec.morpheus.controller.CronController;
+import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +20,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.Objects;
-import java.util.TimeZone;
-import java.util.concurrent.ScheduledFuture;
+import fatec.morpheus.controller.CronController;
 
 @Service
 public class CronManager {
@@ -23,13 +28,12 @@ public class CronManager {
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> scheduledTask;
     @Autowired
-    private ScrapingService scrapingService;    
+    private ScrapingService scrapingService;
 
-    // Injetando a expressão cron inicial a partir do arquivo de configuração
-    @Value("${cron.expression:0 * * * * *}") // Valor padrão: a cada minuto
+    @Value("${cron.expression:0 * * * * *}")
     private String cronExpression;
 
-    @Value("${cron.timeZone:America/Sao_Paulo}") // Valor padrão: a cada minuto
+    @Value("${cron.timeZone:America/Sao_Paulo}")
     private String cronTimeZone;
 
     public CronManager() {
@@ -37,52 +41,50 @@ public class CronManager {
         ((ThreadPoolTaskScheduler) taskScheduler).initialize();
     }
 
-    // Método para iniciar a tarefa cron
     @PostConstruct
     public void startCronTask() {
         scheduledTask = taskScheduler.schedule(this::runTask, getTrigger());
         logger.info("Tarefa cron iniciada com a expressão: " + cronExpression);
     }
 
-    // Método para atualizar a expressão cron e reiniciar a tarefa
     public void updateCron(String newCron) {
         this.cronExpression = newCron;
         if (scheduledTask != null) {
-            scheduledTask.cancel(false);  // Cancela a tarefa anterior
+            scheduledTask.cancel(false);
         }
     }
 
-    // Método para parar o cron
     public void stopCronTask() {
         if (scheduledTask != null && !scheduledTask.isCancelled()) {
-            scheduledTask.cancel(false);  // Cancela a tarefa cron se estiver rodando
+            scheduledTask.cancel(false);
             logger.info("Tarefa cron parada.");
         } else {
             logger.info("Nenhuma tarefa cron ativa para parar.");
         }
     }
 
-    // Tarefa executada pelo cron
     private void runTask() {
-        scrapingService.getSearch();
-        logger.info("Executando a tarefa com o cron: " + cronExpression);
-    }
+        long timeout = Long.parseLong(System.getProperty("cron.timeout", "5000"));
 
-    // Obtém o Trigger com base na expressão cron
-//    private Trigger getTrigger() {
-//        return triggerContext -> {
-//            CronTrigger cronTrigger = new CronTrigger(cronExpression);
-//            return cronTrigger.nextExecutionTime(triggerContext).toInstant();
-//        };
+        try{
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scrapingService.getSearch());
+
+            future.get(timeout, TimeUnit.MILLISECONDS);
+            logger.info("Tarefa cron executada com sucesso.");
+        } catch (TimeoutException e) {
+            logger.warn("Tarefa cron excedeu o tempo limite de execução.");
+        } catch (Exception e) {
+            logger.error("Erro ao executar tarefa cron.", e);
+        }
+    }
+        
+
     private Trigger getTrigger() {
         return triggerContext -> {
-            // Cria o CronTrigger com a cron expression
             CronTrigger cronTrigger = new CronTrigger(cronExpression,TimeZone.getTimeZone(cronTimeZone));
 
-            // Obtém a próxima execução de acordo com o contexto do trigger
             Date nextExecution = Date.from(Objects.requireNonNull(cronTrigger.nextExecution(triggerContext)));
 
-            // Converte para Instant (evitando o uso de toInstant de Date diretamente)
             return nextExecution.toInstant();
         };
     }

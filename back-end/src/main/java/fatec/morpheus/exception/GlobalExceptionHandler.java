@@ -17,6 +17,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CustomNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCustomNotFound(CustomNotFoundException ex) { 
+        return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(UniqueConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleUniqueConstraint(UniqueConstraintViolationException ex) {
         return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.CONFLICT);
@@ -32,8 +37,10 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "O JSON enviado está malformado ou contém valores inválidos.");
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-    
-    
 
+    @ExceptionHandler(NoAuthorsFoundException.class)
+    public ResponseEntity<String> handleNoAuthorsFoundException(NoAuthorsFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
 

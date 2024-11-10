@@ -1,15 +1,15 @@
 package fatec.morpheus.DTO;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class TextDTO {
-    private String content;
-    private Integer code;
-    private List<Integer> synonyms;
+public class TagDTO {
+    private Integer id;
+    private String name;
+    private Integer newsCount;
 }

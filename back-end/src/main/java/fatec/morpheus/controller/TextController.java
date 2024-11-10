@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fatec.morpheus.DTO.TextDTO;
 import fatec.morpheus.entity.Synonymous;
 import fatec.morpheus.entity.Text;
+import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.service.SynonymousService;
 import fatec.morpheus.service.TextService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,9 +57,8 @@ public class TextController {
     public ResponseEntity<Text> getTextById(@PathVariable Integer id) {
         return textService.findTextById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NotFoundException(id, "Texto"));
     }
-
 
     @Operation(summary = "Metodo para listar todos os textos com seus sinonimos", description = "Lista todos os textos")
     @ApiResponses(value = {
@@ -68,15 +68,12 @@ public class TextController {
     @GetMapping
     public ResponseEntity<List<TextDTO>> getAllTexts() {
         List<Text> texts = textService.findAllTexts();
-        if (texts.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<TextDTO> textDTOs = texts.stream().map(text -> {
-                List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCod());
-                return new TextDTO(text.getTextDescription(), text.getTextCod(), synonyms);
-            }).collect(Collectors.toList());
-            return ResponseEntity.ok(textDTOs);
-        }
+        
+        List<TextDTO> textDTOs = texts.stream().map(text -> {
+            List<Integer> synonyms = textService.findSynonymsByTextId(text.getTextCode());
+            return new TextDTO(text.getTextDescription(), text.getTextCode(), synonyms);
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(textDTOs);
     }
 
 
@@ -96,7 +93,7 @@ public class TextController {
     
                     for (Integer synonymId : request.getSynonymIds()) {
                         Synonymous synonymous = new Synonymous();
-                        synonymous.setTextCod(id);
+                        synonymous.setTextCode(id);
                         synonymous.setSynGroup(synonymId);
                         synonymousService.saveSynonymous(synonymous);
                     }
@@ -138,8 +135,8 @@ public class TextController {
         }
     
         Synonymous synonymous = new Synonymous();
-        synonymous.setTextCod(text1.getTextCod());
-        synonymous.setSynGroup(text2.getTextCod());
+        synonymous.setTextCode(text1.getTextCode());
+        synonymous.setSynGroup(text2.getTextCode());
     
         synonymousService.saveSynonymous(synonymous);
     

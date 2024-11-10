@@ -10,4 +10,5 @@ public class CronProperties {
     private String time;
     private String timeZone;
     private boolean active;
+    private String timeout;
 }
