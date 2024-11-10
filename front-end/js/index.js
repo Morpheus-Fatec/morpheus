@@ -769,6 +769,182 @@ const app = Vue.createApp({
             } else {
                 this.sourceNews.automaticMap.isSubmitted = false;
             }
+        },
+        startUserGuide(guide) {
+            const vm = this;
+            let stepsGuide = [];
+            if(guide == 'main'){
+                stepsGuide = [
+                {
+                    element: '#titleSources',
+                    intro: 'Aqui você pode gerenciar todas as fontes de dados utilizadas para alimentar a base de notícias.',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#searchElements',
+                    intro: 'Aqui você pode pesquisar usando uma busca viva por um portal de notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#optionsSearch',
+                    intro: 'Aqui é possível selecionar um campo a sua escolha para utilizar na filtragem de dados',
+                    position: 'top'
+                  },
+                  {
+                    element: '#allSources',
+                    intro: 'Aqui ficam exibidos todos as fontes de dados resultantes da pesquisa',
+                    position: 'right'
+                  },
+                  {
+                    element: '.editTagsSource:first-of-type',
+                    intro: 'Aqui é possível gerenciar as tags vinculadas a uma fonte de dados, sendo o numero exibido nesse botão o resultado total de tags vinculadas, caso não existam tags vínculadas o botão fica em vermelho, pois isso indica que a fonte de dados nunca terá dados salvos',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '.removeTagsSource:first-of-type',
+                    intro: 'Aqui é possível excluir uma fonte de dados',
+                    position: 'top'
+                  },
+                  {
+                    element: '#btnCreateSource',
+                    intro: 'Aqui é possível realizar o cadastro de uma nova fonte de dados',
+                    position: 'right'
+                  },
+                  {
+                    element: '#btnManTags',
+                    intro: 'Aqui é possível realizar o gerenciamento das tags usadas no sistema',
+                    position: 'right'
+                  },
+                  {
+                    element: '#btnManRegionalism',
+                    intro: 'Aqui é possível realizar o gerenciamento dos termos usados no regionalismo',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#btnConfig',
+                    intro: 'Aqui é possível ajustar as configurações técnicas do sistema como ajuste do cron',
+                    position: 'top'
+                  }
+                ]
+            }
+
+            if(guide == 'sources'){
+                stepsGuide = [
+                {
+                    element: '#titleSourcesModal',
+                    intro: 'Aqui você pode editar ou cadastrar fontes de dados',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#nameSourcesModal',
+                    intro: 'o campo novo representa o nome pelo qual a fonte de dados será representada dentro do sistema, esse campo é livre porem deve ser único',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#addresSourcesModal',
+                    intro: 'O campo endereço representa a URL dessa fonte de dados, deve-se cadastrar o endereço mais especifico possível, isso para otimizar todo o funcionamento do armazenamento de notícias, Importante destacar que somente notícias que tiverem dentro do seu endereço o próprio endereço da fonte de dados, que podem ser consideradas para analise de conteúdo',
+                    position: 'left'
+                  },
+                  {
+                    element: '#mapAutSourcerModal',
+                    intro: 'Aqui estão disponíveis para configuração o mapeamento, são dados referentes a como a fonte de dados organiza cada parte da notícia, de modo que o sistema consiga buscar os dados com mais precisão',
+                    position: 'top'
+                  },
+                  {
+                    element: '#btnMapAutSourcerModal',
+                    intro: 'Aqui é possível abrir a funcionalidade de mapeamento automático',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#titleMapAutModal',
+                    intro: 'Aqui é possível realizar a ação de mapear automaticamente um porta de notícias',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#urlMapAutModal',
+                    intro: 'Primeiramente você deve colar aqui uma notícia utilizada no portal de notícias pertencente a fonte que você deseja cadastrar',
+                    position: 'right'
+                  },
+                  {
+                    element: '#frameMapAutModal',
+                    intro: 'uma miniatura da notícia ira carregar na sequência, permitindo com que você copie cada dado da notícia, importante destacar que a miniatura é apenas uma ferramenta facilitadora podendo você copiar as informações diretamente da página.',
+                    position: 'right'
+                  },
+                  {
+                    element: '#titleInputMapAutModal',
+                    intro: 'Insira aqui o título presente na notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#bodyMapAutModal',
+                    intro: 'Insira parte do corpo da notícia, não é preciso inserir a notícia inteira',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#dateMapAutModal',
+                    intro: 'Insira aqui a data presente na notícia, utilizar no formato dd/mm/aaaa',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#authorMapAutModal',
+                    intro: 'Insira aqui os autores presentes na notícia',
+                    position: 'bottom'
+                  },
+                  {
+                    element: '#mapAutSourcerModal',
+                    intro: 'Os dados devem ser exibidos aqui de maneira automática, podendo também ser editado livremente.',
+                    position: 'top'
+                  },
+                ]
+            }
+
+            let modalElement = this.$refs.sourceNewsFormModal;
+            const createModal = new bootstrap.Modal(modalElement);
+            modalElement = this.$refs.automaticMapModal;
+            const automaticMapModal = new bootstrap.Modal(modalElement);
+
+            const mD = this.sourceNews.formData.modal;
+
+            introJs().setOptions({
+                steps: stepsGuide,
+                nextLabel: 'Próximo',
+                prevLabel: 'Anterior',
+                skipLabel: '<i class="fa fa-times"></i>',
+                doneLabel: 'Concluir'
+              })
+              .onchange(async function(element) {
+                if(guide == 'sources'){
+                    const stepIndex = this._currentStep;
+                    if (stepIndex == '5') {
+                        mD.hide();
+                        await showModal(automaticMapModal);
+                    }
+                    if (stepIndex == '6') {
+                        vm.sourceNews.automaticMap.map.url = '../assets/newsExample.html';
+                    }
+                    if (stepIndex == '8') {
+                        vm.sourceNews.automaticMap.map.body ="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum nisi at felis commodo, ut";
+                    }
+                    if (stepIndex == '9') {
+                        vm.sourceNews.automaticMap.map.date ="05/11/2024";
+                    }
+                    if (stepIndex == '10') {
+                        vm.sourceNews.automaticMap.map.author ="João Silva";
+                    }
+                    if (stepIndex == '12') {
+                        automaticMapModal.hide();
+                        showModal(vm.sourceNews.formData.modal);
+                    }
+                }
+              })
+              .start();
+
+              function showModal(modal) {
+                return new Promise((resolve) => {
+                    modal.show();
+                    modal._element.addEventListener('shown.bs.modal', resolve, { once: true });
+                });
+            }
         }
     },
     computed: {
