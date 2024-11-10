@@ -144,3 +144,21 @@
 
 5. **Documentação**:
    - A documentação deve ser atualizada para refletir as funcionalidades do sistema.
+  
+# Sprint 4
+
+## Registrar dados provenientes de APIs de notícias, vinculando uma notícia ao seu devido endereço e à data de registro
+
+### Critérios de aceitação
+
+1. **Coleta de Dados**:
+   - O sistema deve extrair os dados pertinentes dos dados a partir das respostas da API (Interface de Programação de Aplicações), assegurando que apenas as informações relevantes sejam coletadas.
+
+2. **Armazenamento**:
+   - Os dados coletados devem ser armazenados em um banco de dados estruturado, com campos separados para conteudo e data.
+
+4. **Performance**:
+   - O sistema deve ser capaz de registrar e acessar os dados de forma rápida e eficiente, mesmo com um grande volume de dados.
+
+5. **Documentação**:
+   - A documentação deve ser atualizada para refletir as funcionalidades do sistema.
