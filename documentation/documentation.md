@@ -144,3 +144,72 @@
 
 5. **Documentação**:
    - A documentação deve ser atualizada para refletir as funcionalidades do sistema.
+  
+# Sprint 4
+
+## Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro
+
+### Critérios de aceitação
+
+1. **Coleta de Dados**:
+   - O sistema deve extrair os dados pertinentes dos dados a partir das respostas da API (Interface de Programação de Aplicações), assegurando que apenas as informações relevantes sejam coletadas.
+
+2. **Armazenamento**:
+   - Os dados coletados devem ser armazenados em um banco de dados estruturado, com campos separados para conteudo e data.
+
+4. **Performance**:
+   - O sistema deve ser capaz de registrar e acessar os dados de forma rápida e eficiente, mesmo com um grande volume de dados.
+
+5. **Documentação**:
+   - A documentação deve ser atualizada para refletir as funcionalidades do sistema.
+  
+## Filtrar dados de uma consulta de dados provenientes de uma API, utilizando filtros referentes aos dados de um registro específico
+
+### Critérios de aceitação
+
+1. **Definição de Filtros**:
+   - O sistema deve permitir a aplicação de filtros específicos para os dados de um registro individual proveniente da API, como dados de identificação, categoria e data.
+
+2. **Coerência dos Dados**:
+   - Os filtros devem retornar dados que correspondem exatamente aos critérios aplicados, assegurando precisão na filtragem por registro.
+
+3. **Performance**:
+   - A aplicação dos filtros deve ocorrer de forma rápida e eficiente, sem comprometer o desempenho do sistema.
+
+4. **Documentação**:
+   - A documentação deve ser atualizada para incluir informações sobre a configuração e o uso dos filtros de registro.
+
+
+## Filtrar dados de uma consulta de dados provenientes de uma API, utilizando filtros referentes aos dados da fonte de dados
+
+### Critérios de aceitação
+
+1. **Definição de Filtros**:
+   - O sistema deve possibilitar a aplicação de filtros baseados nas características gerais dos dados provenientes da fonte, como tipo de fonte, categoria de dados e parâmetros de origem.
+
+2. **Coerência dos Dados**:
+   - Os dados retornados devem refletir as condições gerais aplicadas, garantindo que todos os dados exibidos atendam aos critérios da fonte especificada.
+
+3. **Performance**:
+   - O sistema deve ser capaz de aplicar esses filtros rapidamente, mesmo com um grande volume de dados da fonte.
+
+4. **Documentação**:
+   - A documentação deve incluir orientações para a configuração e uso dos filtros de fonte de dados.
+
+
+## Filtrar dados de uma consulta de dados provenientes de uma API, utilizando tags para complementar regionalismos linguísticos, mediante análise do conteúdo registrado
+
+### Critérios de aceitação
+
+1. **Definição de Tags**:
+   - O sistema deve permitir a aplicação de tags que complementem regionalismos linguísticos, mapeando sinônimos ou variações regionais, com base na análise do conteúdo registrado.
+
+2. **Coerência dos Dados**:
+   - Os dados filtrados devem corresponder aos critérios de regionalismo especificados, assegurando que as variações linguísticas estejam bem representadas.
+
+3. **Performance**:
+   - O sistema deve aplicar as tags de forma eficiente, permitindo uma consulta rápida mesmo ao usar filtros linguísticos complexos.
+
+4. **Documentação**:
+   - A documentação deve detalhar como configurar e utilizar tags para filtros de regionalismo linguístico.
+
