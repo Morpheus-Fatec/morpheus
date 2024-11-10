@@ -12,9 +12,12 @@ import fatec.morpheus.entity.NewsAuthor;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.repository.MapSourceRepository;
 import fatec.morpheus.repository.NewsAuthorRepository;
+import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,9 @@ public class ScrapingService {
 
     @Autowired
     private AdaptedTagsService adaptedTagsService;
+
+    @Autowired
+    private NewsRepository newsRepository;
 
     private Set<String> processedUrls = new HashSet<>();
 
@@ -66,10 +72,10 @@ public class ScrapingService {
                 List<String> tagsAndVariations = findVariation(source.getSource().getCode());
 
                 Map<String, String> tagsClass = Map.of(
-                    "content", source.getBody(),
-                    "title", source.getTitle(),
-                    "date", source.getDate(),
-                    "author", source.getAuthor(),
+                    "content", sanitizeSelector(source.getBody()),
+                    "title", sanitizeSelector(source.getTitle()),
+                    "date", sanitizeSelector(source.getDate()),
+                    "author", sanitizeSelector(source.getAuthor()),
                     "urlNoticiaSalva", portalUrl
                 );
 
@@ -95,11 +101,18 @@ public class ScrapingService {
                     link = "https:" + link;
                 }
 
+                if (tagsClass.get("title").isEmpty() || tagsClass.get("content").isEmpty() || 
+                    tagsClass.get("date").isEmpty() || tagsClass.get("author").isEmpty()) {
+                    System.err.println("Uma ou mais chaves de tagsClass estão vazias.");
+                    return;
+                }
+
                 if (link.startsWith(url) && !processedUrls.contains(link)) {
                     if(tagsAndVariations.size() == 0) {
                         System.err.println("O link: " + link + " não possui tags. Seguindo para o proximo portal.");
                         return;
                     }
+                    processedUrls.add(link);
                     scrapeNewsDetails(link, tagsClass, tagsAndVariations, portalCodeUrl);
                 }
             }
@@ -112,8 +125,26 @@ public class ScrapingService {
         try {
             Document newsPage = Jsoup.connect(newsUrl).get();
 
+            if (newsRepository.existsByNewAddress(newsUrl)) {
+                System.out.println("Notícia já existente no banco de dados: " + newsUrl);
+                return;
+            }
+
             String title = newsPage.select(tagsClass.get("title")).text();
             String datePublished = newsPage.select(tagsClass.get("date")).text();
+            String firstDate = datePublished.split(" ")[0];
+
+            News news = new News();
+
+            if (firstDate.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                String[] dateParts = firstDate.split("/");
+                String formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                Date publishedDate = Date.valueOf(formattedDate);
+                news.setNewsRegistryDate(publishedDate);
+            } else {
+                return;
+            }
+
             String authorName = newsPage.select(tagsClass.get("author")).text();
 
             Elements contentElements = newsPage.select(tagsClass.get("content"));
@@ -132,11 +163,6 @@ public class ScrapingService {
                 return;
             }
 
-            if (newsService.existsByNewAddress(newsUrl)) {
-                System.out.println("Notícia já existe no banco: " + newsUrl);
-                return;
-            }
-
             NewsAuthor newsAuthor = newsAuthorRepository.findByAutName(authorName);
             if (newsAuthor == null) {
                 newsAuthor = new NewsAuthor();
@@ -144,7 +170,6 @@ public class ScrapingService {
                 newsAuthor = newsAuthorRepository.save(newsAuthor);
             }
 
-            News news = new News();
             news.setNewsTitle(title);
             news.setNewsContent(contentString);
             news.setNewAddress(newsUrl);
@@ -171,6 +196,16 @@ public class ScrapingService {
     private List<String> findVariation(int newsSourceCode){
         List<String> tagsAndVariations = adaptedTagsService.findVariation(newsSourceCode);
         return tagsAndVariations;
+    }
+
+    private String sanitizeSelector(String selector) {
+        if (selector == null) {
+            return "";
+        }
+
+        return selector.trim()
+            .replaceAll("^\\.+\\s*", ".") 
+            .replaceAll("\\s+", ""); 
     }
 
 }
