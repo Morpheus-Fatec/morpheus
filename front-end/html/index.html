@@ -133,11 +133,11 @@
                                         :class="news.tags.length === 0 ? 'bg-danger' : 'bg-secondary'">{{
                                         news.tags.length }}</span>
                                 </button>
-                                <button class="btn btn-outline-success btn-sm editTagsSource" title="Editar"
+                                <button id="editTagsSource" class="btn btn-outline-success btn-sm" title="Editar"
                                     @click="newsStartEdit(news)">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-outline-danger btn-sm removeTagsSource" title="Excluir" @click="newsDelete(news)">
+                                <button id="removeTagsSource" class="btn btn-outline-danger btn-sm" title="Excluir" @click="newsDelete(news)">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
