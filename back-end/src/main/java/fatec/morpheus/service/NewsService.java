@@ -28,9 +28,11 @@ public class NewsService {
     @Autowired
     private NewsRepository newsRepository;
     
-
     @Autowired
     private NewsSourceRepository newsSourceRepository;
+
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
@@ -75,6 +77,22 @@ public class NewsService {
 
     public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
+
+        request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
+            
+        for (String s : request.getTitleSearch()) {
+            System.out.println(s + ", ");
+        }
+
+        if (request.getTitleSearch() == null || request.getTitleSearch().isEmpty()) {
+            System.out.println("request.getTitleSearch() está vazia ou null");
+        }        
+
+        request.setTextSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
+
+        for (String s : request.getTextSearch()) {
+            System.out.println(s + ", ");
+        }
         
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
