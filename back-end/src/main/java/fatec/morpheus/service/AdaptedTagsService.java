@@ -41,25 +41,25 @@ public class AdaptedTagsService {
     }
 
     @Transactional    
-    public List<String> findVariationByText(List<String> listOfText) {
+    public List<String> findVariationByText(List<String> filters) {
         // Criar tabela temporária
-        String createTableSql = "CREATE TEMPORARY TABLE IF NOT EXISTS temp_strings (valor VARCHAR(255))";
+        String createTableSql = "CREATE TEMPORARY TABLE IF NOT EXISTS temp_filters (filter VARCHAR(255))";
         entityManager.createNativeQuery(createTableSql).executeUpdate();
     
-        // Inserir valores na tabela temporária
-        String insertSql = "INSERT INTO temp_strings (valor) VALUES (:valor)";
-        for (String text : listOfText) {
+        // Inserir textos dos filtros na tabela temporária
+        String insertSql = "INSERT INTO temp_filters (filter) VALUES (:filter)";
+        for (String filterText : filters) {
             Query insertQuery = entityManager.createNativeQuery(insertSql);
-            insertQuery.setParameter("valor", text);
+            insertQuery.setParameter("filter", filterText);
             insertQuery.executeUpdate();
         }
     
         // Executar consulta para obter as variações
         String sqlQuery = "SELECT "
-                + "COALESCE(REPLACE(ts.valor, t.text_description, t2.text_description), ts.valor) AS valor_com_variacao "
-                + "FROM temp_strings ts "
+                + "COALESCE(REPLACE(tf.filter, t.text_description, t2.text_description), tf.filter) AS filter_with_variation "
+                + "FROM temp_filters tf "
                 + "LEFT JOIN text t "
-                + "  ON LOCATE(t.text_description, ts.valor) > 0 "
+                + "  ON LOCATE(t.text_description, tf.filter) > 0 "
                 + "LEFT JOIN synonymous s "
                 + "  ON t.text_cod = s.text_cod "
                 + "LEFT JOIN synonymous s1 "
@@ -70,8 +70,8 @@ public class AdaptedTagsService {
         Query query = entityManager.createNativeQuery(sqlQuery);
         List<String> resultList = query.getResultList();
     
-        // Remover tabela temporária
-        String dropTableSql = "DROP TEMPORARY TABLE IF EXISTS temp_strings";
+        // Dropar tabela temporária
+        String dropTableSql = "DROP TEMPORARY TABLE IF EXISTS temp_filters";
         entityManager.createNativeQuery(dropTableSql).executeUpdate();
     
         return resultList;
