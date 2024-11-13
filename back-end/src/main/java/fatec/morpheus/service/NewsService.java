@@ -79,20 +79,7 @@ public class NewsService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
 
         request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
-            
-        for (String s : request.getTitleSearch()) {
-            System.out.println(s + ", ");
-        }
-
-        if (request.getTitleSearch() == null || request.getTitleSearch().isEmpty()) {
-            System.out.println("request.getTitleSearch() está vazia ou null");
-        }        
-
-        request.setTextSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
-
-        for (String s : request.getTextSearch()) {
-            System.out.println(s + ", ");
-        }
+        request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
         
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
