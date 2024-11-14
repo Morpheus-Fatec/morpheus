@@ -65,3 +65,9 @@ create table Synonymous(
     foreign key (text_cod) REFERENCES Text(text_cod) ON DELETE CASCADE,
 	foreign key (syn_group) REFERENCES text(text_cod) ON DELETE CASCADE
 );
+
+create table Api(
+    api_cod int auto_increment primary key,
+    api_name varchar(30) NOT NULL,
+    api_url varchar(500) unique not null
+);
