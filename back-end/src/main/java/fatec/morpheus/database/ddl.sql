@@ -79,3 +79,11 @@ create table Api_tag(
     foreign key (api_cod) REFERENCES Api(api_cod),
     foreign key (tag_cod) REFERENCES Tag(tag_cod)
 );
+
+create table Data_collected_api(
+    dat_coll_api_cod int auto_increment primary key,
+    api_cod int,
+    dat_coll_api_registry_date timestamp not null DEFAULT CURRENT_TIMESTAMP,
+    dat_coll_api_content LONGTEXT,
+    foreign key (api_cod) REFERENCES Api(api_cod)
+);
