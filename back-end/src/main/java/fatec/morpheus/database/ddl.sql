@@ -71,3 +71,11 @@ create table Api(
     api_name varchar(30) NOT NULL,
     api_url varchar(500) unique not null
 );
+
+create table Api_tag(
+    api_cod int,
+    tag_cod int,
+    primary key (api_cod, tag_cod),
+    foreign key (api_cod) REFERENCES Api(api_cod),
+    foreign key (tag_cod) REFERENCES Tag(tag_cod)
+);
