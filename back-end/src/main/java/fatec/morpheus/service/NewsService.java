@@ -84,8 +84,7 @@ public class NewsService {
         if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()){
             request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
         }
-
-        
+  
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
         List<NewsReponse> newsResponses = pageResult.stream().map(news -> {
