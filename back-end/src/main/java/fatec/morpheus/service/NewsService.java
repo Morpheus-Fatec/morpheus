@@ -78,8 +78,13 @@ public class NewsService {
     public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
 
-        request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
-        request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
+        if (request.getTitleSearch() != null && !request.getTextSearch().isEmpty()){
+            request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
+        }
+        if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()){
+            request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
+        }
+
         
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
