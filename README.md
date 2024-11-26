@@ -117,7 +117,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint3.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint4.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
 <br>
