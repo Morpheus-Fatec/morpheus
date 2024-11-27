@@ -98,6 +98,7 @@ public class ApiService {
                         existingApi.setAddress(apiToUpdate.getAddress());
                         existingApi.setGet(apiToUpdate.getGet());
                         existingApi.setPost(apiToUpdate.getPost());
+                        existingApi.setTagCodes(apiToUpdate.getTagCodes());
                         return apiRepository.save(existingApi);
                     })
                     .orElseThrow(() -> new NotFoundException(id, "API"));
