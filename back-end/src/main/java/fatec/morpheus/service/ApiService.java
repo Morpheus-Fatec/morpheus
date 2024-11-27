@@ -7,6 +7,7 @@ import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,10 @@ public class ApiService {
     public Api createApi(ApiDTO apiCreatedDTO) {
         Api api = new Api();
 
-        api.setCode(apiCreatedDTO.getCode());
-        api.setName(apiCreatedDTO.getName());
         api.setAddress(apiCreatedDTO.getAddress());
+        api.setGet(apiCreatedDTO.getGet());
+        api.setPost(apiCreatedDTO.getPost());
+        api.setTagCodes(apiCreatedDTO.getTagCodes());
 
         Set<ConstraintViolation<Api>> sourceViolations = validator.validate(api);
         if (!sourceViolations.isEmpty()) {
@@ -75,9 +77,6 @@ public class ApiService {
 
     private List<String> verifyUniqueKeys(Api api) {
         List<String> duplicateFields = new ArrayList<>();
-        if (apiRepository.existsByName(api.getName())) {
-            duplicateFields.add("name");
-        }
         if (apiRepository.existsByAddress(api.getAddress())) {
             duplicateFields.add("address");
         }
@@ -96,9 +95,9 @@ public class ApiService {
         try {
             return apiRepository.findById(id)
                     .map(existingApi -> {
-                        existingApi.setCode(id);
-                        existingApi.setName(apiToUpdate.getName());
                         existingApi.setAddress(apiToUpdate.getAddress());
+                        existingApi.setGet(apiToUpdate.getGet());
+                        existingApi.setPost(apiToUpdate.getPost());
                         return apiRepository.save(existingApi);
                     })
                     .orElseThrow(() -> new NotFoundException(id, "API"));
@@ -112,7 +111,6 @@ public class ApiService {
             throw new UniqueConstraintViolationException(errorResponse);
         }
     }
-
 
     public Api deleteApiById(int id) {
         Api api = apiRepository.findById(id)
