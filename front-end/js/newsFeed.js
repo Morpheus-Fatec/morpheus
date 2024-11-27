@@ -116,7 +116,7 @@ const app = Vue.createApp({
                     this.initChoices();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'portal:Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal.');
                 });
         },
 
@@ -130,7 +130,7 @@ const app = Vue.createApp({
                     this.initChoicesAuthors();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'autor');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados dos autores.');
                 });
         },
 
@@ -146,7 +146,7 @@ const app = Vue.createApp({
                     this.choicesTagsTitle();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'tag');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados das tags');
                 })
         },
 
