@@ -1,7 +1,9 @@
 package fatec.morpheus.service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,8 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import fatec.morpheus.DTO.NewsSearchRequest;
+import fatec.morpheus.DTO.ApiSearchRequest;
 import fatec.morpheus.entity.Api;
+import fatec.morpheus.entity.ApiResponse;
 import fatec.morpheus.repository.ApiRepository;
 
 public class ApiService {
@@ -18,31 +21,26 @@ public class ApiService {
     @Autowired
     private ApiRepository apiRepository;
 
-    public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
+    public Map<String, Object> findNewsWithFilter(ApiSearchRequest request, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("apiRegistryDate").descending());
         
         Page<Api> pageResult = apiRepository.findAll(ApiSpecification.withFilter(request), pageable);
         
-        // List<NewsReponse> newsResponses = pageResult.stream().map(news -> {
-            // String srcName = news.getSourceNews().getSrcName();
-            // String srcAddress = news.getSourceNews().getAddress();
-            
-        //     return new NewsReponse(
-        //         news.getNewsTitle(),
-        //         news.getNewsContent(),
-        //         news.getNewsRegistryDate(),
-        //         news.getNewsAuthor().getAutName(),
-        //         srcName,
-        //         srcAddress,
-        //         news.getNewAddress()
-        //     );
-        // }).collect(Collectors.toList());
+        List<ApiResponse> apiResponse = pageResult.stream().map(api -> {            
+            return new ApiResponse(
+                api.getCode(),
+                api.getName(),
+                api.getAddress(),
+                api.getContent(),
+                api.getMethod()
+            );
+        }).collect(Collectors.toList());
         
-        // Map<String, Object> response = new HashMap<>();
-        // response.put("news", newsResponses);   
-        // response.put("totalPages", pageResult.getTotalPages());   
-        // response.put("totalElements", pageResult.getTotalElements());
+        Map<String, Object> response = new HashMap<>();
+        response.put("api", apiResponse);   
+        response.put("totalPages", pageResult.getTotalPages());   
+        response.put("totalElements", pageResult.getTotalElements());
         
-        return null;
+        return response;
     }
 }

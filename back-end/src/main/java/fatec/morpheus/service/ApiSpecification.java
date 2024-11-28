@@ -2,13 +2,13 @@ package fatec.morpheus.service;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import fatec.morpheus.DTO.NewsSearchRequest;
+import fatec.morpheus.DTO.ApiSearchRequest;
 import fatec.morpheus.entity.Api;
 import jakarta.persistence.criteria.Predicate;
 
 public class ApiSpecification {
 
-    public static Specification<Api> withFilter(NewsSearchRequest request) {
+    public static Specification<Api> withFilter(ApiSearchRequest request) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction(); 
     
