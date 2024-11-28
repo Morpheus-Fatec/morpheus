@@ -393,7 +393,7 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tags.all = response.data.map(tag => ({
-                        tagCod: tag.tagCode,
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                 })

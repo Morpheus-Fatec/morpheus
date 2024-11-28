@@ -139,7 +139,7 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tagFilters = response.data.map(tag => ({
-                        tagCod: tag.tagCod,
+                        tagCod: tag.tagCode,
                         tagName: tag.tagName
                     }));
                     this.choicesTagsText();
