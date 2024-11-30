@@ -1,23 +1,36 @@
 package fatec.morpheus.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ApiContentService {
-    @Autowired
-    private RestTemplate restTemplate;
+    public String searchContentApi(String url, String tag){
+        RestTemplate restTemplateObj = new RestTemplate();
 
-    public String searchContent(String url, String tag){
-        String content = restTemplate.getForObject(url, String.class);
-        return content;
-    } 
+        String content = restTemplateObj.getForObject(url, String.class);
+        String contentToReturn = "Não há nenhum conteúdo com a tag "+tag;
+
+        try{
+            if (url != null && tag != null){
+                boolean busca = content.contains(tag);
+    
+                if (busca){
+                    contentToReturn = content;
+                }
+            } else {
+                return "Faltando dados nos parametros";
+            }
+
+            return contentToReturn;
+        } catch (Exception e){
+            e.printStackTrace();
+            return "Erro na requisição";
+        }
+    }
 
     public static void main(String[] args) {
-        RestTemplate restTemplate = new RestTemplate();
         ApiContentService api = new ApiContentService();
-        api.restTemplate = restTemplate; // Injeção manual
-        System.out.println(api.searchContent("https://api.dicionario-aberto.net/random", "pele"));
+        System.out.println(api.searchContentApi("https://pokeapi.co/api/v2/pokemon/", "dragonait"));
     }
 }
