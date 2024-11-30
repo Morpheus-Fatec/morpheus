@@ -364,7 +364,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Você tem certeza de que deseja excluir {{this.tags.delete.tagSelected.tagName}}?
+                        A tag <strong>{{this.tags.delete.tagSelected.tagName}}</strong> pode estar vinculada há algum portal de notícia. Você tem certeza de que deseja excluir ?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -528,7 +528,7 @@
                     <div v-if="cron.isSubmited && !cron.timeout">
                         <span class="text-danger">Este campo é obrigatório.</span>
                     </div>
-        
+                </div>
                 <button class="btn btn-success mt-3" @click="cronSalvarConfiguracao">Salvar</button>
             </div>
         </div>
@@ -645,7 +645,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Você tem certeza de que deseja excluir {{regionalism.delete.wordSelected.content}}?
+                        <strong>{{regionalism.delete.wordSelected.content}}</strong> pode ser sinônimo de outro texto. Você tem certeza de que deseja exclui-lo?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="cancelDeleteWord()">Cancelar</button>
