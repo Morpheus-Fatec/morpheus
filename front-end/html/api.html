@@ -123,6 +123,9 @@
                                          : 'bi bi-arrow-up-circle-fill'"></i>
                             </button>
                         </th>
+                        <th scope="col">
+                            Metodos
+                        </th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -144,6 +147,14 @@
                                 <button id="removeTagsSource" class="btn btn-outline-danger btn-sm" title="Excluir" @click="apiDelete(api)">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="api.get">
+                                <span class="badge text-bg-secondary">GET</span>
+                            </div>
+                            <div v-if="api.post">
+                                <span class="badge text-bg-secondary">POST</span>
                             </div>
                         </td>
                     </tr>
@@ -197,6 +208,15 @@
                                        v-model="sourceApi.formData.sourceSelected.address" @keyup.enter="apiSave"
                                        :class="{ 'is-invalid': sourceApi.formData.isSubmitted && !sourceApi.formData.sourceSelected.address }">
                                 <div class="invalid-feedback">Este campo é obrigatório.</div>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" v-model="sourceApi.formData.sourceSelected.get" type="checkbox" role="switch" id="getChecked">
+                                <label class="form-check-label" for="getChecked">GET</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" v-model="sourceApi.formData.sourceSelected.post" type="checkbox" role="switch" id="postChecked">
+                                <label class="form-check-label" for="postChecked">POST</label>
                             </div>
                         </form>
                     </div>
