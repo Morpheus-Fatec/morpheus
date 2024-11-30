@@ -14,10 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.NewsResponse;
 import fatec.morpheus.DTO.NewsSearchRequest;
+import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.entity.News;
-import fatec.morpheus.entity.NewsResponse;
-import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
 

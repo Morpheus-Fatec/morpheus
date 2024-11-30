@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import fatec.morpheus.entity.Synonymous;
 
 @Repository
-public interface SynonymousRepository extends JpaRepository<Synonymous, fatec.morpheus.entity.SynonymousId> {
+public interface SynonymousRepository extends JpaRepository<Synonymous, fatec.morpheus.DTO.SynonymousId> {
     void deleteByText_TextCode(Integer textCode);
     void deleteBySynGroup(Integer synGroup);
     List<Synonymous> findByTextCodeOrSynGroup(Integer textCode, Integer synGroup);

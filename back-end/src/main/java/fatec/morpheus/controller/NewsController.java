@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.entity.NewsResponse;
-import fatec.morpheus.entity.PaginatedNewsResponse;
+import fatec.morpheus.DTO.NewsResponse;
+import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
