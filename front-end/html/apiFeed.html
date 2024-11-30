@@ -72,7 +72,7 @@
 
             <div class="mt-3 d-flex">
 
-                <input type="text" class="form-control ms-2" v-model="api.search.query" @input="apiFilter"
+                <input type="text" class="form-control ms-2" v-model="api.search.query" @input="apiUpdateSearch"
                     placeholder="Pesquisar" style="flex-grow: 1;">
                 <div class="col-auto ms-5">
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
@@ -139,7 +139,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="api in apiList" :key="api.code">
+                        <tr v-for="api in filteredApiList" :key="api.code">
                             <td class="text">
                                 <span :class="{
                                     'text-white bg-success px-2 rounded': api.method.toLowerCase() === 'get',
@@ -168,7 +168,6 @@
                 Nenhuma API encontrada
             </div>
 
-            <!-- Modal de conteúdo -->
             <div class="modal fade" id="contentModal" tabindex="-1" role="dialog"
                 aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
                 <div class="modal-dialog" role="document">

@@ -3,7 +3,7 @@ const app = Vue.createApp({
         return {
             api: {
                 search: {
-                    field: 'newsTitle',  // Ou qualquer valor padrão desejado
+                    field: 'address',  
                     query: '',
                     sort: {
                         order: 'asc'
@@ -11,9 +11,7 @@ const app = Vue.createApp({
                 },
             },
 
-            modalSource: {
-                source: '',
-            },
+            modalSource: '',
 
             filters: {
                 address: {
@@ -49,7 +47,8 @@ const app = Vue.createApp({
             apiList: [],
             tagFilters: [],
             searchText: [],
-            
+            filteredApiList: [],
+
 
 
         }
@@ -72,13 +71,13 @@ const app = Vue.createApp({
                         };
                         this.apiList.push(itemAdd);
                     });
+                    this.apiFilter();
                     this.pagination.totalPages = data.totalPages;
                     this.pagination.totalElements = data.totalElements;
                     this.initAddress();
-                    this.apiFilter();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger' , 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal')
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal')
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -106,18 +105,28 @@ const app = Vue.createApp({
                 })
         },
 
+        apiUpdateSearch() {
+            this.apiFilter();
+        },
+
+        _apiFilter() {
+            const query = this.api.search.query.toLowerCase();
+            this.filteredApiList = this.apiList.filter(item =>
+                item.address.toLowerCase().includes(query)
+            );
+        },
+
         apiFilter() {
             const query = this.api.search.query.toLowerCase();
-            this.api.filtered = this.apiList
-                .filter(api =>
-                    api[this.api.search.field]?.toLowerCase().includes(query)
-                )
-                .sort((a, b) => {
-                    const result = a['newsTitle']?.toLowerCase().localeCompare(b['newsTitle']?.toLowerCase());
-                    return this.api.search.sort.order === 'asc' ? result : -result;
-                });
+            if (query === '') {
+                this.filteredApiList = this.apiList;
+            } else {
+                this.filteredApiList = this.apiList
+                    .filter(api =>
+                        api['address'].toLowerCase().includes(query)
+                    );
+            }
         },
-        
 
         rootMontedAlert(type, message, title) {
             this.root.alert = {
@@ -133,7 +142,7 @@ const app = Vue.createApp({
         },
 
         openModal(source) {
-            this.modalSource.source = source;
+            this.modalSource = source.replace(/\\/g, "");
             const modal = new bootstrap.Modal(document.getElementById('contentModal'));
             modal.show();
 
@@ -144,75 +153,11 @@ const app = Vue.createApp({
             const modal = bootstrap.Modal.getInstance(modalElement);
             modal.hide();
         },
-    
-        formatSource() {
-            this.modalSource = this.formatContent(this.modalSource); // Formata o conteúdo ao clicar
-        },
-        // Função para formatar o conteúdo dependendo de ser JSON ou XML
-        formatContent(content) {
-            // Se for JSON, formate com JSON.stringify
-            if (this.isValidJSON(content)) {
-                return this.formatJSON(content);
-            }
-            // Se for XML, formate com a função de XML
-            else if (this.isValidXML(content)) {
-                return this.formatXML(content);
-            }
-            // Caso não seja JSON nem XML, apenas retorne o conteúdo
-            return content;
-        },
-        // Função para formatar JSON
-        formatJSON(json) {
-            try {
-                return JSON.stringify(JSON.parse(json), null, 2); // Indentação de 2 espaços
-            } catch (e) {
-                return "Erro ao formatar JSON";
-            }
-        },
-        // Função para formatar XML
-        formatXML(xml) {
-            let formatted = '';
-            let reg = /(>)\s*(<)(\/*)/g;
-            xml = xml.replace(reg, '$1\n$2$3');
-            let pad = 0;
-            xml.split('\n').forEach(function(node) {
-                let indent = 0;
-                if (node.match(/.+<\/\w[^>]*>$/)) {
-                    indent = 0;
-                } else if (node.match(/^<\/\w/)) {
-                    if (pad > 0) {
-                        pad--;
-                    }
-                } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
-                    indent = 1;
-                } else {
-                    indent = 0;
-                }
 
-                formatted += new Array(pad + 1).join('  ') + node + '\n';
-                pad += indent;
-            });
-            return formatted;
+        formatSource() {
+            this.modalSource = this.formatContent(this.modalSource); 
         },
-        // Função para verificar se o conteúdo é um JSON válido
-        isValidJSON(str) {
-            try {
-                JSON.parse(str);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        },
-        // Função para verificar se o conteúdo é um XML válido
-        isValidXML(str) {
-            try {
-                let parser = new DOMParser();
-                let xmlDoc = parser.parseFromString(str, "text/xml");
-                return xmlDoc.getElementsByTagName("parsererror").length === 0;
-            } catch (e) {
-                return false;
-            }
-        },
+        
 
         initAddress() {
             const element = document.querySelector('#choices-address');
@@ -265,7 +210,6 @@ const app = Vue.createApp({
 
             choicesText.passedElement.element.addEventListener('change', () => {
                 this.searchText = choicesText.getValue(true);
-                console.log(this.searchText);
             });
         },
 
@@ -330,7 +274,7 @@ const app = Vue.createApp({
                     this.initAddress();
                 })
                 .catch(error => {
-                    console.error('Erro:', error);
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados.')
                 });
             const offcanvasElement = document.getElementById('offcanvasWithBothOptions');
             const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
@@ -339,13 +283,12 @@ const app = Vue.createApp({
                 offcanvasInstance.hide();
             }
         },
+
         filteredAddresses() {
             const query = this.api.search.query?.toLowerCase() || "";
             return this.apiList.filter(item => item.address?.toLowerCase().includes(query));
         }
     },
-
-
 
     mounted() {
         this.apiLoad();
