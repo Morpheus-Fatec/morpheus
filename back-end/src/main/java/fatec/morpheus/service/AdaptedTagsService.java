@@ -1,7 +1,9 @@
 package fatec.morpheus.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -45,7 +47,7 @@ public class AdaptedTagsService {
         // Criar tabela temporária
         String createTableSql = "CREATE TEMPORARY TABLE IF NOT EXISTS temp_filters (filter VARCHAR(255))";
         entityManager.createNativeQuery(createTableSql).executeUpdate();
-    
+
         // Inserir textos dos filtros na tabela temporária
         String insertSql = "INSERT INTO temp_filters (filter) VALUES (:filter)";
         for (String filterText : filters) {
@@ -53,7 +55,7 @@ public class AdaptedTagsService {
             insertQuery.setParameter("filter", filterText);
             insertQuery.executeUpdate();
         }
-    
+
         // Executar consulta para obter as variações
         String sqlQuery = "SELECT "
             + "COALESCE(REPLACE(tf.filter, t.text_description, t2.text_description), tf.filter) AS filter_with_variation "
@@ -64,20 +66,19 @@ public class AdaptedTagsService {
             + "  ON t.text_cod = s.text_cod "
             + "LEFT JOIN text t2 "
             + "  ON s.syn_group = t2.text_cod ";
-    
+
         Query query = entityManager.createNativeQuery(sqlQuery);
-        List<String> resultList = query.getResultList();
-    
+        List<String> queryResults = query.getResultList();
+
         // Dropar tabela temporária
         String dropTableSql = "DROP TEMPORARY TABLE IF EXISTS temp_filters";
         entityManager.createNativeQuery(dropTableSql).executeUpdate();
 
-        for (String f: filters) {
-            if (!resultList.contains(f)) {
-                resultList.add(f);
-            };
-        }
-    
-        return resultList;
-    }    
+        //Set para evitar duplicatas
+        Set<String> resultSet = new LinkedHashSet<>(queryResults);
+        resultSet.addAll(filters);
+
+        return new ArrayList<>(resultSet);
+    }
+
 }
