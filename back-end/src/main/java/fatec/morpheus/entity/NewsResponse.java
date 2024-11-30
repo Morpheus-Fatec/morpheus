@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewsReponse {
+public class NewsResponse {
 
     private String newsTitle;
     private String newsContent;
