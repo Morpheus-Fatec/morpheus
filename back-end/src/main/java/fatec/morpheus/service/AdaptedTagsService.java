@@ -56,16 +56,14 @@ public class AdaptedTagsService {
     
         // Executar consulta para obter as variações
         String sqlQuery = "SELECT "
-                + "COALESCE(REPLACE(tf.filter, t.text_description, t2.text_description), tf.filter) AS filter_with_variation "
-                + "FROM temp_filters tf "
-                + "LEFT JOIN text t "
-                + "  ON LOCATE(t.text_description, tf.filter) > 0 "
-                + "LEFT JOIN synonymous s "
-                + "  ON t.text_cod = s.text_cod "
-                + "LEFT JOIN synonymous s1 "
-                + "  ON s1.syn_group = s.syn_group "
-                + "LEFT JOIN text t2 "
-                + "  ON s1.text_cod = t2.text_cod";
+            + "COALESCE(REPLACE(tf.filter, t.text_description, t2.text_description), tf.filter) AS filter_with_variation "
+            + "FROM temp_filters tf "
+            + "LEFT JOIN text t "
+            + "  ON LOCATE(t.text_description, tf.filter) > 0 "
+            + "LEFT JOIN synonymous s "
+            + "  ON t.text_cod = s.text_cod "
+            + "LEFT JOIN text t2 "
+            + "  ON s.syn_group = t2.text_cod ";
     
         Query query = entityManager.createNativeQuery(sqlQuery);
         List<String> resultList = query.getResultList();
@@ -73,6 +71,12 @@ public class AdaptedTagsService {
         // Dropar tabela temporária
         String dropTableSql = "DROP TEMPORARY TABLE IF EXISTS temp_filters";
         entityManager.createNativeQuery(dropTableSql).executeUpdate();
+
+        for (String f: filters) {
+            if (!resultList.contains(f)) {
+                resultList.add(f);
+            };
+        }
     
         return resultList;
     }    
