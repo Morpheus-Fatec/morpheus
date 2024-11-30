@@ -58,7 +58,7 @@ const app = Vue.createApp({
 
         apiLoad() {
             this.isLoading = true;
-            axios.get(`https://morpheus-api35.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
+            axios.get(`https://morpheus-api36.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
@@ -256,7 +256,7 @@ const app = Vue.createApp({
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal
             };
-            axios.post('https://morpheus-api35.free.beeceptor.com/todos', dataFilter)
+            axios.post('https://morpheus-api36.free.beeceptor.com/todos', dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
