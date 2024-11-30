@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.NewsSearchRequest;
@@ -32,7 +31,7 @@ public class NewsService {
     @Autowired
     private NewsSourceRepository newsSourceRepository;
 
-    public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
+    public PaginatedNewsResponse<NewsReponse> getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
         Page<News> newsPage = newsRepository.findAll(pageable);
         
@@ -51,7 +50,7 @@ public class NewsService {
             responseDTOs.add(dto);
         }
         
-        return new PaginatedNewsResponse(
+        return new PaginatedNewsResponse<>(
             responseDTOs,
             newsPage.getTotalPages(),
             newsPage.getTotalElements()
