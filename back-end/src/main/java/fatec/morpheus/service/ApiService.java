@@ -1,46 +1,124 @@
 package fatec.morpheus.service;
 
-import java.util.HashMap;
+import fatec.morpheus.DTO.ApiDTO;
+import fatec.morpheus.entity.Api;
+import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.exception.InvalidFieldException;
+import fatec.morpheus.exception.NotFoundException;
+import fatec.morpheus.exception.UniqueConstraintViolationException;
+import fatec.morpheus.repository.ApiRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import fatec.morpheus.DTO.ApiSearchRequest;
-import fatec.morpheus.entity.Api;
-import fatec.morpheus.entity.ApiResponse;
-import fatec.morpheus.repository.ApiRepository;
-
+@Service
 public class ApiService {
 
     @Autowired
     private ApiRepository apiRepository;
+    @Autowired
+    private Validator validator;
 
-    public Map<String, Object> findNewsWithFilter(ApiSearchRequest request, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("apiRegistryDate").descending());
-        
-        Page<Api> pageResult = apiRepository.findAll(ApiSpecification.withFilter(request), pageable);
-        
-        List<ApiResponse> apiResponse = pageResult.stream().map(api -> {            
-            return new ApiResponse(
-                api.getCode(),
-                api.getName(),
-                api.getAddress(),
-                api.getContent(),
-                api.getMethod()
+    public Api createApi(ApiDTO apiCreatedDTO) {
+        Api api = new Api();
+
+        api.setCode(apiCreatedDTO.getCode());
+        api.setName(apiCreatedDTO.getName());
+        api.setAddress(apiCreatedDTO.getAddress());
+
+        Set<ConstraintViolation<Api>> sourceViolations = validator.validate(api);
+        if (!sourceViolations.isEmpty()) {
+            List<String> errors = sourceViolations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.toList());
+
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
+            errorResponse.setMessage("Problemas com campos obrigatórios");
+            throw new InvalidFieldException(errorResponse);
+        }
+
+
+        try {
+            apiRepository.save(api);
+            return api;
+
+        } catch (Exception e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(api);
+
+            if (duplicateFields.isEmpty()) {
+                String errorMessage = e.getCause().getMessage();
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpStatus.CONFLICT,
+                        duplicateFields,
+                        errorMessage
+                );
+                throw new UniqueConstraintViolationException(errorResponse);
+            }
+
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,
+                    duplicateFields,
+                    "Campos Duplicados"
             );
-        }).collect(Collectors.toList());
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("api", apiResponse);   
-        response.put("totalPages", pageResult.getTotalPages());   
-        response.put("totalElements", pageResult.getTotalElements());
-        
-        return response;
+
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
     }
+
+    private List<String> verifyUniqueKeys(Api api) {
+        List<String> duplicateFields = new ArrayList<>();
+        if (apiRepository.existsByName(api.getName())) {
+            duplicateFields.add("name");
+        }
+        if (apiRepository.existsByAddress(api.getAddress())) {
+            duplicateFields.add("address");
+        }
+        return duplicateFields;
+    }
+
+    public List<Api> findAllApi() {
+        return apiRepository.findAll();
+    }
+
+    public Api findApiById(int id) {
+        return apiRepository.findById(id).orElseThrow(() -> new NotFoundException(id, "API"));
+    }
+
+    public Api updateApiById(int id, Api apiToUpdate) {
+        try {
+            return apiRepository.findById(id)
+                    .map(existingApi -> {
+                        existingApi.setCode(id);
+                        existingApi.setName(apiToUpdate.getName());
+                        existingApi.setAddress(apiToUpdate.getAddress());
+                        return apiRepository.save(existingApi);
+                    })
+                    .orElseThrow(() -> new NotFoundException(id, "API"));
+        } catch (DataIntegrityViolationException e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(apiToUpdate);
+
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,
+                    duplicateFields
+            );
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
+    }
+
+
+    public Api deleteApiById(int id) {
+        Api api = apiRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
+        apiRepository.delete(api);
+        return api;
+    }
+
 }
