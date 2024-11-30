@@ -58,7 +58,7 @@ const app = Vue.createApp({
 
         apiLoad() {
             this.isLoading = true;
-            axios.get(`https://morpheus-api36.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
+            axios.get(`https://morpheus-api37.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
@@ -179,7 +179,10 @@ const app = Vue.createApp({
             });
 
             choicesAddress.passedElement.element.addEventListener('change', (event) => {
-                this.filters.address.selectItems = Array.from(event.target.selectedOptions).map(option => option.textContent);
+                this.filters.address.selectItems = Array.from(event.target.selectedOptions).map(option => ({
+                    value: option.value,
+                    label: option.textContent
+                }));
             });
         },
 
@@ -250,13 +253,13 @@ const app = Vue.createApp({
 
         filtersData() {
             const dataFilter = {
-                address: this.filters.address.selectItems,
+                address: this.filters.address.selectItems.map(item => parseInt(item.value, 10)),
                 text: this.searchText,
                 tags: this.filters.tags.selectItems,
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal
             };
-            axios.post('https://morpheus-api36.free.beeceptor.com/todos', dataFilter)
+            axios.post('https://morpheus-api37.free.beeceptor.com/todos', dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
