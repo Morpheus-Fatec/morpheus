@@ -32,7 +32,7 @@ public class ApiContent {
     @OneToOne
     @JoinColumn(name = "api_cod", nullable = false, unique = true)
     @JsonBackReference
-    private int apiId;
+    private Api apiId;
 
     @Column(name = "dat_coll_api_registry_date", nullable = false)
     private String date;
