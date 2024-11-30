@@ -11,9 +11,30 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ApiResponse {
     private int code;
-    private String name;
     private String address;
-    private String content;
     private String method;
+    private String content;
+
+    public ApiResponse(int code, String address, int get, int post){
+        if (get == 1 && post == 1) {
+            this.method = "Get, Post";
+            this.code = code;
+            this.address = address;
+            return;
+        }
+        if (get == 1) {
+            this.method = "Get";
+            this.code = code;
+            this.address = address;
+            return;
+        }
+        if (post == 1) {
+            this.method = "Post";
+            this.code = code;
+            this.address = address;
+            return;
+        }
+    }
+    
 
 }
