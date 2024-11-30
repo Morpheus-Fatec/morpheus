@@ -2,6 +2,7 @@ package fatec.morpheus.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import fatec.morpheus.DTO.MapSourceApiDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +24,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MapSourceAPI {
+public class MapSourceApi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dat_coll_api_cod")
@@ -39,4 +40,9 @@ public class MapSourceAPI {
 
     @Column(name = "dat_coll_api_content", nullable = false)
     private String apiContent;
+
+    public MapSourceApi(MapSourceApiDTO mapSourceApiDTO){
+        this.date = mapSourceApiDTO.getDate();
+        this.apiContent = mapSourceApiDTO.getContent();
+    }
 }
