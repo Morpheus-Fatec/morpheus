@@ -1,4 +1,4 @@
-package fatec.morpheus.entity;
+package fatec.morpheus.DTO;
 
 import java.util.ArrayList;
 import java.util.List;
