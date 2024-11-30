@@ -1,7 +1,9 @@
 package fatec.morpheus.service;
 
 import fatec.morpheus.DTO.ApiDTO;
+import fatec.morpheus.DTO.ApiSearchRequest;
 import fatec.morpheus.entity.Api;
+import fatec.morpheus.entity.ApiResponse;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
@@ -9,13 +11,20 @@ import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,4 +130,26 @@ public class ApiService {
         return api;
     }
 
+    public Map<String, Object> findNewsWithFilter(ApiSearchRequest request, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("apiRegistryDate").descending());
+        
+        Page<Api> pageResult = apiRepository.findAll(ApiSpecification.withFilter(request), pageable);
+        
+        List<ApiResponse> apiResponse = pageResult.stream().map(api -> {            
+            return new ApiResponse(
+                api.getCode(),
+                api.getName(),
+                api.getAddress(),
+                api.getContent(),
+                api.getMethod()
+            );
+        }).collect(Collectors.toList());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("api", apiResponse);   
+        response.put("totalPages", pageResult.getTotalPages());   
+        response.put("totalElements", pageResult.getTotalElements());
+        
+        return response;
+    }
 }
