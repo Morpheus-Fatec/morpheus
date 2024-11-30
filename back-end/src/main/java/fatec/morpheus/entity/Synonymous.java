@@ -1,5 +1,6 @@
 package fatec.morpheus.entity;
 
+import fatec.morpheus.DTO.SynonymousId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -140,7 +140,8 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tagFilters = response.data.map(tag => ({
-                        tagCod: tag.tagCode,
+
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                     this.choicesTagsText();
@@ -262,7 +263,7 @@ const app = Vue.createApp({
             });
             choicesTagsTitle.clearStore();
             this.tagFilters.forEach(item => {
-                choicesTagsTitle.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+                choicesTagsTitle.setChoices([{ value: item.tagCode, label: item.tagName }], 'value', 'label', false);
             });
 
             choicesTagsTitle.passedElement.element.addEventListener('change', (event) => {
@@ -281,7 +282,7 @@ const app = Vue.createApp({
             });
             choicesTagsText.clearStore();
             this.tagFilters.forEach(item => {
-                choicesTagsText.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+                choicesTagsText.setChoices([{ value: item.tagCode, label: item.tagName }], 'value', 'label', false);
             });
 
             choicesTagsText.passedElement.element.addEventListener('change', (event) => {

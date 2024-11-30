@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApiRepository extends JpaRepository<Api, Integer> {
-    boolean existsByName(String name);
     boolean existsByAddress(String address);
     Api findByCode(int code);
 }

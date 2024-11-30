@@ -1,9 +1,9 @@
 package fatec.morpheus.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.MalformedURLException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,10 +12,9 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fatec.morpheus.entity.ErrorResponse;
-import fatec.morpheus.exception.InvalidFieldException;
-
+import fatec.morpheus.DTO.ErrorResponse;
 import fatec.morpheus.DTO.MappingDTO;
+import fatec.morpheus.exception.InvalidFieldException;
 
 @Service
 public class MapSourceService {

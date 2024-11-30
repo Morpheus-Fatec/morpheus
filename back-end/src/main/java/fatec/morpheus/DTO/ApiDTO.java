@@ -1,5 +1,7 @@
 package fatec.morpheus.DTO;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiDTO {
-    private int code;
-    private String name;
     private String address;
+    private int get;
+    private int post;
+    private List<Integer> tagCodes;
 }

@@ -3,12 +3,16 @@ package fatec.morpheus.service;
 import fatec.morpheus.DTO.ApiDTO;
 import fatec.morpheus.entity.Api;
 import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -30,9 +34,10 @@ public class ApiService {
     public Api createApi(ApiDTO apiCreatedDTO) {
         Api api = new Api();
 
-        api.setCode(apiCreatedDTO.getCode());
-        api.setName(apiCreatedDTO.getName());
         api.setAddress(apiCreatedDTO.getAddress());
+        api.setGet(apiCreatedDTO.getGet());
+        api.setPost(apiCreatedDTO.getPost());
+        api.setTagCodes(apiCreatedDTO.getTagCodes());
 
         Set<ConstraintViolation<Api>> sourceViolations = validator.validate(api);
         if (!sourceViolations.isEmpty()) {
@@ -75,9 +80,6 @@ public class ApiService {
 
     private List<String> verifyUniqueKeys(Api api) {
         List<String> duplicateFields = new ArrayList<>();
-        if (apiRepository.existsByName(api.getName())) {
-            duplicateFields.add("name");
-        }
         if (apiRepository.existsByAddress(api.getAddress())) {
             duplicateFields.add("address");
         }
@@ -96,9 +98,10 @@ public class ApiService {
         try {
             return apiRepository.findById(id)
                     .map(existingApi -> {
-                        existingApi.setCode(id);
-                        existingApi.setName(apiToUpdate.getName());
                         existingApi.setAddress(apiToUpdate.getAddress());
+                        existingApi.setGet(apiToUpdate.getGet());
+                        existingApi.setPost(apiToUpdate.getPost());
+                        existingApi.setTagCodes(apiToUpdate.getTagCodes());
                         return apiRepository.save(existingApi);
                     })
                     .orElseThrow(() -> new NotFoundException(id, "API"));
@@ -113,10 +116,11 @@ public class ApiService {
         }
     }
 
-
     public Api deleteApiById(int id) {
         Api api = apiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Fonte de Notícia"));
+                .orElseThrow(() -> new NotFoundException(id, "API"));    
+        Hibernate.initialize(api.getTagCodes());
+
         apiRepository.delete(api);
         return api;
     }
