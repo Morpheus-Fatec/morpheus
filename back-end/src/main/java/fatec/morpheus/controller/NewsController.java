@@ -3,17 +3,17 @@ package fatec.morpheus.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fatec.morpheus.entity.NewsResponse;
 import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -32,8 +32,8 @@ public class NewsController {
     })
 
     @GetMapping
-    public ResponseEntity<PaginatedNewsResponse> getAllNews(@RequestParam (defaultValue = "1")int page, @RequestParam(defaultValue = "50") int itens) {
-        PaginatedNewsResponse news = newsService.getNewsWithDetails(page, itens);
+    public ResponseEntity<PaginatedNewsResponse<NewsResponse>> getAllNews(@RequestParam (defaultValue = "1")int page, @RequestParam(defaultValue = "50") int itens) {
+        PaginatedNewsResponse<NewsResponse> news = newsService.getNewsWithDetails(page, itens);
         return ResponseEntity.ok(news);
     }
 
