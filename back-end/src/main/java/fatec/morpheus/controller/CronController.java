@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fatec.morpheus.entity.CronProperties;
+import fatec.morpheus.DTO.CronProperties;
 import fatec.morpheus.service.CronManager;
 
 @CrossOrigin(origins = "*")

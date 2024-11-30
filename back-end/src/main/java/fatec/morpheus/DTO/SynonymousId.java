@@ -1,4 +1,4 @@
-package fatec.morpheus.entity;
+package fatec.morpheus.DTO;
 
 import java.io.Serializable;
 import java.util.Objects;
