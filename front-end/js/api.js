@@ -19,7 +19,9 @@ const app = Vue.createApp({
             root: {
                 formData: {
                     sourceSelected: {
-                        address: ''
+                        address: '',
+                        get:0,
+                        post:0
                     },
                     isSubmitted: false,
                     alert: {
@@ -36,7 +38,9 @@ const app = Vue.createApp({
                     action: null,
                     model: null,
                     sourceSelected: {
-                        address: null
+                        address: null,
+                        get:0,
+                        post:0
                     },
                     alert: {
                         show: false,
@@ -64,7 +68,9 @@ const app = Vue.createApp({
                 newsSelected: null,
                 delete: {
                     sourceSelected: {
-                        address: null
+                        address: null,
+                        post:0,
+                        get:0
                     },
                     modal: null
                 },
@@ -164,6 +170,8 @@ const app = Vue.createApp({
                         const itemAdd = new Object();
                         itemAdd.code = portalNoticia.code;
                         itemAdd.address = portalNoticia.address;
+                        itemAdd.get = portalNoticia.get;
+                        itemAdd.post = portalNoticia.post;
                         this.sourceApi.all.push(itemAdd);
 
                     });
@@ -196,6 +204,8 @@ const app = Vue.createApp({
             this.sourceApi.formData.sourceSelected = {
                 code: "",
                 address: "",
+                get:0,
+                post:0,
                 tags: []
             };
             this.sourceApi.formData.isSubmitted = false;
@@ -211,6 +221,8 @@ const app = Vue.createApp({
             this.sourceApi.formData.sourceSelected = {
                 code: news.code,
                 address: news.address,
+                get:news.get,
+                post:news.post,
                 tags: news.tags
             };
             const modalElement = this.$refs.sourceNewsFormModal;
@@ -238,6 +250,8 @@ const app = Vue.createApp({
                     code: this.sourceApi.formData.sourceSelected.code,
                     address: this.sourceApi.formData.sourceSelected.address,
                     tagCodes: this.sourceApi.formData.sourceSelected.tags,
+                    get: this.sourceApi.formData.sourceSelected.get,
+                    post: this.sourceApi.formData.sourceSelected.post,
                 };
 
                 if (this.sourceApi.formData.action != 'create') {
@@ -310,6 +324,8 @@ const app = Vue.createApp({
             const payload = {
                 code: this.sourceApi.tags.newsSelected.code,
                 address: this.sourceApi.tags.newsSelected.address,
+                get: this.sourceApi.tags.newsSelected.get,
+                post: this.sourceApi.tags.newsSelected.post,
                 tagCodes: this.sourceApi.tags.selected
             };
 
