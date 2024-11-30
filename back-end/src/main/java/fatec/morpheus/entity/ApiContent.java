@@ -8,7 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,9 +28,9 @@ public class ApiContent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dat_coll_api_cod")
-    private int apiCollId;
+    private Long apiCollId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "api_cod", nullable = false, unique = true)
     @JsonBackReference
     private Api apiId;
@@ -37,6 +38,10 @@ public class ApiContent {
     @Column(name = "dat_coll_api_registry_date", nullable = false)
     private String date;
 
-    @Column(name = "dat_coll_api_content", nullable = false)
+    @Lob
+    @Column(name = "dat_coll_api_content", nullable = false, columnDefinition = "LONGTEXT")
     private String apiContent;
+
+    @Column(name = "da_coll_api_address", nullable = false)
+    private String apiAddress;
 }
