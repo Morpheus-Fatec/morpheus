@@ -47,8 +47,8 @@ public class ApiController {
             @ApiResponse(responseCode = "400", description = "Erro ao retornar APIs"),
     })
     @GetMapping
-    public ResponseEntity<List<Api>> getAllApi() {
-        List<Api> apis = apiService.findAllApi();
+    public ResponseEntity<List<ApiDTO>> getAllApi() {
+        List<ApiDTO> apis = apiService.findAllApiWithTags();
         return ResponseEntity.ok(apis);
     }
 

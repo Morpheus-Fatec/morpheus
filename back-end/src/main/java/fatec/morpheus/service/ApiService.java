@@ -1,5 +1,6 @@
 package fatec.morpheus.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class ApiService {
         try {
             Api savedApi = apiRepository.save(api);
 
-            associateTagsWithApi(savedApi, apiDTO.getTagCodes());
+            associateTagsWithApi(savedApi, apiDTO.getTags());
             return savedApi;
 
         } catch (DataIntegrityViolationException e) {
@@ -98,6 +99,30 @@ public class ApiService {
     public List<Api> findAllApi() {
         return apiRepository.findAll();
     }
+
+    public List<ApiDTO> findAllApiWithTags() {
+    List<Api> apis = apiRepository.findAll();
+    List<ApiDTO> apiDTOs = new ArrayList<>();
+
+    for (Api api : apis) {
+        // Buscar as tags relacionadas à API
+        List<String> tags = tagRepository.findTagsByApiId(api.getCode());
+        
+        // Criar o DTO com as informações da API e suas tags
+        ApiDTO apiDTO = new ApiDTO(
+            api.getAddress(),
+            api.getName(),
+            api.getGet(),
+            api.getPost(),
+            tags
+        );
+        
+        apiDTOs.add(apiDTO);
+    }
+    
+    return apiDTOs;
+}
+
 
     /**
      * Busca uma API pelo ID.
@@ -181,9 +206,9 @@ public class ApiService {
      * @param api      Instância da API.
      * @param tagCodes Lista de IDs das tags.
      */
-    private void associateTagsWithApi(Api api, List<Integer> tagCodes) {
+    private void associateTagsWithApi(Api api, List<String> tagCodes) {
         if (tagCodes != null) {
-            List<Tag> tags = tagRepository.findAllById(tagCodes);
+            List<Tag> tags = tagRepository.findByTagNameIn(tagCodes);
             for (Tag tag : tags) {
                 TagRelFont relation = new TagRelFont();
                 relation.setApiId(api);

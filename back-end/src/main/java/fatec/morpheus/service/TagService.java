@@ -66,6 +66,7 @@ public class TagService {
     }
 
 
+    @SuppressWarnings("rawtypes")
     public List findTagWithSource(List<String> newsSource) {
         String inClause = "("+String.join(",", newsSource.stream()
                 .map(source -> "'" + source + "'")
