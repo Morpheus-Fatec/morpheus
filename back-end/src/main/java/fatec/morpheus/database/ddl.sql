@@ -84,7 +84,7 @@ CREATE TABLE Data_collected_api (
     dat_coll_api_registry_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     dat_coll_api_content LONGTEXT NOT NULL,
     dat_coll_api_method VARCHAR(10) NOT NULL,
-    dat_coll_api_url VARCHAR(500) NOT NULL,
+    dat_coll_api_address VARCHAR(500) NOT NULL,
     FOREIGN KEY (api_cod) REFERENCES Api(api_cod) ON DELETE CASCADE
 );
 
