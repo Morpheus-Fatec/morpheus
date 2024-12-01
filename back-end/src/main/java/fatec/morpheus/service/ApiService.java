@@ -11,9 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.ApiDTO;
-import fatec.morpheus.entity.Api;
 import fatec.morpheus.DTO.ErrorResponse;
-import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.entity.Api;
 import fatec.morpheus.entity.Tag;
 import fatec.morpheus.entity.TagRelFont;
 import fatec.morpheus.exception.InvalidFieldException;
