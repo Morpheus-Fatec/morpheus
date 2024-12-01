@@ -27,9 +27,11 @@ public class NewsService {
     @Autowired
     private NewsRepository newsRepository;
     
-
     @Autowired
     private NewsSourceRepository newsSourceRepository;
+
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     public PaginatedNewsResponse<NewsResponse> getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
@@ -74,7 +76,32 @@ public class NewsService {
 
     public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
-        
+        System.out.println("------------------");
+        System.out.println("TitleSearch Antes de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTitleSearch());
+        System.out.println("------------------");
+        if (request.getTitleSearch() != null && !request.getTitleSearch().isEmpty()){
+            request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
+        }
+
+        System.out.println("------------------");
+        System.out.println("TitleSearch depois de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTitleSearch());
+        System.out.println("------------------");
+
+        System.out.println("------------------");
+        System.out.println("TextSearch Antes de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTextSearch());
+        System.out.println("------------------");
+        if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()){
+            request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
+        }
+
+        System.out.println("------------------");
+        System.out.println("TextSearch Depois de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTextSearch());
+        System.out.println("------------------");
+  
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
         List<NewsResponse> newsResponses = pageResult.stream().map(news -> {
