@@ -27,15 +27,13 @@ public class AdaptedTagsService {
             "JOIN Text txA ON txA.text_cod = tr.text_cod " +
             "JOIN Text txB ON txB.text_cod = tr.syn_group " +
             "JOIN source_tag ON source_tag.tag_cod = tg.tag_cod " +
-            "WHERE source_tag.src_cod = '" + idNewSource + "' " +  // Correção de espaço aqui
+            "WHERE source_tag.src_cod = '" + idNewSource + "' " +
             "UNION " +
             "SELECT tg.tag_name AS variacao " +
             "FROM tag tg " +
             "INNER JOIN source_tag src_tg ON tg.tag_cod = src_tg.tag_cod " +
             "WHERE src_tg.src_cod = '" + idNewSource + "';";
 
-            // System.out.println(sql);
-            // return null;
             Query query = entityManager.createNativeQuery(sql);
             List<String> resultList = query.getResultList();
     
