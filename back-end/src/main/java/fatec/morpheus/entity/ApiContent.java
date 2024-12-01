@@ -44,5 +44,8 @@ public class ApiContent {
 
     @Column(name = "da_coll_api_address", nullable = false)
     private String apiAddress;
+
+    @Column(name = "da_coll_api_method", nullable = false, length = 10)
+    private String method;
 }
 

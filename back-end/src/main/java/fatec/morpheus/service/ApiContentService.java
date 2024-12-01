@@ -47,45 +47,55 @@ public class ApiContentService {
 
             System.out.println("Tags relacionadas: " + relatedTags);
 
-            if (!relatedTags.isEmpty()) {
-                String content = restTemplateObj.getForObject(api.getAddress(), String.class);
+            String content = restTemplateObj.getForObject(api.getAddress(), String.class);
 
-                boolean tagFound = false;
+            boolean tagFound = false;
 
-                for (String tag : relatedTags) {
-                    if (content != null && content.contains(tag)) {
-                        tagFound = true;
-                        break;
-                    }
+            for (String tag : relatedTags) {
+                if (content != null && content.contains(tag)) {
+                    tagFound = true;
+                    break;
+                }
+            }
+
+            if (tagFound) {
+                System.out.println("API: " + api.getAddress() + " - Ok");
+
+                if (api.getGet() == 1) {
+                    saveApiContent(api, content, "GET");
                 }
 
-                if (tagFound) {
-                    System.out.println("API: " + api.getAddress() + " - Ok");
-
-                    Optional<ApiContent> existingContent = apiContentRepository
-                        .findByApiIdAndApiAddressAndDate(api, api.getAddress(), getCurrentDate());
-
-                    if (existingContent.isPresent()) {
-                        System.out.println("Conteúdo já existe para a API: " + api.getAddress() + " no dia " + getCurrentDate() + ". Não será salvo.");
-                        continue;
-                    }
-
-                    ApiContent apiContent = new ApiContent();
-                    apiContent.setApiId(api);
-                    apiContent.setApiContent(content);
-                    apiContent.setApiAddress(api.getAddress());
-
-                    String currentDate = getCurrentDate();
-                    apiContent.setDate(currentDate);
-
-                    apiContentRepository.save(apiContent);
-                } else {
-                    System.out.println("API: " + api.getAddress() + " - Não tem");
+                if (api.getPost() == 1) {
+                    saveApiContent(api, content, "POST");
                 }
             } else {
-                System.out.println("Nenhuma tag encontrada para a API: " + api.getAddress());
+                System.out.println("API: " + api.getAddress() + " - Não tem");
             }
         }
+    }
+
+    private void saveApiContent(Api api, String content, String method) {
+        String currentDate = getCurrentDate();
+
+        Optional<ApiContent> existingContent = apiContentRepository
+                .findByApiIdAndApiAddressAndMethodAndDate(api, api.getAddress(), method, currentDate);
+
+        if (existingContent.isPresent()) {
+            System.out.println("Conteúdo já existe para a API: " + api.getAddress() + 
+                ", método: " + method + " no dia " + currentDate + ". Não será salvo.");
+            return;
+        }
+
+        ApiContent apiContent = new ApiContent();
+        apiContent.setApiId(api);
+        apiContent.setApiContent(content);
+        apiContent.setApiAddress(api.getAddress());
+        apiContent.setDate(currentDate);
+        apiContent.setMethod(method);
+
+        apiContentRepository.save(apiContent);
+
+        System.out.println("Conteúdo salvo para a API: " + api.getAddress() + ", método: " + method);
     }
 
     private List<String> findTagsForApi(Api api, List<TagRelFont> tagRelFonts) {
@@ -105,4 +115,3 @@ public class ApiContentService {
         return sdf.format(new Date());
     }
 }
-
