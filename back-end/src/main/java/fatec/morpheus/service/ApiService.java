@@ -73,7 +73,7 @@ public class ApiService {
      * @param tagCodes    Lista de códigos das tags para associação.
      * @return A instância da API atualizada.
      */
-    public Api updateApiById(int id, Api apiToUpdate, List<Integer> tagCodes) {
+    public Api updateApiById(int id, Api apiToUpdate, List<String> tagCodes) {
         validateApi(apiToUpdate);
 
         return apiRepository.findById(id)
@@ -224,7 +224,7 @@ public class ApiService {
      * @param api      Instância da API.
      * @param tagCodes Lista de IDs das tags.
      */
-    private void updateTagsForApi(Api api, List<Integer> tagCodes) {
+    private void updateTagsForApi(Api api, List<String> tagCodes) {
         tagRelFontRepository.deleteByApiId(api);
 
         associateTagsWithApi(api, tagCodes);
