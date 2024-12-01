@@ -93,11 +93,6 @@
             </div>
 
             <div class="mt-3 d-flex" >
-                <select id="optionsSearch" class="form-select" v-model="this.sourceApi.search.field" @change="apiUpdateSearch"
-                    style="width: auto;">
-                    <option value="name">Nome</option>
-                    <option value="address">Endereço</option>
-                </select>
                 <input type="text" id="searchElements" class="form-control ms-2" v-model="this.sourceApi.search.query" @input="apiFilter"
                     placeholder="Pesquisar" style="flex-grow: 1;">
             </div>
@@ -108,30 +103,27 @@
                 <thead>
                     <tr>
                         <th scope="col">
-                            Nome
-                            <button class="btn btn-icon" @click="apiToggleSort('name')">
-                                <i :class="sourceApi.search.sort.order != 'asc' 
-                                         ? 'bi bi-arrow-down-circle-fill' 
-                                         : 'bi bi-arrow-up-circle-fill'"></i>
-                            </button>
-                        </th>
-                        <th scope="col">
                             Endereço
-                            <button class="btn btn-icon" @click="apiToggleSort('address')">
-                                <i :class="sourceApi.search.sort.order != 'asc' 
-                                         ? 'bi bi-arrow-down-circle-fill' 
-                                         : 'bi bi-arrow-up-circle-fill'"></i>
-                            </button>
                         </th>
                         <th scope="col">
                             Metodos
                         </th>
-                        <th scope="col"></th>
+                        <th scope="col">
+                            
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="api in this.sourceApi.filtered" :key="api.code">
                         <td>{{ api.address }}</td>
+                        <td>
+                            <div v-if="api.get">
+                                <span class="badge text-bg-secondary">GET</span>
+                            </div>
+                            <div v-if="api.post">
+                                <span class="badge text-bg-secondary">POST</span>
+                            </div>
+                        </td>
                         <td class="text-center">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button class="btn btn-outline-primary btn-sm" title="Tags"
@@ -147,14 +139,6 @@
                                 <button id="removeTagsSource" class="btn btn-outline-danger btn-sm" title="Excluir" @click="apiDelete(api)">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                            </div>
-                        </td>
-                        <td>
-                            <div v-if="api.get">
-                                <span class="badge text-bg-secondary">GET</span>
-                            </div>
-                            <div v-if="api.post">
-                                <span class="badge text-bg-secondary">POST</span>
                             </div>
                         </td>
                     </tr>
@@ -192,16 +176,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
                         </div>
                         
-                        <form @submit.prevent="apiSave">
-                            <div id="nameSourcesModal" class="mb-3">
-                                <label for="newsName" class="form-label">Nome:</label>
-                                <input type="text" class="form-control" id="newsName"
-                                       v-model="sourceApi.formData.sourceSelected.name"
-                                       :class="{ 'is-invalid': sourceApi.formData.isSubmitted && !sourceApi.formData.sourceSelected.name }"
-                                       required>
-                                <div class="invalid-feedback">Este campo é obrigatório.</div>
-                            </div>
-                            
+                        <form @submit.prevent="apiSave">                            
                             <div id="addresSourcesModal" class="mb-3">
                                 <label for="newsAddress" class="form-label">Endereço:</label>
                                 <input type="text" class="form-control" id="newsAddress"
