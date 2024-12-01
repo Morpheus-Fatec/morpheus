@@ -1,16 +1,9 @@
 package fatec.morpheus.service;
 
-import fatec.morpheus.DTO.ApiDTO;
-import fatec.morpheus.entity.Api;
-import fatec.morpheus.entity.ErrorResponse;
-import fatec.morpheus.entity.NewsSource;
-import fatec.morpheus.exception.InvalidFieldException;
-import fatec.morpheus.exception.NotFoundException;
-import fatec.morpheus.exception.UniqueConstraintViolationException;
-import fatec.morpheus.repository.ApiRepository;
-import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +11,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import fatec.morpheus.DTO.ApiDTO;
+import fatec.morpheus.DTO.ErrorResponse;
+import fatec.morpheus.entity.Api;
+import fatec.morpheus.exception.InvalidFieldException;
+import fatec.morpheus.exception.NotFoundException;
+import fatec.morpheus.exception.UniqueConstraintViolationException;
+import fatec.morpheus.repository.ApiRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 @Service
 public class ApiService {
@@ -118,7 +116,7 @@ public class ApiService {
 
     public Api deleteApiById(int id) {
         Api api = apiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "API"));    
+                .orElseThrow(() -> new NotFoundException(id, "API"));
         Hibernate.initialize(api.getTagCodes());
 
         apiRepository.delete(api);
