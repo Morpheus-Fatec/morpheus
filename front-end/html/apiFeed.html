@@ -195,42 +195,44 @@
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros
-                    </h5>
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros</h5>
+                    <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuideAPIFilter('main')" id="btnHelpFilterAPI">
+                        <i class="bi bi-person-raised-hand"></i>
+                    </button>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <div id="app" class="card mb-3">
                         <div class="card-body">
-                            <div class="col-md-15">
+                            <div class="col-md-15"  id="choices-address">
                                 <h6 class="mb-3 fs-6">Selecione os endereços:</h6>
-                                <select id="choices-address" class="form-select" multiple></select>
+                                <select class="form-select" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class=" card mb-3">
-                        <div class="card-body">
+                    <div class=" card mb-3" id="div-choices-text-remove-button">
+                        <div class="card-body" id="choices-text-remove-button">
                             <label for="choices-text-remove-button" class="form-label">
                                 <h6>Adicione textos:</h6>
                             </label>
-                            <input id="choices-text-remove-button" class="form-control"
+                            <input class="form-control"
                                 placeholder="Digite algo e pressione Enter">
                         </div>
                     </div>
                     <div class="card mb-3">
                         <div class="card-body">
-                            <div class="col-md-15">
+                            <div class="col-md-15" id="choices-tags">
                                 <h6 class="mb-3 fs-6">Selecione as tags:</h6>
-                                <select id="choices-tags" class="form-select" multiple></select>
+                                <select  class="form-select" multiple></select>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <div class="card mb-3">
-                            <div class="card-body">
+                            <div class="card-body" id="dateRange">
                                 <h6>Selecione um intervalo de datas:</h6>
-                                <input type="text" id="dateRange" class="form-control" readonly v-model="dateWrite">
+                                <input type="text" class="form-control" readonly v-model="dateWrite">
                             </div>
                         </div>
                     </div>

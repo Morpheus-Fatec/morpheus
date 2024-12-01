@@ -365,8 +365,59 @@ const app = Vue.createApp({
                 }
             })
             .start();
+        },
+
+        startUserGuideAPIFilter(guide) {
+            let stepsGuide = [];
+    
+            if (guide === 'main') {
+                stepsGuide = [
+                    {
+                        element: '#offcanvasWithBothOptionsLabel',
+                        intro: 'Título',
+                        position: 'auto'
+                    },
+                    {
+                        element: '#choices-address',
+                        intro: 'Endereços',
+                        position: 'auto'
+                    },
+                    {
+                        element: '#div-choices-text-remove-button',
+                        intro: 'Adicione textos',
+                        position: 'auto'
+                    },
+                    {
+                        element: '#choices-tags',
+                        intro: 'Selecione as tags',
+                        position: 'auto'
+                    },
+                    {
+                        element: '#dateRange',
+                        intro: 'Selecione um intervalo de datas',
+                        position: 'auto'
+                    },
+                    {
+                        element: '#btnFilterApply',
+                        intro: 'Clique aqui para aplicar os filtros',
+                        position: 'auto'
+                    }
+                ];
+            }
+    
+            introJs().setOptions({
+                steps: stepsGuide,
+                nextLabel: 'Próximo',
+                prevLabel: 'Anterior',
+                skipLabel: '<i class="fa fa-times"></i>',
+                doneLabel: 'Concluir',
+                scrollToElementOptions: {
+                    scrollContainer: '#offcanvasWithBothOptions'
+                }
+            }).start();
         }
     },
+
     mounted() {
         this.apiLoad();
         this.tagsLoad();

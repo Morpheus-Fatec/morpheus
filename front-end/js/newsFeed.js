@@ -458,7 +458,10 @@ const app = Vue.createApp({
             nextLabel: 'Próximo',
             prevLabel: 'Anterior',
             skipLabel: '<i class="fa fa-times"></i>',
-            doneLabel: 'Concluir'
+            doneLabel: 'Concluir',
+            scrollToElementOptions: {
+                scrollContainer: '#offcanvasWithBothOptions'
+            }
         })
         .onchange(async function(element) {
             const stepIndex = this._currentStep;
@@ -492,6 +495,75 @@ const app = Vue.createApp({
             }
         })
         .start();
+    },
+    
+    startUserGuideNewsFilter(guide) {
+        const vm = this;
+        let stepsGuide = [];
+    
+        if (guide === 'main') {
+            stepsGuide = [
+                {
+                    element: '#offcanvasWithBothOptionsLabel',
+                    intro: 'Título',
+                    position: 'auto'
+                },
+                {
+                    element: '#choices-select-portals',
+                    intro: 'Portais',
+                    position: 'auto'
+                },
+                {
+                    element: '#search-title-existent',
+                    intro: 'Tag titulo',
+                    position: 'auto'
+                },
+                {
+                    element: '#search-title-text',
+                    intro: 'texto titulo',
+                    position: 'auto'
+                },
+                {
+                    element: '#search-body-tag',
+                    intro: 'tag corpo.',
+                    position: 'auto'
+                },
+                {
+                    element: '#search-body-text',
+                    intro: 'texto corpo.',
+                    position: 'auto'
+                },
+                {
+                    element: '#search-author',
+                    intro: 'Autor.',
+                    position: 'auto'
+                },
+                {
+                    element: '#dateRange',
+                    intro: 'Aqui você pode selecionar um intervalo de datas.',
+                    position: 'auto'
+                },
+                {
+                    element: '#btnFilterApply',
+                    intro: 'Clique aqui para aplicar os filtros.',
+                    position: 'auto'
+                }
+            ];
+        }
+    
+        introJs().setOptions({
+            steps: stepsGuide,
+            nextLabel: 'Próximo',
+            prevLabel: 'Anterior',
+            skipLabel: '<i class="fa fa-times"></i>',
+            doneLabel: 'Concluir',
+            scrollToElement: true,
+            scrollToElementOptions: {
+                behavior: 'smooth',
+                block: 'center',
+                scrollContainer: '#offcanvasWithBothOptions'
+            }
+        }).start();
     }
     
 },

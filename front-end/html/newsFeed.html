@@ -104,60 +104,60 @@
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros
-                    </h5>
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros</h5>
+                    <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuideNewsFilter('main')" id="btnHelpFilter">
+                        <i class="bi bi-person-raised-hand"></i>
+                    </button>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <p><b>Filtros por portais</b></p>
                     <div id="app" class="card mb-3">
-                        <div class="card-body">
+                        <div class="card-body" id="choices-select-portals">
                             <div class="col-md-15">
-                                <h6 class="mb-3 fs-6">Selecione os portais:</h6>
-                                <select id="choices-select" class="form-select" multiple></select>
+                                <h6 class="mb-3 fs-6" >Selecione os portais:</h6>
+                                <select  class="form-select" multiple ></select>
                             </div>
                         </div>
                     </div>
                     <p><b>Filtros por título</b></p>
                     <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="col-md-15">
+                        <div class="card-body" >
+                            <div class="col-md-15" id="search-title-existent">
                                 <h6 class="mb-3 fs-6">Selecione as tags:</h6>
-                                <select id="choices-tags-title" class="form-select" multiple></select>
+                                <select class="form-select" multiple ></select>
                             </div>
                             <br>
-                            <div class="mb-3">
+                            <div class="mb-3" id="search-title-text">
                                 <label for="choices-title-remove-button" class="form-label">
                                     <h6>Adicione textos:</h6>
                                 </label>
-                                <input id="choices-title-remove-button" class="form-control"
-                                    placeholder="Digite algo e pressione Enter">
+                                <input class="form-control" placeholder="Digite algo e pressione Enter">
                             </div>
                         </div>
                     </div>
                     <p><b>Filtros por texto</b></p>
                     <div class="card mb-3">
                         <div class="card-body">
-                            <div class="col-md-15">
+                            <div class="col-md-15" id="search-body-tag">
                                 <h6 class="mb-3 fs-6">Selecione as tags:</h6>
-                                <select id="choices-tags-text" class="form-select" multiple></select>
+                                <select class="form-select" multiple></select>
                             </div>
                             <br>
-                            <div class="mb-3">
+                            <div class="mb-3" id="search-body-text">
                                 <label for="choices-text-remove-button" class="form-label">
                                     <h6>Adicione textos:</h6>
                                 </label>
-                                <input id="choices-text-remove-button" class="form-control"
-                                    placeholder="Digite algo e pressione Enter">
+                                <input id="choices-text-remove-button" class="form-control" placeholder="Digite algo e pressione Enter">
                             </div>
                         </div>
                     </div>
                     <p><b>Filtros por autor</b></p>
                     <div class="card mb-3">
                         <div class="card-body">
-                            <div class="col-md-15">
+                            <div class="col-md-15" id="search-author" >
                                 <h6 class="mb-3 fs-6">Selecione os autores:</h6>
-                                <select id="choices-select-authors" class="form-select" multiple></select>
+                                <select class="form-select" multiple></select>
                             </div>
                         </div>
                     </div>
@@ -169,8 +169,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary w-100" @click="filterData"><i
-                            class="bi bi-filter"></i>Filtrar</button>
+                    <button type="button" class="btn btn-primary w-100" @click="filterData" id="btnFilterApply"><i class="bi bi-filter"></i>Filtrar</button>
                 </div>
             </div>
 
