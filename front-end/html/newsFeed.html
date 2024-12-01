@@ -80,6 +80,9 @@
                     <i class="bi bi-globe2" style="font-size: 30px; color: #004c8a;"></i>
                     <h1 class="ms-2 mb-0">Notícias</h1>
                 </div>
+                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuide('main')">
+                    <i class="bi bi-person-raised-hand"></i>
+                </button>
             </div>
             <div class="alert alert-dismissible fade show" :class="`alert-${root.alert.type}`" role="alert"
                 v-if="root.alert.show">
