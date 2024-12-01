@@ -7,19 +7,13 @@
     <title>Morpheus</title>
     <link rel="stylesheet" href="../css/bootstrap.css">
     <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css\bootstrap-icons-1.11.3\bootstrap-icons-1.11.3\font\bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-icons-1.11.3/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
-        rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/4.2.2/introjs.min.css">
+</head>
 </head>
 
 <body>
@@ -78,9 +72,9 @@
             <div class="page-title d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-globe2" style="font-size: 30px; color: #004c8a;"></i>
-                    <h1 class="ms-2 mb-0">Notícias</h1>
+                    <h1 class="ms-2 mb-0" id="titleNews">Notícias</h1>
                 </div>
-                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuide('main')">
+                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuideNews('main')">
                     <i class="bi bi-person-raised-hand"></i>
                 </button>
             </div>
@@ -98,10 +92,10 @@
                     <option value="newsContent">Conteúdo</option>
                 </select>
                 <input type="text" class="form-control ms-2" v-model="news.search.query" @input="newsFilter"
-                    placeholder="Pesquisar" style="flex-grow: 1;">
+                    placeholder="Pesquisar" style="flex-grow: 1;" id="searchElementsNews">
                 <div class="col-auto ms-5">
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
-                        role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary">
+                        role="button" aria-controls="offcanvasWithBothOptions" class="btn btn-primary" id="btnFilterNews">
                         <i class="bi bi-filter"></i> Filtros
                     </button>
                 </div>
@@ -227,31 +221,31 @@
 
 
             <div v-if="news && news.filtered && news.filtered.length > 0" class="table-container">
-                <table class="table table-bordered mt-2">
+                <table class="table table-bordered mt-2" id="allNews">
                     <thead>
                         <tr>
-                            <th scope="col" style="width: 10%;">Título
+                            <th scope="col" style="width: 10%;" id="spanNewsTitle">Título
                                 <button class="btn btn-icon" @click="newsToggleSort('newsTitle')">
                                     <i :class="news.search.sort.order != 'asc' 
                                                ? 'bi bi-arrow-down-circle-fill' 
                                                : 'bi bi-arrow-up-circle-fill'"></i>
                                 </button>
                             </th>
-                            <th scope="col" style="width: 5%;">Conteúdo
+                            <th scope="col" style="width: 5%;" id="spanNewsContent">Conteúdo
                                 <button class="btn btn-icon" @click="newsToggleSort('newsContent')">
                                     <i :class="news.search.sort.order != 'asc' 
                                            ? 'bi bi-arrow-down-circle-fill' 
                                            : 'bi bi-arrow-up-circle-fill'"></i>
                                 </button>
                             </th>
-                            <th scope="col" style="width: 15%;">Portal
+                            <th scope="col" style="width: 15%;"id="spanPortal">Portal
                                 <button class="btn btn-icon" @click="newsToggleSort('srcName')">
                                     <i :class="news.search.sort.order != 'asc' 
                                            ? 'bi bi-arrow-down-circle-fill' 
                                            : 'bi bi-arrow-up-circle-fill'"></i>
                                 </button>
                             </th>
-                            <th scope="col" style="width: 50%;">Endereço</th>
+                            <th scope="col" style="width: 50%;" id="linkNewsAddress">Endereço</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -260,7 +254,7 @@
                             <td>{{ news.newsContent.slice(0,100) }}
                                 <span v-if="news.newsContent.length > 100"
                                     @click="openModal(news.newsContent, news.newsTitle, news.autName, news.newsRegistryDate)"
-                                    style="cursor: pointer; color: blue;">...</span>
+                                    style="cursor: pointer; color: blue;" id="btnViewContentNews">...</span>
                             </td>
                             <td style="text-align: center;">
                                 <a :href="news.scrAddress" target="_blank"
@@ -310,8 +304,13 @@
         </div>
 
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/4.2.2/intro.min.js"></script>
     <script src="../library/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
     <script src="../library/axios.js"></script>
     <script src="../js/newsFeed.js"></script>
 </body>
