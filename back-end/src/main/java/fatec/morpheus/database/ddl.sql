@@ -74,6 +74,8 @@ CREATE TABLE Api (
     api_cod INT AUTO_INCREMENT PRIMARY KEY,
     api_name VARCHAR(30) NOT NULL,
     api_url VARCHAR(500) UNIQUE NOT NULL
+    api_get int NOT NULL,
+    api_post int NOT NULL
 );
 
 CREATE TABLE Data_collected_api (
