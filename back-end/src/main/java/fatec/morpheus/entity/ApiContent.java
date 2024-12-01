@@ -1,5 +1,9 @@
 package fatec.morpheus.entity;
 
+import java.time.LocalDate;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -35,8 +39,9 @@ public class ApiContent {
     @JsonBackReference
     private Api apiId;
 
-    @Column(name = "dat_coll_api_registry_date", nullable = false)
-    private String date;
+    @CreationTimestamp
+    @Column(name = "dat_coll_api_registry_date", nullable = false, updatable = false)
+    private LocalDate date;
 
     @Lob
     @Column(name = "dat_coll_api_content", nullable = false, columnDefinition = "LONGTEXT")

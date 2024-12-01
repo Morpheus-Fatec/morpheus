@@ -1,8 +1,7 @@
 package fatec.morpheus.service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,26 +74,26 @@ public class ApiContentService {
     }
 
     private void saveApiContent(Api api, String content, String method) {
-        String currentDate = getCurrentDate();
-
+        LocalDate currentDate = LocalDate.now();
+    
         Optional<ApiContent> existingContent = apiContentRepository
                 .findByApiIdAndApiAddressAndMethodAndDate(api, api.getAddress(), method, currentDate);
-
+    
         if (existingContent.isPresent()) {
-            System.out.println("Conteúdo já existe para a API: " + api.getAddress() + 
-                ", método: " + method + " no dia " + currentDate + ". Não será salvo.");
+            System.out.println("Conteúdo já existe para a API: " + api.getAddress() +
+                    ", método: " + method + " no dia " + currentDate + ". Não será salvo.");
             return;
         }
-
+    
         ApiContent apiContent = new ApiContent();
         apiContent.setApiId(api);
         apiContent.setApiContent(content);
         apiContent.setApiAddress(api.getAddress());
         apiContent.setDate(currentDate);
         apiContent.setMethod(method);
-
+    
         apiContentRepository.save(apiContent);
-
+    
         System.out.println("Conteúdo salvo para a API: " + api.getAddress() + ", método: " + method);
     }
 
@@ -108,10 +107,5 @@ public class ApiContentService {
         }
 
         return tagsForApi;
-    }
-
-    private String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(new Date());
     }
 }

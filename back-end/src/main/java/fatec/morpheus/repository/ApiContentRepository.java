@@ -1,5 +1,6 @@
 package fatec.morpheus.repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,6 @@ import fatec.morpheus.entity.ApiContent;
 
 @Repository
 public interface ApiContentRepository extends JpaRepository<ApiContent, Integer> {
-
-    Optional<ApiContent> findByApiIdAndApiAddressAndMethodAndDate(Api api, String apiAddress, String method, String date);
+   Optional<ApiContent> findByApiIdAndApiAddressAndMethodAndDate(Api api, String apiAddress, String method, LocalDate date);
 }
+
