@@ -2,13 +2,11 @@ package fatec.morpheus.service;
 
 import fatec.morpheus.DTO.ApiDTO;
 import fatec.morpheus.entity.Api;
-import fatec.morpheus.entity.ErrorResponse;
-import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.DTO.ErrorResponse;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
