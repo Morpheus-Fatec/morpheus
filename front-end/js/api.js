@@ -716,11 +716,6 @@ const app = Vue.createApp({
                     position: 'bottom'
                   },
                   {
-                    element: '#optionsSearch',
-                    intro: 'Aqui é possível selecionar um campo a sua escolha para utilizar na filtragem de dados',
-                    position: 'top'
-                  },
-                  {
                     element: '#allSources',
                     intro: 'Aqui ficam exibidos todos as fontes de dados resultantes da pesquisa',
                     position: 'right'
