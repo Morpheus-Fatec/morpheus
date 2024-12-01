@@ -1,5 +1,6 @@
 package fatec.morpheus.DTO;
 
+
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,10 +12,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiDTO {
-    private String address;
-    private String name;
-    private int get;
-    private int post;
-    private List<Integer> tagCodes;
+public class PaginatedApi<T> {
+    private List<T> api;
+    private int totalPages;
+    private long totalElements;
 }

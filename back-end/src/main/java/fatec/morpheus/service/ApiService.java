@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fatec.morpheus.DTO.ApiDTO;
+import fatec.morpheus.DTO.ErrorResponse;
 import fatec.morpheus.entity.Api;
-import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.Tag;
 import fatec.morpheus.entity.TagRelFont;
 import fatec.morpheus.exception.InvalidFieldException;
@@ -40,82 +40,81 @@ public class ApiService {
     @Autowired
     private Validator validator;
 
-    public Api createApi(ApiDTO apiDTO) {
+    public Api createApi(ApiDTO apiCreatedDTO) {
         Api api = new Api();
-        api.setAddress(apiDTO.getAddress());
-        api.setName(apiDTO.getName());
-        api.setGet(apiDTO.getGet());
-        api.setPost(apiDTO.getPost());
-    
-        validateApi(api);
-    
+
+        api.setAddress(apiCreatedDTO.getAddress());
+        api.setGet(apiCreatedDTO.getGet());
+        api.setPost(apiCreatedDTO.getPost());
+        api.setTagCodes(apiCreatedDTO.getTagCodes());
+
+        Set<ConstraintViolation<Api>> sourceViolations = validator.validate(api);
+        if (!sourceViolations.isEmpty()) {
+            List<String> errors = sourceViolations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.toList());
+
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, errors);
+            errorResponse.setMessage("Problemas com campos obrigatórios");
+            throw new InvalidFieldException(errorResponse);
+        }
+
+
         try {
-            Api savedApi = apiRepository.save(api);
-    
-            associateTagsWithApi(savedApi, apiDTO.getTags());
-            return savedApi;
-    
-        } catch (DataIntegrityViolationException e) {
-            handleUniqueConstraintViolation(api);
-            return null;
+            apiRepository.save(api);
+            return api;
+
+        } catch (Exception e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(api);
+
+            if (duplicateFields.isEmpty()) {
+                String errorMessage = e.getCause().getMessage();
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpStatus.CONFLICT,
+                        duplicateFields,
+                        errorMessage
+                );
+                throw new UniqueConstraintViolationException(errorResponse);
+            }
+
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,
+                    duplicateFields,
+                    "Campos Duplicados"
+            );
+
+            throw new UniqueConstraintViolationException(errorResponse);
         }
     }
     
-    @Transactional
-    public Api updateApiById(int id, Api apiToUpdate, List<String> tags) {
-        return apiRepository.findById(id)
-                .map(existingApi -> {
-                    existingApi.setAddress(apiToUpdate.getAddress());
-                    existingApi.setGet(apiToUpdate.getGet());
-                    existingApi.setPost(apiToUpdate.getPost());
-    
-                    Api updatedApi = apiRepository.save(existingApi);
-    
-                    updateTagsForApi(updatedApi, tags);
-    
-                    return updatedApi;
-                })
-                .orElseThrow(() -> new NotFoundException(id, "API"));
+    public Api updateApiById(int id, Api apiToUpdate) {
+        try {
+            return apiRepository.findById(id)
+                    .map(existingApi -> {
+                        existingApi.setAddress(apiToUpdate.getAddress());
+                        existingApi.setGet(apiToUpdate.getGet());
+                        existingApi.setPost(apiToUpdate.getPost());
+                        existingApi.setTagCodes(apiToUpdate.getTagCodes());
+                        return apiRepository.save(existingApi);
+                    })
+                    .orElseThrow(() -> new NotFoundException(id, "API"));
+        } catch (DataIntegrityViolationException e) {
+            List<String> duplicateFields = this.verifyUniqueKeys(apiToUpdate);
+
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.CONFLICT,
+                    duplicateFields
+            );
+            throw new UniqueConstraintViolationException(errorResponse);
+        }
     }
 
     public List<Api> findAllApi() {
         return apiRepository.findAll();
     }
 
-    public List<ApiDTO> findAllApiWithTags() {
-        List<Api> apis = apiRepository.findAll();
-        List<ApiDTO> apiDTOs = new ArrayList<>();
-
-        for (Api api : apis) {
-            List<String> tags = tagRepository.findTagsByApiId(api.getCode());
-            
-            ApiDTO apiDTO = new ApiDTO(
-                api.getAddress(),
-                api.getName(),
-                api.getGet(),
-                api.getPost(),
-                tags
-            );
-            
-            apiDTOs.add(apiDTO);
-        }
-        
-        return apiDTOs;
-    }
-
-    public ApiDTO findApiById(int id) {
-        Api api = apiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "API"));
-
-        List<String> tags = tagRepository.findTagsByApi(id);
-
-        return new ApiDTO(
-                api.getAddress(),
-                api.getName(),
-                api.getGet(),
-                api.getPost(),
-                tags
-        );
+    public Api findApiById(int id) {
+        return apiRepository.findById(id).orElseThrow(() -> new NotFoundException(id, "API"));
     }
     
     @Transactional
