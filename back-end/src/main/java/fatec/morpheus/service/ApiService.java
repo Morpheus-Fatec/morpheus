@@ -21,9 +21,11 @@ import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
 import fatec.morpheus.repository.TagRelFontRepository;
 import fatec.morpheus.repository.TagRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+
+import org.hibernate.Hibernate;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ApiService {
