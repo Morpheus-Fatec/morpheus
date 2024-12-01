@@ -166,9 +166,18 @@ public class ApiService {
 
     private void associateTagsWithApi(Api api, List<String> tagCodes) {
         if (tagCodes != null && !tagCodes.isEmpty()) {
-            List<Tag> tags = tagRepository.findByTagNameIn(tagCodes);
-            System.out.println("Associação das tags: " + tagCodes);
-            
+            List<Tag> tags = new ArrayList<>();
+
+            for (String tagCode : tagCodes) {
+                Tag tag = tagRepository.findByTagName(tagCode);
+                if (tag == null) {
+                    tag = new Tag();
+                    tag.setTagName(tagCode);
+                    tagRepository.save(tag);
+                }
+                tags.add(tag);
+            }
+    
             for (Tag tag : tags) {
                 TagRelFont relation = new TagRelFont();
                 relation.setApiId(api);
@@ -176,6 +185,8 @@ public class ApiService {
                 tagRelFontRepository.save(relation);
                 System.out.println("Tag associada: " + tag.getTagName());
             }
+        } else {
+            System.out.println("Nenhuma tag fornecida para associar.");
         }
     }
     
