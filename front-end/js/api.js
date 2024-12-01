@@ -76,9 +76,9 @@ const app = Vue.createApp({
                 },
                 search: {
                     query: '',
-                    field: 'name',
+                    field: 'address',
                     sort: {
-                        field: 'name',
+                        field: 'address',
                         order: 'asc'
                     },
                 }
@@ -161,7 +161,7 @@ const app = Vue.createApp({
             }, 20000);
         },
         apiLoad() {
-            axios.get('http://localhost:8080/morpheus/sourceapi')
+            axios.get('http://localhost:8080/morpheus/api')
                 .then(response => {
                     this.sourceApi.all = [];
          
@@ -172,12 +172,15 @@ const app = Vue.createApp({
                         itemAdd.address = portalNoticia.address;
                         itemAdd.get = portalNoticia.get;
                         itemAdd.post = portalNoticia.post;
+                        itemAdd.tags = portalNoticia.tagCodes;
                         this.sourceApi.all.push(itemAdd);
 
                     });
+                    console.log(this.sourceApi.all);
                     this.apiFilter();
                 })
                 .catch(error => {
+                    throw error;
                     this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
                 });
         },
@@ -188,12 +191,8 @@ const app = Vue.createApp({
             const query = this.sourceApi.search.query.toLowerCase();
             this.sourceApi.filtered = this.sourceApi.all
                 .filter(news =>
-                    news[this.sourceApi.search.field].toLowerCase().includes(query)
-                )
-                .sort((a, b) => {
-                    const result = a[this.sourceApi.search.sort.field].toLowerCase().localeCompare(b[this.sourceApi.search.sort.field].toLowerCase());
-                    return this.sourceApi.search.sort.order === 'asc' ? result : -result;
-                });
+                    news['address'].toLowerCase().includes(query)
+                );
         },
         apiToggleSort(field) {
             this.sourceApi.search.sort.field = field;
@@ -215,7 +214,8 @@ const app = Vue.createApp({
             this.sourceApi.formData.modal = new bootstrap.Modal(modalElement);
             this.sourceApi.formData.modal.show();
         },
-        newsStartEdit(news) {
+
+        apiStartEdit(news) {
             this.root.formData.alert.show = false;
             this.sourceApi.formData.action = "edit";
             this.sourceApi.formData.sourceSelected = {
@@ -239,19 +239,19 @@ const app = Vue.createApp({
         },
         apiSave() {
             this.sourceApi.formData.isSubmitted = true;
-            if (this.sourceApi.formData.sourceSelected.name && this.sourceApi.formData.sourceSelected.address) {
+            if (this.sourceApi.formData.sourceSelected.address) {
                 this.sourceApi.formData.modal.hide();
 
                 let endpoint = this.sourceApi.formData.action === 'create'
-                    ? 'http://localhost:8080/morpheus/sourceapi'
-                    : `http://localhost:8080/morpheus/sourceapi/${this.sourceApi.formData.sourceSelected.code}`;
+                    ? 'http://localhost:8080/morpheus/api'
+                    : `http://localhost:8080/morpheus/api/${this.sourceApi.formData.sourceSelected.code}`;
 
                 const payload = {
                     code: this.sourceApi.formData.sourceSelected.code,
                     address: this.sourceApi.formData.sourceSelected.address,
                     tagCodes: this.sourceApi.formData.sourceSelected.tags,
-                    get: this.sourceApi.formData.sourceSelected.get,
-                    post: this.sourceApi.formData.sourceSelected.post,
+                    get: this.sourceApi.formData.sourceSelected.get ? 1 : 0,
+                    post: this.sourceApi.formData.sourceSelected.post ? 1 : 0,
                 };
 
                 if (this.sourceApi.formData.action != 'create') {
@@ -264,7 +264,7 @@ const app = Vue.createApp({
 
                 request
                     .then(response => {
-                        this.rootMontedAlert('success', 'Foi salvo com sucesso o portal: ' + this.sourceApi.formData.sourceSelected.name, 'Portal salvo com sucesso');
+                        this.rootMontedAlert('success', 'Foi salvo com sucesso a Api: ' + this.sourceApi.formData.sourceSelected.address, 'API salvo com sucesso');
                         this.apiLoad();
                         this.sourceApi.formData.isSubmitted = false;
                     })
@@ -285,12 +285,12 @@ const app = Vue.createApp({
         apiConfirmDelete() {
             this.sourceApi.delete.modal.hide();
             const code = this.sourceApi.delete.sourceSelected.code;
-            const endpoint = `http://localhost:8080/morpheus/source/${code}`;
+            const endpoint = `http://localhost:8080/morpheus/api/${code}`;
 
             axios.delete(endpoint)
                 .then(response => {
                     this.apiLoad();
-                    this.rootMontedAlert('success', 'Foi excluido com sucesso o portal: ' + this.sourceApi.delete.sourceSelected.name, 'Portal excluido com sucesso');
+                    this.rootMontedAlert('success', 'Foi excluida com sucesso a API: ' + this.sourceApi.delete.sourceSelected.address, 'API excluida com sucesso');
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar excluir!');
@@ -319,7 +319,7 @@ const app = Vue.createApp({
         },
         tagsForSourceNewsSave() {
             this.sourceApi.formData.isSubmitted = true;
-            const endpoint = `http://localhost:8080/morpheus/sourceapi/${this.sourceApi.tags.newsSelected.code}`;
+            const endpoint = `http://localhost:8080/morpheus/api/${this.sourceApi.tags.newsSelected.code}`;
 
             const payload = {
                 code: this.sourceApi.tags.newsSelected.code,
@@ -434,7 +434,7 @@ const app = Vue.createApp({
 
             axios.delete(endpoint)
                 .then(response => {
-                    this.tagsMontedAlert('success', 'Foi excluido com sucesso a tag: ' + this.tags.delete.tagSelected.tagName, 'Tag excluido com sucesso');
+                    this.tagsMontedAlert('success', 'Foi excluida com sucesso a tag: ' + this.tags.delete.tagSelected.tagName, 'Tag excluida com sucesso');
                 })
                 .catch(error => {
                     this.tagsMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Erro ao tentar excluir!');

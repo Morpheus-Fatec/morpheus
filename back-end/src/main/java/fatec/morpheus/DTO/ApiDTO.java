@@ -13,7 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ApiDTO {
     private String address;
+    private String name;
     private int get;
     private int post;
-    private List<Integer> tagCodes;
+    private List<String> tags;
 }
