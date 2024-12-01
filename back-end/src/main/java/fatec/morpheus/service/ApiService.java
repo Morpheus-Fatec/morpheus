@@ -39,40 +39,27 @@ public class ApiService {
     @Autowired
     private Validator validator;
 
-    /**
-     * Cria uma nova API e associa as tags fornecidas.
-     *
-     * @param apiDTO Dados para criação da API.
-     * @return A instância da API criada.
-     */
     public Api createApi(ApiDTO apiDTO) {
         Api api = new Api();
         api.setAddress(apiDTO.getAddress());
+        api.setName(apiDTO.getName());
         api.setGet(apiDTO.getGet());
         api.setPost(apiDTO.getPost());
-
+    
         validateApi(api);
-
+    
         try {
             Api savedApi = apiRepository.save(api);
-
+    
             associateTagsWithApi(savedApi, apiDTO.getTags());
             return savedApi;
-
+    
         } catch (DataIntegrityViolationException e) {
             handleUniqueConstraintViolation(api);
             return null;
         }
     }
-
-    /**
-     * Atualiza uma API existente e suas associações de tags.
-     *
-     * @param id         Identificador único da API.
-     * @param apiToUpdate Dados para atualização da API.
-     * @param tagCodes    Lista de códigos das tags para associação.
-     * @return A instância da API atualizada.
-     */
+    
     public Api updateApiById(int id, Api apiToUpdate, List<String> tagCodes) {
         validateApi(apiToUpdate);
 
@@ -91,11 +78,6 @@ public class ApiService {
                 .orElseThrow(() -> new NotFoundException(id, "API"));
     }
 
-    /**
-     * Retorna todas as APIs cadastradas.
-     *
-     * @return Lista de APIs.
-     */
     public List<Api> findAllApi() {
         return apiRepository.findAll();
     }
@@ -105,10 +87,8 @@ public class ApiService {
     List<ApiDTO> apiDTOs = new ArrayList<>();
 
     for (Api api : apis) {
-        // Buscar as tags relacionadas à API
         List<String> tags = tagRepository.findTagsByApiId(api.getCode());
         
-        // Criar o DTO com as informações da API e suas tags
         ApiDTO apiDTO = new ApiDTO(
             api.getAddress(),
             api.getName(),
@@ -123,24 +103,11 @@ public class ApiService {
     return apiDTOs;
 }
 
-
-    /**
-     * Busca uma API pelo ID.
-     *
-     * @param id Identificador da API.
-     * @return Instância da API encontrada.
-     */
     public Api findApiById(int id) {
         return apiRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "API"));
     }
 
-    /**
-     * Remove uma API e suas associações de tags.
-     *
-     * @param id Identificador da API.
-     * @return A API removida.
-     */
     public Api deleteApiById(int id) {
         Api api = apiRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(id, "API"));
@@ -152,11 +119,6 @@ public class ApiService {
         return api;
     }
 
-    /**
-     * Valida os campos de uma API usando o Validator.
-     *
-     * @param api Instância da API para validação.
-     */
     private void validateApi(Api api) {
         Set<ConstraintViolation<Api>> violations = validator.validate(api);
         if (!violations.isEmpty()) {
@@ -170,11 +132,6 @@ public class ApiService {
         }
     }
 
-    /**
-     * Trata violações de unicidade.
-     *
-     * @param api Instância da API para verificação.
-     */
     private void handleUniqueConstraintViolation(Api api) {
         List<String> duplicateFields = verifyUniqueKeys(api);
         if (!duplicateFields.isEmpty()) {
@@ -187,12 +144,7 @@ public class ApiService {
         }
     }
 
-    /**
-     * Verifica se existem campos únicos já cadastrados no banco.
-     *
-     * @param api Instância da API para verificação.
-     * @return Lista de campos duplicados.
-     */
+
     private List<String> verifyUniqueKeys(Api api) {
         if (apiRepository.existsByAddress(api.getAddress())) {
             return List.of("address");
@@ -200,30 +152,21 @@ public class ApiService {
         return List.of();
     }
 
-    /**
-     * Associa as tags à API usando TagRelFont.
-     *
-     * @param api      Instância da API.
-     * @param tagCodes Lista de IDs das tags.
-     */
     private void associateTagsWithApi(Api api, List<String> tagCodes) {
-        if (tagCodes != null) {
+        if (tagCodes != null && !tagCodes.isEmpty()) {
             List<Tag> tags = tagRepository.findByTagNameIn(tagCodes);
+            System.out.println("Associação das tags: " + tagCodes);
+            
             for (Tag tag : tags) {
                 TagRelFont relation = new TagRelFont();
                 relation.setApiId(api);
                 relation.setTagId(tag);
                 tagRelFontRepository.save(relation);
+                System.out.println("Tag associada: " + tag.getTagName());
             }
         }
     }
-
-    /**
-     * Atualiza as associações de tags para uma API.
-     *
-     * @param api      Instância da API.
-     * @param tagCodes Lista de IDs das tags.
-     */
+    
     private void updateTagsForApi(Api api, List<String> tagCodes) {
         tagRelFontRepository.deleteByApiId(api);
 

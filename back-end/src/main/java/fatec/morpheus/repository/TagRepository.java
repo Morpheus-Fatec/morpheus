@@ -18,7 +18,6 @@ public interface TagRepository extends JpaRepository<Tag, Integer>{
     "WHERE trf.apiId.code = :apiCode")
     List<String> findTagsByApiId(int apiCode);
 
-    @Query("SELECT t FROM Tag t WHERE t.tagName IN :tagNames")
-    List<Tag> findByTagNameIn(List<String> tagNames);
+    List<Tag> findByTagNameIn(List<String> tagCodes);
 
 }
