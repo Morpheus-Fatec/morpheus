@@ -16,5 +16,5 @@ public class ApiDTO {
     private String name;
     private int get;
     private int post;
-    private List<Integer> tagCodes;
+    private List<String> tags;
 }
