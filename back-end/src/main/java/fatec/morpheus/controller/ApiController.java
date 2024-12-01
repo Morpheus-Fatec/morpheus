@@ -68,10 +68,27 @@ public class ApiController {
             @ApiResponse(responseCode = "200", description = "API atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro ao atualizar API"),
     })
+
     @PutMapping("/{id}")
-    public ResponseEntity<Api> updateApi(@PathVariable int id, @RequestBody Api api) {
-        Api updatedApi = apiService.updateApiById(id, api, null);
-        return ResponseEntity.ok(updatedApi);
+    public ResponseEntity<ApiDTO> updateApi(@PathVariable int id,@RequestBody ApiDTO apiDTO) {
+
+        Api updatedApi = apiService.updateApiById(id, mapToApiEntity(apiDTO), apiDTO.getTags());
+        ApiDTO response = mapToApiDTO(updatedApi, apiDTO.getTags());
+
+        return ResponseEntity.ok(response);
+    }
+
+    private Api mapToApiEntity(ApiDTO apiDTO) {
+        Api api = new Api();
+        api.setAddress(apiDTO.getAddress());
+        api.setName(apiDTO.getName());
+        api.setGet(apiDTO.getGet());
+        api.setPost(apiDTO.getPost());
+        return api;
+    }
+
+    private ApiDTO mapToApiDTO(Api api, List<String> tags) {
+        return new ApiDTO(api.getAddress(), api.getName(), api.getGet(), api.getPost(), tags);
     }
 
     @Operation(summary= "", description = "Deleta uma API pelo ID")

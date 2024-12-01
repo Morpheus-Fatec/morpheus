@@ -61,19 +61,18 @@ public class ApiService {
         }
     }
     
-    public Api updateApiById(int id, Api apiToUpdate, List<String> tagCodes) {
-        validateApi(apiToUpdate);
-
+    @Transactional
+    public Api updateApiById(int id, Api apiToUpdate, List<String> tags) {
         return apiRepository.findById(id)
                 .map(existingApi -> {
                     existingApi.setAddress(apiToUpdate.getAddress());
                     existingApi.setGet(apiToUpdate.getGet());
                     existingApi.setPost(apiToUpdate.getPost());
-
+    
                     Api updatedApi = apiRepository.save(existingApi);
-
-                    updateTagsForApi(updatedApi, tagCodes);
-
+    
+                    updateTagsForApi(updatedApi, tags);
+    
                     return updatedApi;
                 })
                 .orElseThrow(() -> new NotFoundException(id, "API"));

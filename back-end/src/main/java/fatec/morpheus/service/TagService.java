@@ -29,8 +29,9 @@ public class TagService {
         return tagRepository.findById(id);
     }
 
-    public Optional<Tag> tagFindByName(String name){
-        return tagRepository.findByTagName(name);
+    public Optional<Tag> tagFindByName(String name) {
+        Tag tag = tagRepository.findByTagName(name);
+        return Optional.ofNullable(tag);
     }
 
     public List<Tag> tagFindAll() {
