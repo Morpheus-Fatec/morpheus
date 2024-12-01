@@ -11,5 +11,5 @@ import fatec.morpheus.entity.ApiContent;
 @Repository
 public interface ApiContentRepository extends JpaRepository<ApiContent, Integer> {
 
-    Optional<ApiContent> findByApiIdAndApiAddressAndDate(Api api, String apiAddress, String date);
+    Optional<ApiContent> findByApiIdAndApiAddressAndMethodAndDate(Api api, String apiAddress, String method, String date);
 }
