@@ -1,5 +1,4 @@
-package fatec.morpheus.entity;
-
+package fatec.morpheus.DTO;
 
 import java.util.List;
 
@@ -12,8 +11,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaginatedNewsResponse<T> {
-    private List<T> news;
-    private int totalPages;
-    private long totalElements;
+public class ApiDTO {
+    private String address;
+    private int get;
+    private int post;
+    private List<Integer> tagCodes;
 }

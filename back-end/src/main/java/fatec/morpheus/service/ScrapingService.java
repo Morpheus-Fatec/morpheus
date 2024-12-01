@@ -1,11 +1,19 @@
 package fatec.morpheus.service;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.News;
 import fatec.morpheus.entity.NewsAuthor;
@@ -14,14 +22,6 @@ import fatec.morpheus.repository.MapSourceRepository;
 import fatec.morpheus.repository.NewsAuthorRepository;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
-
-import java.io.IOException;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class ScrapingService {

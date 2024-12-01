@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 
-import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.DTO.ErrorResponse;
 import lombok.Getter;
 
 @Getter
