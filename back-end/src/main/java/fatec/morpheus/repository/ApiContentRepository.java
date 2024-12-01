@@ -9,7 +9,7 @@ import fatec.morpheus.entity.Api;
 import fatec.morpheus.entity.ApiContent;
 
 @Repository
-public interface ApiContentRepository extends JpaRepository<ApiContent, Long> {
+public interface ApiContentRepository extends JpaRepository<ApiContent, Integer> {
 
     Optional<ApiContent> findByApiIdAndApiAddressAndDate(Api api, String apiAddress, String date);
 }
