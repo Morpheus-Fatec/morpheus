@@ -44,11 +44,9 @@ public class AdaptedTagsService {
 
     @Transactional    
     public List<String> findVariationByText(List<String> filters) {
-        // Criar tabela temporária
         String createTableSql = "CREATE TEMPORARY TABLE IF NOT EXISTS temp_filters (filter VARCHAR(255))";
         entityManager.createNativeQuery(createTableSql).executeUpdate();
 
-        // Inserir textos dos filtros na tabela temporária
         String insertSql = "INSERT INTO temp_filters (filter) VALUES (:filter)";
         for (String filterText : filters) {
             Query insertQuery = entityManager.createNativeQuery(insertSql);
@@ -56,7 +54,6 @@ public class AdaptedTagsService {
             insertQuery.executeUpdate();
         }
 
-        // Executar consulta para obter as variações
         String sqlQuery = "SELECT "
             + "COALESCE(REPLACE(tf.filter, t.text_description, t2.text_description), tf.filter) AS filter_with_variation "
             + "FROM temp_filters tf "
@@ -70,11 +67,9 @@ public class AdaptedTagsService {
         Query query = entityManager.createNativeQuery(sqlQuery);
         List<String> queryResults = query.getResultList();
 
-        // Dropar tabela temporária
         String dropTableSql = "DROP TEMPORARY TABLE IF EXISTS temp_filters";
         entityManager.createNativeQuery(dropTableSql).executeUpdate();
 
-        //Set para evitar duplicatas
         Set<String> resultSet = new LinkedHashSet<>(queryResults);
         resultSet.addAll(filters);
 
