@@ -49,6 +49,14 @@ CREATE TABLE News (
     FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );
 
+CREATE TABLE News_tag (
+    new_cod INT NOT NULL,
+    src_tag_cod INT NOT NULL,
+    PRIMARY KEY (new_cod, src_tag_cod),
+    FOREIGN KEY (new_cod) REFERENCES News(new_cod) ON DELETE CASCADE,
+    FOREIGN KEY (src_tag_cod) REFERENCES Source_tag(src_tag_cod) ON DELETE CASCADE
+);
+
 CREATE TABLE Text (
     text_cod INT AUTO_INCREMENT PRIMARY KEY,
     text_description VARCHAR(255) UNIQUE NOT NULL
@@ -66,14 +74,6 @@ CREATE TABLE Api (
     api_cod INT AUTO_INCREMENT PRIMARY KEY,
     api_name VARCHAR(30) NOT NULL,
     api_url VARCHAR(500) UNIQUE NOT NULL
-);
-
-CREATE TABLE Api_tag (
-    api_cod INT NOT NULL,
-    tag_cod INT NOT NULL,
-    PRIMARY KEY (api_cod, tag_cod),
-    FOREIGN KEY (api_cod) REFERENCES Api(api_cod) ON DELETE CASCADE,
-    FOREIGN KEY (tag_cod) REFERENCES Tag(tag_cod) ON DELETE CASCADE
 );
 
 CREATE TABLE Data_collected_api (
