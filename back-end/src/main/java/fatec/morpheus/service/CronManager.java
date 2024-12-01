@@ -30,6 +30,9 @@ public class CronManager {
     @Autowired
     private ScrapingService scrapingService;
 
+    @Autowired
+    private ApiContentService apiContentService;
+
     @Value("${cron.expression:0 * * * * *}")
     private String cronExpression;
 
@@ -68,8 +71,10 @@ public class CronManager {
 
         try{
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scrapingService.getSearch());
+            CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> apiContentService.searchContentApi());
 
             future.get(timeout, TimeUnit.MILLISECONDS);
+            future2.get(timeout, TimeUnit.MILLISECONDS);
             logger.info("Tarefa cron executada com sucesso.");
         } catch (TimeoutException e) {
             logger.warn("Tarefa cron excedeu o tempo limite de execução.");

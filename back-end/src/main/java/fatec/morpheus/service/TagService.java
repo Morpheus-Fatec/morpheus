@@ -29,8 +29,9 @@ public class TagService {
         return tagRepository.findById(id);
     }
 
-    public Optional<Tag> tagFindByName(String name){
-        return tagRepository.findByTagName(name);
+    public Optional<Tag> tagFindByName(String name) {
+        Tag tag = tagRepository.findByTagName(name);
+        return Optional.ofNullable(tag);
     }
 
     public List<Tag> tagFindAll() {
@@ -66,6 +67,7 @@ public class TagService {
     }
 
 
+    @SuppressWarnings("rawtypes")
     public List findTagWithSource(List<String> newsSource) {
         String inClause = "("+String.join(",", newsSource.stream()
                 .map(source -> "'" + source + "'")
