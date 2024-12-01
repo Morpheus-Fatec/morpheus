@@ -398,6 +398,101 @@ const app = Vue.createApp({
                     offcanvasInstance.hide();
         }
     },
+
+    startUserGuideNews(guide) {
+        const vm = this;
+        let stepsGuide = [];
+    
+        if (guide === 'main') {
+            stepsGuide = [
+                {
+                    element: '#titleNews',
+                    intro: 'Aqui você pode ver o título da seção de notícias.',
+                    position: 'bottom'
+                },
+                {
+                    element: '#searchElementsNews',
+                    intro: 'Aqui você pode pesquisar por notícias.',
+                    position: 'bottom'
+                },
+                {
+                    element: '#btnFilterNews',
+                    intro: 'Clique aqui para abrir os filtros de pesquisa.',
+                    position: 'right'
+                },
+                {
+                    element: '#allNews',
+                    intro: 'Aqui estão listadas todas as notícias.',
+                    position: 'top'
+                },
+                {
+                    element: '#spanNewsTitle',
+                    intro: 'Aqui você pode ver o título da notícia.',
+                    position: 'top'
+                },
+                {
+                    element: '#spanNewsContent',
+                    intro: 'Aqui você pode ver o conteúdo da notícia.',
+                    position: 'top'
+                },
+                {
+                    element: '#spanPortal',
+                    intro: 'Aqui você pode ver o conteúdo da notícia.',
+                    position: 'top'
+                },
+                {
+                    element: '#linkNewsAddress',
+                    intro: 'Aqui você pode ver o endereço da notícia.',
+                    position: 'top'
+                },
+                {
+                    element: '#btnViewContentNews',
+                    intro: 'Clique aqui para ver o conteúdo completo da notícia.',
+                    position: 'left'
+                }
+            ];
+        }
+    
+        introJs().setOptions({
+            steps: stepsGuide,
+            nextLabel: 'Próximo',
+            prevLabel: 'Anterior',
+            skipLabel: '<i class="fa fa-times"></i>',
+            doneLabel: 'Concluir'
+        })
+        .onchange(async function(element) {
+            const stepIndex = this._currentStep;
+            if (guide === 'main') {
+                if (vm.newsList.length === 0) {
+                    if (stepIndex === 4) {
+                        const newsTitleElement = document.querySelector('#spanNewsTitle');
+                        if (newsTitleElement) {
+                            newsTitleElement.innerText = 'Título';
+                        }
+                    }
+                    if (stepIndex === 5) {
+                        const newsAddressElement = document.querySelector('#linkNewsAddress');
+                        if (newsAddressElement) {
+                            newsAddressElement.innerText = 'Endereço';
+                        }
+                    }
+                    if (stepIndex === 6) {
+                        const newsContentElement = document.querySelector('#spanNewsContent');
+                        if (newsContentElement) {
+                            newsContentElement.innerText = 'Conteúdo';
+                        }
+                    }
+                    if (stepIndex === 7) {
+                        const newsContentButton = document.querySelector('#btnViewContentNews');
+                        if (newsContentButton) {
+                            newsContentButton.innerText = 'Ver conteúdo';
+                        }
+                    }
+                }
+            }
+        })
+        .start();
+    }
     
 },
 
