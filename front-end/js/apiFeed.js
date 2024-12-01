@@ -48,14 +48,10 @@ const app = Vue.createApp({
             tagFilters: [],
             searchText: [],
             filteredApiList: [],
-
-
-
         }
     },
 
     methods: {
-
         apiLoad() {
             this.isLoading = true;
             axios.get(`https://morpheus-api37.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
@@ -145,7 +141,6 @@ const app = Vue.createApp({
             this.modalSource = source.replace(/\\/g, "");
             const modal = new bootstrap.Modal(document.getElementById('contentModal'));
             modal.show();
-
         },
 
         closeModal() {
@@ -158,7 +153,6 @@ const app = Vue.createApp({
             this.modalSource = this.formatContent(this.modalSource); 
         },
         
-
         initAddress() {
             const element = document.querySelector('#choices-address');
             if (!element) return;
@@ -215,7 +209,6 @@ const app = Vue.createApp({
                 this.searchText = choicesText.getValue(true);
             });
         },
-
 
         initDatePicker() {
             flatpickr("#dateRange", {
@@ -290,17 +283,97 @@ const app = Vue.createApp({
         filteredAddresses() {
             const query = this.api.search.query?.toLowerCase() || "";
             return this.apiList.filter(item => item.address?.toLowerCase().includes(query));
+        },
+
+        startUserGuideAPI(guide) {
+            const vm = this;
+            let stepsGuide = [];
+        
+            if (guide === 'main') {
+                stepsGuide = [
+                    {
+                        element: '#titleAPI',
+                        intro: 'Aqui você pode ver o título da seção de APIs.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#searchElementsAPI',
+                        intro: 'Aqui você pode pesquisar por APIs.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#btnFilterAPI',
+                        intro: 'Clique aqui para abrir os filtros de pesquisa.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#allAPIs',
+                        intro: 'Aqui estão listadas todas as APIs.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#spanApiMethod',
+                        intro: 'Aqui você pode ver o método da API (GET, POST, etc.).',
+                        position: 'top'
+                    },
+                    {
+                        element: '#linkApiAddress',
+                        intro: 'Aqui você pode ver o endereço da API.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#btnViewContentAPI',
+                        intro: 'Clique aqui para ver o conteúdo da API.',
+                        position: 'left'
+                    }
+                ];
+            }
+        
+            introJs().setOptions({
+                steps: stepsGuide,
+                nextLabel: 'Próximo',
+                prevLabel: 'Anterior',
+                skipLabel: '<i class="fa fa-times"></i>',
+                doneLabel: 'Concluir'
+            })
+            .onchange(async function(element) {
+                // Adicione aqui eventos específicos para cada passo, se necessário
+            })
+            .onchange(async function(element) {
+                const stepIndex = this._currentStep;
+                if (guide === 'main') {
+                    if (vm.apiList.length === 0) {
+                        if (stepIndex === 4) {
+                            const apiMethodElement = document.querySelector('#spanApiMethod');
+                            if (apiMethodElement) {
+                                apiMethodElement.innerText = 'Método';
+                            }
+                        }
+                        if (stepIndex === 5) {
+                            const apiAddressElement = document.querySelector('#linkApiAddress');
+                            if (apiAddressElement) {
+                                apiAddressElement.innerText = 'Endereço';
+                            }
+                        }
+                        if (stepIndex === 6) {
+                            const apiContentElement = document.querySelector('#btnViewContentAPI');
+                            if (apiContentElement) {
+                                apiContentElement.innerText = 'Conteúdo';
+                            }
+                        }
+                    }
+                }
+            })
+            .start();
         }
     },
-
     mounted() {
         this.apiLoad();
         this.tagsLoad();
         this.insertionText();
         this.initDatePicker();
         this.filteredAddresses();
-
     },
 });
-app.mount('#api');
 
+app.mount('#api');
