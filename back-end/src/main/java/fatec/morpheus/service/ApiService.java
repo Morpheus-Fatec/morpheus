@@ -1,13 +1,22 @@
 package fatec.morpheus.service;
 
 import fatec.morpheus.DTO.ApiDTO;
+import fatec.morpheus.DTO.ApiEndpointDTO;
+import fatec.morpheus.DTO.ApiFiltersDTO;
 import fatec.morpheus.entity.Api;
+import fatec.morpheus.entity.DataCollectedApi;
 import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.NewsSource;
+import fatec.morpheus.entity.Synonymous;
+import fatec.morpheus.entity.Tag;
 import fatec.morpheus.exception.InvalidFieldException;
 import fatec.morpheus.exception.NotFoundException;
 import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
+import fatec.morpheus.repository.DataCollectedApiRepository;
+import fatec.morpheus.repository.SynonymousRepository;
+import fatec.morpheus.repository.TagRepository;
+import fatec.morpheus.repository.TextRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -18,6 +27,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -125,4 +136,28 @@ public class ApiService {
         return api;
     }
 
+
+    @Autowired
+    private DataCollectedApiRepository dataCollectedApiRepository;
+
+    public List<ApiEndpointDTO> getApiResponsesByCodes(List<ApiEndpointDTO> filterRequests) {
+        // Processa a lista de filtros e gera a resposta com a busca do source
+        return filterRequests.stream().map(request -> {
+            // Criar um DTO de resposta com base no filtro recebido
+            ApiEndpointDTO dto = new ApiEndpointDTO();
+            dto.setCode(request.getCode());
+            dto.setAddress(request.getAddress());
+            dto.setMethod(request.getMethod());
+
+            // Buscar o source relacionado à API usando o código da API
+            DataCollectedApi dataCollectedApi = dataCollectedApiRepository.findFirstByApi_Code(request.getCode());
+            if (dataCollectedApi != null) {
+                dto.setSource(dataCollectedApi.getContent()); // Ou qualquer outro campo que deseja usar como "source"
+            } else {
+                dto.setSource("No source found");
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

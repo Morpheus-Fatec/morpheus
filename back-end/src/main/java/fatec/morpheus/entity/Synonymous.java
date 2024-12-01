@@ -2,6 +2,7 @@ package fatec.morpheus.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +29,11 @@ public class Synonymous {
     @Id
     @Column(name = "syn_group")
     private int synGroup;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tag_cod", referencedColumnName = "tag_cod")
+    private Tag tag;
 
     @ManyToOne
     @JoinColumn(name = "text_cod", insertable = false, updatable = false)
