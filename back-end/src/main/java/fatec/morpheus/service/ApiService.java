@@ -21,6 +21,7 @@ import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.ApiRepository;
 import fatec.morpheus.repository.TagRelFontRepository;
 import fatec.morpheus.repository.TagRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
@@ -83,31 +84,42 @@ public class ApiService {
     }
 
     public List<ApiDTO> findAllApiWithTags() {
-    List<Api> apis = apiRepository.findAll();
-    List<ApiDTO> apiDTOs = new ArrayList<>();
+        List<Api> apis = apiRepository.findAll();
+        List<ApiDTO> apiDTOs = new ArrayList<>();
 
-    for (Api api : apis) {
-        List<String> tags = tagRepository.findTagsByApiId(api.getCode());
+        for (Api api : apis) {
+            List<String> tags = tagRepository.findTagsByApiId(api.getCode());
+            
+            ApiDTO apiDTO = new ApiDTO(
+                api.getAddress(),
+                api.getName(),
+                api.getGet(),
+                api.getPost(),
+                tags
+            );
+            
+            apiDTOs.add(apiDTO);
+        }
         
-        ApiDTO apiDTO = new ApiDTO(
-            api.getAddress(),
-            api.getName(),
-            api.getGet(),
-            api.getPost(),
-            tags
+        return apiDTOs;
+    }
+
+    public ApiDTO findApiById(int id) {
+        Api api = apiRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id, "API"));
+
+        List<String> tags = tagRepository.findTagsByApi(id);
+
+        return new ApiDTO(
+                api.getAddress(),
+                api.getName(),
+                api.getGet(),
+                api.getPost(),
+                tags
         );
-        
-        apiDTOs.add(apiDTO);
     }
     
-    return apiDTOs;
-}
-
-    public Api findApiById(int id) {
-        return apiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "API"));
-    }
-
+    @Transactional
     public Api deleteApiById(int id) {
         Api api = apiRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(id, "API"));

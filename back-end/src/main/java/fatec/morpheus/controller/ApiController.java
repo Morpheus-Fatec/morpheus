@@ -58,9 +58,9 @@ public class ApiController {
             @ApiResponse(responseCode = "400", description = "Erro ao retornar API"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Api> getApiById(@PathVariable int id) {
-        Api api = apiService.findApiById(id);
-        return new ResponseEntity<>(api, HttpStatus.OK);
+    public ResponseEntity<ApiDTO> getApiById(@PathVariable int id) {
+        ApiDTO apiDTO = apiService.findApiById(id);
+        return new ResponseEntity<>(apiDTO, HttpStatus.OK);
     }
 
     @Operation(summary= "", description = "Atualiza uma API pelo ID")

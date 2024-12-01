@@ -1,12 +1,13 @@
 package fatec.morpheus.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import fatec.morpheus.entity.Tag;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import fatec.morpheus.entity.Tag;
 
 
 public interface TagRepository extends JpaRepository<Tag, Integer>{
@@ -19,5 +20,8 @@ public interface TagRepository extends JpaRepository<Tag, Integer>{
     List<String> findTagsByApiId(int apiCode);
 
     List<Tag> findByTagNameIn(List<String> tagCodes);
+
+    @Query("SELECT t.tagName FROM Tag t JOIN TagRelFont trf ON trf.tagId = t WHERE trf.apiId.code = :apiId")
+    List<String> findTagsByApi(@Param("apiId") int apiId);
 
 }
