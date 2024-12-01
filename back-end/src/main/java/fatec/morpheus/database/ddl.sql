@@ -1,89 +1,93 @@
-create database morpheus;
-use morpheus;
+CREATE DATABASE morpheus;
+USE morpheus;
 
-create table Source(
-	src_cod int auto_increment primary key,
-	src_name char(30) unique,
-    src_type enum('1','2'),
-	src_address char(150) unique,
-	src_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE Source (
+    src_cod INT AUTO_INCREMENT PRIMARY KEY,
+    src_name CHAR(30) UNIQUE NOT NULL,
+    src_type ENUM('1', '2') NOT NULL,
+    src_address CHAR(150) UNIQUE NOT NULL,
+    src_registry_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Map_source (
-	map_id INT AUTO_INCREMENT PRIMARY KEY,
-    src_cod INT,
+    map_id INT AUTO_INCREMENT PRIMARY KEY,
+    src_cod INT NOT NULL,
     map_author CHAR(100),
-    map_body TEXT,
-    map_title CHAR(100),
-	map_date char(100),
+    map_body TEXT NOT NULL,
+    map_title CHAR(100) NOT NULL,
+    map_date CHAR(100) NOT NULL,
     FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );
 
-create table Tag(
-	tag_cod int auto_increment primary key,
-    tag_name char(255) unique
+CREATE TABLE Tag (
+    tag_cod INT AUTO_INCREMENT PRIMARY KEY,
+    tag_name CHAR(255) UNIQUE NOT NULL
 );
 
-create table Source_tag(
-	src_tag_cod int auto_increment,
-	src_cod int,
-	tag_cod int,
-    primary key (src_tag_cod),
-	foreign key (src_cod) REFERENCES Source(src_cod),
-	foreign key (tag_cod) REFERENCES Tag(tag_cod)
+CREATE TABLE Source_tag (
+    src_tag_cod INT AUTO_INCREMENT PRIMARY KEY,
+    src_cod INT NOT NULL,
+    tag_cod INT NOT NULL,
+    FOREIGN KEY (src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE,
+    FOREIGN KEY (tag_cod) REFERENCES Tag(tag_cod) ON DELETE CASCADE
 );
 
 CREATE TABLE News_author (
-    new_aut_id INT AUTO_INCREMENT PRIMARY KEY,  
-    new_aut_name VARCHAR(500)
+    new_aut_id INT AUTO_INCREMENT PRIMARY KEY,
+    new_aut_name VARCHAR(500) UNIQUE NOT NULL
 );
 
-create table News(
-	new_cod int auto_increment,
-	new_title char(70),
-	new_content text,
-	new_registry_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	new_aut_cod int,
-    new_src_cod int,
-	new_address LONGTEXT,
-    FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id),
-    FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod),
-    primary key (new_cod)
+CREATE TABLE News (
+    new_cod INT AUTO_INCREMENT PRIMARY KEY,
+    new_title CHAR(70) NOT NULL,
+    new_content TEXT,
+    new_registry_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    new_aut_cod INT,
+    new_src_cod INT,
+    new_address LONGTEXT,
+    FOREIGN KEY (new_aut_cod) REFERENCES News_author(new_aut_id) ON DELETE SET NULL,
+    FOREIGN KEY (new_src_cod) REFERENCES Source(src_cod) ON DELETE CASCADE
 );
 
-
-create table Text(
-    text_cod int auto_increment,
-    text_description varchar(255),
-    primary key (text_cod)
+CREATE TABLE Text (
+    text_cod INT AUTO_INCREMENT PRIMARY KEY,
+    text_description VARCHAR(255) UNIQUE NOT NULL
 );
 
-create table Synonymous(
-    text_cod int,
-    syn_group int,
-    primary key (text_cod, syn_group),
-    foreign key (text_cod) REFERENCES Text(text_cod) ON DELETE CASCADE,
-	foreign key (syn_group) REFERENCES text(text_cod) ON DELETE CASCADE
+CREATE TABLE Synonymous (
+    text_cod INT NOT NULL,
+    syn_group INT NOT NULL,
+    PRIMARY KEY (text_cod, syn_group),
+    FOREIGN KEY (text_cod) REFERENCES Text(text_cod) ON DELETE CASCADE,
+    FOREIGN KEY (syn_group) REFERENCES Text(text_cod) ON DELETE CASCADE
 );
 
-create table Api(
-    api_cod int auto_increment primary key,
-    api_name varchar(30) NOT NULL,
-    api_url varchar(500) unique not null
+CREATE TABLE Api (
+    api_cod INT AUTO_INCREMENT PRIMARY KEY,
+    api_name VARCHAR(30) NOT NULL,
+    api_url VARCHAR(500) UNIQUE NOT NULL
 );
 
-create table Api_tag(
-    api_cod int,
-    tag_cod int,
-    primary key (api_cod, tag_cod),
-    foreign key (api_cod) REFERENCES Api(api_cod),
-    foreign key (tag_cod) REFERENCES Tag(tag_cod)
+CREATE TABLE Api_tag (
+    api_cod INT NOT NULL,
+    tag_cod INT NOT NULL,
+    PRIMARY KEY (api_cod, tag_cod),
+    FOREIGN KEY (api_cod) REFERENCES Api(api_cod) ON DELETE CASCADE,
+    FOREIGN KEY (tag_cod) REFERENCES Tag(tag_cod) ON DELETE CASCADE
 );
 
-create table Data_collected_api(
-    dat_coll_api_cod int auto_increment primary key,
-    api_cod int,
-    dat_coll_api_registry_date timestamp not null DEFAULT CURRENT_TIMESTAMP,
-    dat_coll_api_content LONGTEXT,
-    foreign key (api_cod) REFERENCES Api(api_cod)
+CREATE TABLE Data_collected_api (
+    dat_coll_api_cod INT AUTO_INCREMENT PRIMARY KEY,
+    api_cod INT NOT NULL,
+    dat_coll_api_registry_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dat_coll_api_content LONGTEXT NOT NULL,
+    FOREIGN KEY (api_cod) REFERENCES Api(api_cod) ON DELETE CASCADE
+);
+
+CREATE TABLE Tagrelfont (
+    rel_id INT AUTO_INCREMENT PRIMARY KEY,
+    api_cod INT NOT NULL,
+    tag_cod INT NOT NULL,
+    FOREIGN KEY (api_cod) REFERENCES Api(api_cod) ON DELETE CASCADE,
+    FOREIGN KEY (tag_cod) REFERENCES Tag(tag_cod) ON DELETE CASCADE
 );
