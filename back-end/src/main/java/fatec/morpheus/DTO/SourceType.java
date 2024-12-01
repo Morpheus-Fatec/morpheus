@@ -1,4 +1,4 @@
-package fatec.morpheus.entity;
+package fatec.morpheus.DTO;
 
 public enum SourceType {
     SITE(1),

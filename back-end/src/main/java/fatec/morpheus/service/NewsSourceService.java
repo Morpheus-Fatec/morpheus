@@ -1,13 +1,18 @@
 package fatec.morpheus.service;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.ErrorResponse;
 import fatec.morpheus.DTO.MapSourceDTO;
 import fatec.morpheus.DTO.NewsSourceDTO;
-import fatec.morpheus.entity.ErrorResponse;
 import fatec.morpheus.entity.MapSource;
 import fatec.morpheus.entity.NewsSource;
 import fatec.morpheus.exception.InvalidFieldException;
@@ -16,11 +21,6 @@ import fatec.morpheus.exception.UniqueConstraintViolationException;
 import fatec.morpheus.repository.NewsSourceRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service

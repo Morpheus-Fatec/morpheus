@@ -1,4 +1,4 @@
-package fatec.morpheus.entity;
+package fatec.morpheus.DTO;
 
 import java.sql.Date;
 
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewsReponse {
+public class NewsResponse {
 
     private String newsTitle;
     private String newsContent;

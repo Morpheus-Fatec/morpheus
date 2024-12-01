@@ -3,6 +3,7 @@ package fatec.morpheus.DTO;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,9 @@ public class NewsSearchRequest {
     private List<Integer> author;  
     private List<String> titleSearch;  
     private List<String> textSearch;    
-    private LocalDate dateStart;           
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate dateStart;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dateEnd;
     private int totalPages;  
     private long totalElements;               
