@@ -35,23 +35,40 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.html">
-                            <i class="bi bi-newspaper"></i> Portais de Notícias
+                    <li class="nav-item dropdown" style="margin-right: 10px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="portalDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-newspaper"></i> Portais
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="portalDropdown">
+                            <li>
+                                <a class="dropdown-item" href="index.html">Gerenciar</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="newsFeed.html">Conteúdos</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="newsFeed.html">
-                            <i class="bi bi-globe2"></i> Notícias
+                    <li class="nav-item dropdown" style="margin-right: 40px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="apiDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-layout-text-window-reverse"></i> APIs
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="apiDropdown">
+                            <li>
+                                <a class="dropdown-item" href="api.html">Gerenciar</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="apiFeed.html">Conteúdos</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
         </div>
-        </div>
     </nav>
-    <div id="app">
 
+    <div id="app">
         <div class="container">
             <div v-if="isLoading" class="overlay">
                 <div class="spinner-border text-light" role="status">
@@ -90,7 +107,8 @@
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros</h5>
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><i class="bi bi-filter"></i>Filtros
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
@@ -112,7 +130,9 @@
                             </div>
                             <br>
                             <div class="mb-3">
-                                <label for="choices-title-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
+                                <label for="choices-title-remove-button" class="form-label">
+                                    <h6>Adicione textos:</h6>
+                                </label>
                                 <input id="choices-title-remove-button" class="form-control"
                                     placeholder="Digite algo e pressione Enter">
                             </div>
@@ -127,7 +147,9 @@
                             </div>
                             <br>
                             <div class="mb-3">
-                                <label for="choices-text-remove-button" class="form-label"><h6>Adicione textos:</h6></label>
+                                <label for="choices-text-remove-button" class="form-label">
+                                    <h6>Adicione textos:</h6>
+                                </label>
                                 <input id="choices-text-remove-button" class="form-control"
                                     placeholder="Digite algo e pressione Enter">
                             </div>
@@ -150,8 +172,8 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <button type="button" class="btn btn-primary w-100"  @click="filterData"><i class="bi bi-filter"></i>Filtrar</button>
+                    <button type="button" class="btn btn-primary w-100" @click="filterData"><i
+                            class="bi bi-filter"></i>Filtrar</button>
                 </div>
             </div>
 

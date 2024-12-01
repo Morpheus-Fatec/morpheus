@@ -1,6 +1,6 @@
 package fatec.morpheus.exception;
 
-import fatec.morpheus.entity.ErrorResponse;
+import fatec.morpheus.DTO.ErrorResponse;
 import lombok.Getter;
 
 @Getter
