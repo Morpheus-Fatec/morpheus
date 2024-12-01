@@ -30,6 +30,10 @@ public class Api {
     @Size(max = 150, message = "API Address cannot exceed 150 characters")
     private String address;
 
+    @Column(name = "api_name", length = 500, unique = false)
+    @Size(max = 150, message = "API Address cannot exceed 150 characters")
+    private String name;
+
     @Column(name = "api_post")
     @Min(value = 0, message = "Post value must be 0 or 1")
     @Max(value = 1, message = "Post value must be 0 or 1")
