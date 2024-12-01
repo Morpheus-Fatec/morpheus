@@ -28,10 +28,10 @@ public class ApiContent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dat_coll_api_cod")
-    private Long apiCollId;
+    private int apiCollId;
 
     @ManyToOne
-    @JoinColumn(name = "api_cod", nullable = false, unique = true)
+    @JoinColumn(name = "api_cod", nullable = false)
     @JsonBackReference
     private Api apiId;
 
@@ -45,3 +45,4 @@ public class ApiContent {
     @Column(name = "da_coll_api_address", nullable = false)
     private String apiAddress;
 }
+
