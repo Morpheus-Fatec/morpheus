@@ -42,10 +42,10 @@ public class ApiContent {
     @Column(name = "dat_coll_api_content", nullable = false, columnDefinition = "LONGTEXT")
     private String apiContent;
 
-    @Column(name = "da_coll_api_address", nullable = false)
+    @Column(name = "dat_coll_api_address", nullable = false)
     private String apiAddress;
 
-    @Column(name = "da_coll_api_method", nullable = false, length = 10)
+    @Column(name = "dat_coll_api_method", nullable = false, length = 10)
     private String method;
 }
 
