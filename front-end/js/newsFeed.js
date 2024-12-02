@@ -398,6 +398,48 @@ const app = Vue.createApp({
                     offcanvasInstance.hide();
         }
     },
+
+    startUserGuide() {
+        let stepsGuide = [];
+        stepsGuide = [
+            {
+                element: '#titulo-pagina',
+                intro: 'Aqui você pode consultar todas as noticias salvas.',
+                position: 'bottom'
+            },
+            {
+                element: '#busca-viva',
+                intro: 'Aqui você pode realizar uma busca entre todas as noticias já listadas',
+                position: 'bottom'
+            },
+            {
+                element: '#filtros-busca',
+                intro: 'Aqui você pode adicionar filtros relacionados ao conteudos das notícias como também dos portais que as mesmas são provenientes',
+                position: 'bottom'
+            },
+            {
+                element: '#paginacao',
+                intro: 'Aqui você pode navegar entre as notícias, definindo a melhor forma de consultar os dados',
+                position: 'bottom'
+            },
+            {
+                element: '#tabela-ver-dados',
+                intro: 'Aqui você pode ver os dados da notícias e ao clicar em ver conteudo será possível ver a notícia completa',
+                position: 'bottom'
+            }
+        ]
+
+        introJs().setOptions({
+            steps: stepsGuide,
+            nextLabel: 'Próximo',
+            prevLabel: 'Anterior',
+            skipLabel: '<i class="fa fa-times"></i>',
+            doneLabel: 'Concluir'
+          })
+          .onchange(async function(element) {
+          })
+          .start();
+    }
     
 },
 
