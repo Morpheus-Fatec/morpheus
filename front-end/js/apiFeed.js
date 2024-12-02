@@ -256,12 +256,12 @@ const app = Vue.createApp({
             const dataFilter = {
                 code: this.filters.address.selectItems.map(item => parseInt(item.value, 10)),
                 address: [],
-                text: this.searchText,
-                tags: this.filters.tags.selectItems,
+                text: this.searchText.concat(this.filters.tags.selectItems),
+                tags: [],
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal
             };
-            axios.post(`http://localhost:8080/morpheus/api-filter?page=${this.pagination.page}&size=${this.pagination.items}`, dataFilter)
+            axios.post(`http://localhost:8080/morpheus/api/filter?page=${this.pagination.page}&size=${this.pagination.items}`, dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
@@ -280,7 +280,11 @@ const app = Vue.createApp({
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados.')
+                
+                }).finally(() => {
+                    this.isLoading = false;
                 });
+
             const offcanvasElement = document.getElementById('offcanvasWithBothOptions');
             const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
 
