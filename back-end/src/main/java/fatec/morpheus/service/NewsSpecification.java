@@ -16,7 +16,7 @@ public class NewsSpecification {
             if (request.getTitleSearch() != null && !request.getTitleSearch().isEmpty()) {
                 Predicate titlePredicate = criteriaBuilder.disjunction(); 
                 for (String title : request.getTitleSearch()) {
-                    titlePredicate = criteriaBuilder.and(titlePredicate,
+                    titlePredicate = criteriaBuilder.or(titlePredicate,
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("newsTitle")), "%" + title.toLowerCase() + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, titlePredicate);
@@ -25,7 +25,7 @@ public class NewsSpecification {
             if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
                 Predicate textPredicate = criteriaBuilder.disjunction();
                 for (String text : request.getTextSearch()) {
-                    textPredicate = criteriaBuilder.and(textPredicate,
+                    textPredicate = criteriaBuilder.or(textPredicate,
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("newsContent")), "%" + text.toLowerCase() + "%"));
                 }
                 predicate = criteriaBuilder.and(predicate, textPredicate);
