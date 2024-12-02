@@ -24,7 +24,6 @@ import fatec.morpheus.repository.TagRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-import org.hibernate.Hibernate;
 import jakarta.transaction.Transactional;
 
 @Service

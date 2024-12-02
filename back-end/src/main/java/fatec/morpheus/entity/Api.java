@@ -3,6 +3,8 @@ package fatec.morpheus.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -57,6 +59,7 @@ public class Api {
         return tagCodes;
     }
 
+    @JsonIgnore
     @ElementCollection
     @CollectionTable(name = "Api_tag", joinColumns = @JoinColumn(name = "src_cod"))
     @Column(name = "tag_cod")

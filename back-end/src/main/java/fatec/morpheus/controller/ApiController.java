@@ -21,7 +21,6 @@ import fatec.morpheus.DTO.ApiDTO;
 import fatec.morpheus.DTO.ApiEndpointDTO;
 import fatec.morpheus.DTO.ApiFilterRequestDTO;
 import fatec.morpheus.DTO.PaginatedApi;
-import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.entity.Api;
 import fatec.morpheus.service.ApiContentService;
 import fatec.morpheus.service.ApiService;

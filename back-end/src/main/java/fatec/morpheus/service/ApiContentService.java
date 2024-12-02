@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import fatec.morpheus.DTO.ApiEndpointDTO;
 import fatec.morpheus.DTO.ApiFilterRequestDTO;
 import fatec.morpheus.DTO.PaginatedApi;
-import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.entity.Api;
 import fatec.morpheus.entity.ApiContent;
 import fatec.morpheus.entity.TagRelFont;
@@ -20,7 +20,7 @@ import fatec.morpheus.repository.ApiContentRepository;
 import fatec.morpheus.repository.ApiRepository;
 import fatec.morpheus.repository.TagRelFontRepository;
 
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
@@ -34,6 +34,9 @@ public class ApiContentService {
 
     @Autowired
     private ApiContentRepository apiContentRepository;
+
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
 
     public void searchContentApi() {
         RestTemplate restTemplateObj = new RestTemplate();
@@ -116,35 +119,53 @@ public class ApiContentService {
         return tagsForApi;
     }
 
-    public PaginatedApi<ApiEndpointDTO> getFilteredEndpoints(ApiFilterRequestDTO filterRequest, Pageable pageable) {
+    public PaginatedApi<ApiEndpointDTO> getFilteredEndpoints(ApiFilterRequestDTO filterRequest, Pageable pageable){
 
-        List<Api> apis = apiRepository.findAll();
-
-        List<ApiEndpointDTO> result = new ArrayList<>();
-
-        for (Api api : apis) {
-            if (filterRequest.getCode() == null || filterRequest.getCode().contains(api.getCode())) {
-                ApiContent data = apiContentRepository.findFirstByApiId(api);
-
-                if (data != null) {
-                    ApiEndpointDTO dto = new ApiEndpointDTO();
-                    dto.setCode(api.getCode());
-                    dto.setAddress(api.getAddress());
-                    dto.setSource(data.getApiContent());
-                    dto.setMethod(api.getPost(), api.getGet());
-                    result.add(dto);
-                }
-            }
+        System.out.println("------------------");
+        System.out.println("getTags Antes de aplicar regionalismo na procura de news(ApiContentService)");
+        System.out.println(filterRequest.getTags());
+        System.out.println("------------------");
+        if (filterRequest.getTags() != null && !filterRequest.getTags().isEmpty()){
+            filterRequest.setTags(adaptedTagsService.findVariationByText(filterRequest.getTags()));
         }
 
-        int totalElements = result.size();
-        int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
-        int start = Math.min((int) pageable.getOffset(), totalElements);
-        int end = Math.min(start + pageable.getPageSize(), totalElements);
-        List<ApiEndpointDTO> currentPageContent = result.subList(start, end);
+        System.out.println("------------------");
+        System.out.println("getTags depois de aplicar regionalismo na procura de news(ApiContentService)");
+        System.out.println(filterRequest.getTags());
+        System.out.println("------------------");
 
-        return new PaginatedApi<>(currentPageContent, pageable.getPageSize(), totalPages);
-    }
+        System.out.println("------------------");
+        System.out.println("getText Antes de aplicar regionalismo na procura de news(ApiContentService)");
+        System.out.println(filterRequest.getText());
+        System.out.println("------------------");
+        if (filterRequest.getText() != null && !filterRequest.getText().isEmpty()){
+            filterRequest.setText(adaptedTagsService.findVariationByText(filterRequest.getText()));
+        }
+
+        System.out.println("------------------");
+        System.out.println("getText Depois de aplicar regionalismo na procura de news(ApiContentService)");
+        System.out.println(filterRequest.getText());
+        System.out.println("------------------");
+
+       Page<ApiContent> apis = apiContentRepository.findAll(ApiSpecification.withFilter(filterRequest), pageable);
+
+
+    List<ApiEndpointDTO> result = apis.stream().map(api -> {
+        ApiEndpointDTO dto = new ApiEndpointDTO();
+        dto.setCode(api.getApiId().getCode()); 
+        dto.setAddress(api.getApiAddress());
+        dto.setContent(api.getApiContent());
+        dto.setMethod(api.getMethod());
+        return dto;
+    }).collect(Collectors.toList());
+
+
+    int totalPages = apis.getTotalPages();
+    long totalElements = apis.getTotalElements();
+
+
+    return new PaginatedApi<>(result, totalPages, totalElements);
+        }
 
 
 }
