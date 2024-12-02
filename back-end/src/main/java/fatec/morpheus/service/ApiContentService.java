@@ -149,21 +149,21 @@ public class ApiContentService {
 
        Page<ApiContent> apis = apiContentRepository.findAll(ApiSpecification.withFilter(filterRequest), pageable);
 
-    // Transformar os resultados em uma lista de ApiEndpointDTO
+
     List<ApiEndpointDTO> result = apis.stream().map(api -> {
         ApiEndpointDTO dto = new ApiEndpointDTO();
-        dto.setCode(api.getApiCollId());
+        dto.setCode(api.getApiId().getCode()); 
         dto.setAddress(api.getApiAddress());
         dto.setContent(api.getApiContent());
         dto.setMethod(api.getMethod());
         return dto;
     }).collect(Collectors.toList());
 
-    // Obter metadados de paginação
+
     int totalPages = apis.getTotalPages();
     long totalElements = apis.getTotalElements();
 
-    // Retornar a resposta com PaginatedApi
+
     return new PaginatedApi<>(result, totalPages, totalElements);
         }
 
