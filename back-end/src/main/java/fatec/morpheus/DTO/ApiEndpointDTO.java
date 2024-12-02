@@ -13,7 +13,7 @@ public class ApiEndpointDTO {
 
     private int code;      
     private String address; 
-    private String source;  
+    private String content;  
     private String method;  
 
     public void setMethod(int post, int get) {

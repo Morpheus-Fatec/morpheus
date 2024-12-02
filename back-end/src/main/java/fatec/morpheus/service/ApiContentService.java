@@ -154,7 +154,7 @@ public class ApiContentService {
         ApiEndpointDTO dto = new ApiEndpointDTO();
         dto.setCode(api.getApiCollId());
         dto.setAddress(api.getApiAddress());
-        dto.setSource(api.getApiContent());
+        dto.setContent(api.getApiContent());
         dto.setMethod(api.getMethod());
         return dto;
     }).collect(Collectors.toList());
