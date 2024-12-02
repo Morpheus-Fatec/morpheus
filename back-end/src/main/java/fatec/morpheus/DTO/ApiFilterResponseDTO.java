@@ -12,13 +12,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiSearchRequest {
+public class ApiFilterResponseDTO {
 
     private List<String> address;
     private List<String> text;
     private List<String> tags;
-    private LocalDate dateStart;           
-    private LocalDate dateEnd;
+    private LocalDate collected_data_at;           
     private int totalPages;  
     private long totalElements;   
 

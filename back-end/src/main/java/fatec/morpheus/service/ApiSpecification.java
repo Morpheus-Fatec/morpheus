@@ -2,47 +2,43 @@ package fatec.morpheus.service;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import fatec.morpheus.DTO.ApiSearchRequest;
-import fatec.morpheus.entity.Api;
+import fatec.morpheus.DTO.ApiFilterRequestDTO;
+import fatec.morpheus.entity.ApiContent;
 import jakarta.persistence.criteria.Predicate;
 
 public class ApiSpecification {
 
-    public static Specification<Api> withFilter(ApiSearchRequest request) {
+    public static Specification<ApiContent> withFilter(ApiFilterRequestDTO request) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction(); 
     
 
-            if (request.getTitleSearch() != null && !request.getTitleSearch().isEmpty()) {
-                Predicate titlePredicate = criteriaBuilder.disjunction(); 
-                for (String title : request.getTitleSearch()) {
+            if (request.getTags() != null && !request.getTags().isEmpty()) {
+                Predicate titlePredicate = criteriaBuilder.disjunction();
+                for (String title : request.getTags()) {
                     titlePredicate = criteriaBuilder.or(titlePredicate,
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("newsTitle")), "%" + title.toLowerCase() + "%"));
+                        criteriaBuilder.like(root.get("apiContent"), "%" + title + "%"));
                 }
-                predicate = criteriaBuilder.and(predicate, titlePredicate);
+                predicate = criteriaBuilder.or(predicate, titlePredicate);
             }
-    
-            if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
-                System.out.println("Entrou no textSearch" + request.getTextSearch().size());
+            
+            if (request.getText() != null && !request.getText().isEmpty()) {
                 Predicate textPredicate = criteriaBuilder.disjunction();
-                for (String text : request.getTextSearch()) {
+                for (String text : request.getText()) {
                     textPredicate = criteriaBuilder.or(textPredicate,
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("newsContent")), "%" + text.toLowerCase() + "%"));
+                        criteriaBuilder.like(root.get("apiContent"), "%" + text + "%"));
                 }
-                predicate = criteriaBuilder.and(predicate, textPredicate);
+                predicate = criteriaBuilder.or(predicate, textPredicate);
             }
+            
     
-            if (request.getAuthor() != null && !request.getAuthor().isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, root.get("newsAuthor").get("autId").in(request.getAuthor()));
-            }
-    
-            if (request.getSourcesOrigin() != null && !request.getSourcesOrigin().isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, root.get("sourceNews").get("code").in(request.getSourcesOrigin()));
+            if (request.getCode() != null && !request.getCode().isEmpty()) {
+                predicate = criteriaBuilder.and(predicate, root.get("apiId").get("code").in(request.getCode()));
             }
     
             if (request.getDateStart() != null && request.getDateEnd() != null) {
                 predicate = criteriaBuilder.and(predicate,
-                    criteriaBuilder.between(root.get("newsRegistryDate"), request.getDateStart(), request.getDateEnd()));
+                    criteriaBuilder.between(root.get("date"), request.getDateStart(), request.getDateEnd()));
             }
     
             return predicate;

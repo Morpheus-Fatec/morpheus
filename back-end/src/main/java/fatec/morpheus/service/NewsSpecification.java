@@ -19,7 +19,7 @@ public class NewsSpecification {
                     titlePredicate = criteriaBuilder.or(titlePredicate,
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("newsTitle")), "%" + title.toLowerCase() + "%"));
                 }
-                predicate = criteriaBuilder.and(predicate, titlePredicate);
+                predicate = criteriaBuilder.or(predicate, titlePredicate);
             }
     
             if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
@@ -28,7 +28,7 @@ public class NewsSpecification {
                     textPredicate = criteriaBuilder.or(textPredicate,
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("newsContent")), "%" + text.toLowerCase() + "%"));
                 }
-                predicate = criteriaBuilder.and(predicate, textPredicate);
+                predicate = criteriaBuilder.or(predicate, textPredicate);
             }
     
             if (request.getAuthor() != null && !request.getAuthor().isEmpty()) {
