@@ -9,12 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import fatec.morpheus.DTO.ApiEndpointDTO;
+import fatec.morpheus.DTO.ApiFilterRequestDTO;
+import fatec.morpheus.DTO.PaginatedApi;
+import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.entity.Api;
 import fatec.morpheus.entity.ApiContent;
 import fatec.morpheus.entity.TagRelFont;
 import fatec.morpheus.repository.ApiContentRepository;
 import fatec.morpheus.repository.ApiRepository;
 import fatec.morpheus.repository.TagRelFontRepository;
+
+
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ApiContentService {
@@ -108,4 +115,36 @@ public class ApiContentService {
 
         return tagsForApi;
     }
+
+    public PaginatedApi<ApiEndpointDTO> getFilteredEndpoints(ApiFilterRequestDTO filterRequest, Pageable pageable) {
+
+        List<Api> apis = apiRepository.findAll();
+
+        List<ApiEndpointDTO> result = new ArrayList<>();
+
+        for (Api api : apis) {
+            if (filterRequest.getCode() == null || filterRequest.getCode().contains(api.getCode())) {
+                ApiContent data = apiContentRepository.findFirstByApiId(api);
+
+                if (data != null) {
+                    ApiEndpointDTO dto = new ApiEndpointDTO();
+                    dto.setCode(api.getCode());
+                    dto.setAddress(api.getAddress());
+                    dto.setSource(data.getApiContent());
+                    dto.setMethod(api.getPost(), api.getGet());
+                    result.add(dto);
+                }
+            }
+        }
+
+        int totalElements = result.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
+        int start = Math.min((int) pageable.getOffset(), totalElements);
+        int end = Math.min(start + pageable.getPageSize(), totalElements);
+        List<ApiEndpointDTO> currentPageContent = result.subList(start, end);
+
+        return new PaginatedApi<>(currentPageContent, pageable.getPageSize(), totalPages);
+    }
+
+
 }

@@ -1,11 +1,18 @@
 package fatec.morpheus.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -43,4 +50,23 @@ public class Api {
     @Min(value = 0, message = "Get value must be 0 or 1")
     @Max(value = 1, message = "Get value must be 0 or 1")
     private int get;
+
+
+    @Transient
+    public List<Integer> getTagCodes() {
+        return tagCodes;
+    }
+
+    @ElementCollection
+    @CollectionTable(name = "Api_tag", joinColumns = @JoinColumn(name = "src_cod"))
+    @Column(name = "tag_cod")
+    private List<Integer> tagCodes;
+
+    public void setTagCodes(List<Integer> tagCodes) {
+        if (tagCodes != null) {
+            this.tagCodes = new ArrayList<>(tagCodes);
+        } else {
+            this.tagCodes = new ArrayList<>();
+        }
+    }
 }

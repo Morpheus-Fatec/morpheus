@@ -290,6 +290,48 @@ const app = Vue.createApp({
         filteredAddresses() {
             const query = this.api.search.query?.toLowerCase() || "";
             return this.apiList.filter(item => item.address?.toLowerCase().includes(query));
+        },
+
+        startUserGuide() {
+            let stepsGuide = [];
+            stepsGuide = [
+                {
+                    element: '#titulo-pagina',
+                    intro: 'Aqui você pode consultar todas os dados salvos de APIs de terceiros.',
+                    position: 'bottom'
+                },
+                {
+                    element: '#busca-viva',
+                    intro: 'Aqui você pode realizar uma busca entre os campos já listados',
+                    position: 'bottom'
+                },
+                {
+                    element: '#filtros-busca',
+                    intro: 'Aqui você pode adicionar filtros relacionados ao conteudos dos dados como também das fontes que os dados são provenientes',
+                    position: 'bottom'
+                },
+                {
+                    element: '#paginacao',
+                    intro: 'Aqui você pode navegar entre os registros, definindo a melhor forma de consultar os dados',
+                    position: 'bottom'
+                },
+                {
+                    element: '#tabela-ver-dados',
+                    intro: 'Aqui você pode ver os dados e ao clicar em ver conteudo será possível ver os dados do registro',
+                    position: 'bottom'
+                }
+            ]
+
+            introJs().setOptions({
+                steps: stepsGuide,
+                nextLabel: 'Próximo',
+                prevLabel: 'Anterior',
+                skipLabel: '<i class="fa fa-times"></i>',
+                doneLabel: 'Concluir'
+              })
+              .onchange(async function(element) {
+              })
+              .start();
         }
     },
 
