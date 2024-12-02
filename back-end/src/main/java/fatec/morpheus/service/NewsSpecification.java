@@ -23,7 +23,6 @@ public class NewsSpecification {
             }
     
             if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()) {
-                System.out.println("Entrou no textSearch" + request.getTextSearch().size());
                 Predicate textPredicate = criteriaBuilder.disjunction();
                 for (String text : request.getTextSearch()) {
                     textPredicate = criteriaBuilder.or(textPredicate,

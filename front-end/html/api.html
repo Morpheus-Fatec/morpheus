@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpheus</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css\bootstrap-icons-1.11.3\bootstrap-icons-1.11.3\font\bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/Logo_Morpheus.png" alt="Morpheus Logo" width="auto" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown" style="margin-right: 10px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="portalDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-newspaper"></i> Portais
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="portalDropdown">
+                            <li>
+                                <a class="dropdown-item" href="index.html">Gerenciar</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="newsFeed.html">Conteúdos</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" style="margin-right: 40px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="apiDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-layout-text-window-reverse"></i> APIs
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="apiDropdown">
+                            <li>
+                                <a class="dropdown-item" href="api.html">Gerenciar</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="apiFeed.html">Conteúdos</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div v-if="isLoading" class="overlay">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div class="page-title d-flex justify-content-between align-items-center" :class="{ hidden: !isVisible }">
+            <div id="titulo-pagina" class="d-flex align-items-center">
+                <i class="bi-cloud-arrow-down-fill" style="font-size: 30px; color: #004c8a;"></i>
+                <h1 class="ms-2 mb-0" id="titleSources">Fontes baseadas em API</h1>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary btn-sm" @click="toggleVisibility">
+                    <i :class="isVisible ? 'bi bi-arrows-fullscreen' : 'bi bi-fullscreen-exit'"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuide()">
+                    <i class="bi bi-person-raised-hand"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="alert alert-dismissible fade show" :class="`alert-${root.formData.alert.type}`" role="alert"
+            v-if="root.formData.alert.show">
+            <strong>{{root.formData.alert.titleError}}</strong>
+            <br>
+            {{root.formData.alert.desc}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+
+        <div :class="{ hidden: !isVisible }">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button id="botao-cadastrar" type="button" @click="apiStartCreated" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Cadastrar
+                </button>
+                <button id="botao-tags" type="button" @click="tagsOpenMananger" class="btn btn-primary">
+                    <i class="bi bi-tags"></i> Gerenciar Tags
+                </button>
+                <button id="botao-regionalismo" type="button"  @click="regionalismOpen" class="btn btn-primary">
+                    <i class="bi bi-geo-alt"></i> Regionalismo
+                </button>
+                <button id="botao-configurar" type="button" data-bs-toggle="offcanvas" data-bs-target="#configuracao-cron" role="button"
+                    aria-controls="offcanvasExample" class="btn btn-primary">
+                    <i class="bi bi-tools"></i> Configurações
+                </button>
+            </div>
+
+            <div class="mt-3 d-flex" >
+                <input type="text" id="busca-viva" class="form-control ms-2" v-model="this.sourceApi.search.query" @input="apiFilter"
+                    placeholder="Pesquisar" style="flex-grow: 1;">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tabela-ver-dados" class="table table-bordered mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            Endereço
+                        </th>
+                        <th scope="col">
+                            Metodos
+                        </th>
+                        <th scope="col">
+                            
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="api in this.sourceApi.filtered" :key="api.code">
+                        <td>{{ api.address }}</td>
+                        <td>
+                            <div v-if="api.get">
+                                <span class="badge text-bg-secondary">GET</span>
+                            </div>
+                            <div v-if="api.post">
+                                <span class="badge text-bg-secondary">POST</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button class="btn btn-outline-primary btn-sm" title="Tags"
+                                    @click="tagsForSourceNewsOpen(api)">
+                                    <i class="bi bi-tags"></i> <span class="badge"
+                                        :class="api.tags.length === 0 ? 'bg-danger' : 'bg-secondary'">{{
+                                        api.tags.length }}</span>
+                                </button>
+                                <button id="editTagsSource" class="btn btn-outline-success btn-sm" title="Editar"
+                                    @click="apiStartEdit(api)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button id="removeTagsSource" class="btn btn-outline-danger btn-sm" title="Excluir" @click="apiDelete(api)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="sourceNewsFormModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-between align-items-center">
+                        <h5 id="titleSourcesModal" class="modal-title" v-if="sourceApi.formData.action=='create'" id="createModalLabel">
+                            Cadastrar Fonte de Dados Baseada em API
+                        </h5>
+                        <h5 id="titleSourcesModal" class="modal-title" v-if="sourceApi.formData.action!='create'" id="createModalLabel">
+                            Editar Fonte de Dados Baseada em API
+                        </h5>
+                        
+                        <div class="d-flex align-items-center">
+                        
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="alert alert-dismissible fade show" :class="`alert-${sourceApi.formData.alert.type}`" role="alert" v-if="sourceApi.formData.alert.show">
+                            <strong>{{ sourceApi.formData.alert.titleError }}</strong>
+                            <br>
+                            {{ sourceApi.formData.alert.desc }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        </div>
+                        
+                        <form @submit.prevent="apiSave">                            
+                            <div id="addresSourcesModal" class="mb-3">
+                                <label for="newsAddress" class="form-label">Endereço:</label>
+                                <input type="text" class="form-control" id="newsAddress"
+                                       v-model="sourceApi.formData.sourceSelected.address" @keyup.enter="apiSave"
+                                       :class="{ 'is-invalid': sourceApi.formData.isSubmitted && !sourceApi.formData.sourceSelected.address }">
+                                <div class="invalid-feedback">Este campo é obrigatório.</div>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" v-model="sourceApi.formData.sourceSelected.get" type="checkbox" role="switch" id="getChecked">
+                                <label class="form-check-label" for="getChecked">GET</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" v-model="sourceApi.formData.sourceSelected.post" type="checkbox" role="switch" id="postChecked">
+                                <label class="form-check-label" for="postChecked">POST</label>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="apiSave">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
+            ref="sourceNewsDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{this.sourceApi.delete.sourceSelected.name}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="apiConfirmDelete()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="tagsModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="tagsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Gerenciar Tags</h5>
+        
+                        <!-- Alinha os botões à direita -->
+                        <div class="d-flex align-items-center">
+                            <!-- Botão de ajuda com cor secundária -->
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2" @click="handleHelp">
+                                <i class="bi bi-person-raised-hand"></i>
+                            </button>
+        
+                            <!-- Botão de fechar com ícone bi-x-lg e estilo outline-primary -->
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal" aria-label="Fechar">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="alert alert-dismissible fade show" :class="`alert-${tags.alert.type}`" role="alert" v-if="tags.alert.show">
+                            <strong>{{tags.alert.titleError}}</strong>
+                            <br>
+                            {{tags.alert.desc}}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        </div>
+        
+                        <div class="mt-3 d-flex">
+                            <input type="text" class="form-control ms-2" v-model="tags.search.query" placeholder="Pesquisar" @input="tagsFilter" style="flex-grow: 1;">
+                        </div>
+        
+                        <div class="table-container">
+                            <table class="table table-bordered mt-2">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="w-75">
+                                            Nome
+                                            <button class="btn btn-icon"></button>
+                                        </th>
+                                        <th scope="col" class="w-25 text-center">
+                                            <button v-if="!tags.insert.active" class="btn btn-outline-primary btn-sm" title="Adicionar" @click="tags.insert.active = true">
+                                                <i class="bi bi-plus"></i> Adicionar
+                                            </button>
+                                        </th>
+                                    </tr>
+                                    <tr v-if="tags.insert.active">
+                                        <td>
+                                            <input type="text" v-model="tags.insert.content" placeholder="Conteúdo" class="form-control" :class="{ 'is-invalid': tags.insert.isSubmitted && !tags.insert.content }" />
+                                            <div class="invalid-feedback">O conteúdo não pode ser vazio.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-outline-primary btn-sm" title="Adicionar" @click="tagCreate()">
+                                                <i class="bi bi-floppy"></i> Salvar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="tag in tags.filtered" :key="tag.code">
+                                        <td>
+                                            <span v-if="!tag.isEditing">{{ tag.tagName }}</span>
+                                            <input v-if="tag.isEditing" v-model="tag.tagName" @blur="tagSave(tag)" @keyup.enter="tagSave(tag)" type="text" class="form-control" :class="{ 'is-invalid': tag.isSubmitted && !tag.tagName }" />
+                                            <div class="invalid-feedback">O conteúdo não pode ser vazio.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-success btn-sm" title="Salvar" @click="tagEdit(tag)">
+                                                    <i :class="tag.isEditing ? 'bi bi-floppy' : 'bi bi-pencil'"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm" @click="tagDelete(tag)" title="Excluir">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
+            ref="tagsDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{this.tags.delete.tagSelected.tagName}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="tagConfirmDelete()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+            ref="tagsForSourceNewsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-tags"></i> Definir Tags</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control mb-2"
+                                                placeholder="Buscar tags disponíveis..." v-model="tags.search.query">
+                                        </div>
+                                        <button type="button" class="btn btn-success w-100"
+                                            @click="tagsForSourceNewsCreateTag()"
+                                            v-if="unselectedTags.length === 0 && tags.search.query != '' && tags.search.query != null">
+                                            <i class="bi bi-plus-circle"></i> Cadastrar Tag
+                                        </button>
+                                        <label for="selectOption1" class="form-label">Tags Disponíveis:</label>
+                                        <select id="selectOption1" class="form-select"
+                                            v-model="sourceApi.tags.movedAdd" multiple size="15">
+                                            <option v-for="tag in unselectedTags" :key="tag.tagCode"
+                                                :value="tag.tagCode">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-success w-100" @click="tagsForSourceNewsAdd()"
+                                        :disabled="sourceApi.tags.movedAdd.length === 0">
+                                        <i class="bi bi-arrow-right-circle"></i> Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control mb-2"
+                                                placeholder="Buscar tags selecionadas..."
+                                                v-model="tags.search.selectedQuery">
+                                            <button v-if="selectedTags.length === 0 && tags.search.selected"
+                                                class="btn btn-primary ms-2" @click="registerNewTag">
+                                                Cadastrar Tag
+                                            </button>
+                                        </div>
+                                        <label for="selectOption2" class="form-label">Tags Selecionadas:</label>
+                                        <select id="selectOption2" class="form-select"
+                                            v-model="sourceApi.tags.movedRemove" multiple size="15">
+                                            <option v-for="tag in selectedTags" :key="tag.tagCode" :value="tag.tagCode">
+                                                {{ tag.tagName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-danger w-100"
+                                        @click="tagsForSourceNewsRemove()"
+                                        :disabled="sourceApi.tags.movedRemove.length === 0">
+                                        <i class="bi bi-arrow-left-circle"></i> Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="tagsForSourceNewsSave()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="configuracao-cron" aria-labelledby="configuracaoCronLabel" ref="offcanvas">
+            <div class="offcanvas-header d-flex justify-content-between align-items-center">
+                <h5 class="offcanvas-title" id="configuracaoCronLabel">Configuração do Cron</h5>
+                
+                <!-- Alinha os botões à direita -->
+                <div class="d-flex align-items-center">
+                    <!-- Botão de ajuda com cor secundária -->
+                    <button type="button" class="btn btn-secondary btn-sm me-2" @click="handleHelp">
+                        <i class="bi bi-person-raised-hand"></i>
+                    </button>
+        
+                    <!-- Botão de fechar com ícone bi-x-lg e estilo primary -->
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="offcanvas" aria-label="Fechar">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        
+            <div class="offcanvas-body">
+                <div class="alert alert-dismissible fade show" :class="`alert-${cron.alert.type}`" role="alert" v-if="cron.alert.show">
+                    <strong>{{cron.alert.titleError}}</strong>
+                    <br>
+                    {{cron.alert.desc}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                
+                <div class="form-check form-switch mt-3">
+                    <input class="form-check-input" type="checkbox" id="switchAtivarCron" v-model="cron.active">
+                    <label class="form-check-label" for="switchAtivarCron">Ativar Cron</label>
+                </div>
+        
+                <div v-if="cron.active" class="active-fields">
+                    <label for="periodicidade" class="form-label mt-3">Periodicidade:</label>
+                    <select class="form-select" id="periodicidade" v-model="cron.periodice" :class="{'is-invalid': cron.isSubmited && !cron.periodice}">
+                        <option value="">Escolha uma opção</option>
+                        <option value="Daily">Diário</option>
+                        <option value="Weekly">Semanal</option>
+                        <option value="Monthly">Mensal</option>
+                    </select>
+                    <div v-if="cron.isSubmited && !cron.periodice">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+        
+                    <label for="hora" class="form-label mt-3">Hora:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="hora" v-model="cron.hour" min="0" max="23" placeholder="HH" @input="cronValidateHour" :class="{'is-invalid': cron.isSubmited && !cron.hour}" />
+                        <span class="input-group-text">:</span>
+                        <input type="number" class="form-control" id="minuto" v-model="cron.minute" min="0" max="59" placeholder="MM" @input="cronValidateMinute" :class="{'is-invalid': cron.isSubmited && !cron.minute}" />
+                    </div>
+                    <div v-if="cron.isSubmited && (!cron.hour || !cron.minute)">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+        
+                    <label for="fuso-horario" class="form-label mt-3">Fuso Horário:</label>
+                    <select class="form-select" id="fuso-horario" v-model="cron.timeZone" :class="{'is-invalid': cron.isSubmited && !cron.timeZone}">
+                        <option value="">Escolha um fuso horário</option>
+                        <option value="America/Noronha">Fernando de Noronha (UTC-2)</option>
+                        <option value="America/Belem">Belém (UTC-3)</option>
+                        <option value="America/Fortaleza">Fortaleza (UTC-3)</option>
+                        <option value="America/Recife">Recife (UTC-3)</option>
+                        <option value="America/Araguaina">Araguaína (UTC-3)</option>
+                        <option value="America/Maceio">Maceió (UTC-3)</option>
+                        <option value="America/Bahia">Bahia (UTC-3)</option>
+                        <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+                        <option value="America/Campo_Grande">Campo Grande (UTC-4)</option>
+                        <option value="America/Cuiaba">Cuiabá (UTC-4)</option>
+                        <option value="America/Porto_Velho">Porto Velho (UTC-4)</option>
+                        <option value="America/Boa_Vista">Boa Vista (UTC-4)</option>
+                        <option value="America/Manaus">Manaus (UTC-4)</option>
+                        <option value="America/Eirunepe">Eirunepé (UTC-5)</option>
+                        <option value="America/Rio_Branco">Rio Branco (UTC-5)</option>
+                    </select>
+                    <div v-if="cron.isSubmited && !cron.timeZone">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+                    <label for="timeout" class="form-label mt-3">Timeout (em segundos): </label>
+                    <input type="number" class="form-control" id="timeout" v-model="cron.timeout" min="1" max="15" @input="validateTimeoutInput" :class="{'is-invalid': cron.isSubmited && !cron.timeout}" />
+                    <div v-if="cron.isSubmited && !cron.timeout">
+                        <span class="text-danger">Este campo é obrigatório.</span>
+                    </div>
+        
+                <button class="btn btn-success mt-3" @click="cronSalvarConfiguracao">Salvar</button>
+            </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" ref="regionalismModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title" id="createModalLabel"><i class="bi bi-geo-alt"></i> Gerenciar Regionalismo</h5>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-secondary btn-sm me-2" @click="handleHelp">
+                                <i class="bi bi-person-raised-hand"></i>
+                            </button>
+        
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" aria-label="Fechar">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+        
+                    <div class="modal-body">
+                        <div v-if="regionalism.alert.active" :class="['alert', `alert-${regionalism.alert.class}`]" role="alert">
+                            {{ regionalism.alert.message }}
+                        </div>
+                        <div v-if="!regionalism.wordSelected.available">
+                            <div class="mt-3 d-flex">
+                                <input type="text" class="form-control ms-2" v-model="regionalism.search" placeholder="Pesquisar" @input="filterWords" style="flex-grow: 1;">
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-bordered mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="w-75">Conteudo</th>
+                                            <th scope="col" class="w-25 text-center">
+                                                <button v-if="!regionalism.insert" class="btn btn-outline-primary btn-sm" title="Adicionar" @click="regionalism.insert = true">
+                                                    <i class="bi bi-plus"></i> Adicionar
+                                                </button>
+                                            </th>
+                                        </tr>
+                                        <tr v-if="regionalism.insert">
+                                            <td>
+                                                <input type="text" v-model="regionalism.insertWord" placeholder="Conteudo" class="form-control" />
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-primary btn-sm" title="Adicionar" @click="addWord()">
+                                                    <i class="bi bi-save"></i> Salvar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="regionalism.filtered.length === 0">
+                                            <td colspan="2" class="text-center">Sem palavras encontradas</td>
+                                        </tr>
+                                        <tr v-for="word in regionalism.filtered" :key="word.code">
+                                            <td><span>{{ word.content }}</span></td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-outline-success btn-sm" title="Editar" @click="editWord(word)">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm" title="Excluir" @click="deleteWord(word)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+        
+                        <div v-if="regionalism.wordSelected.available">
+                            <div class="mb-3">
+                                <label for="inputContent" class="form-label">Conteúdo</label>
+                                <input type="text" id="inputContent" class="form-control ms-2" v-model="regionalism.wordSelected.word.content" placeholder="Digite o conteúdo da palavra" style="flex-grow: 1;">
+                            </div>
+                            <!-- Card para os checkboxes -->
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    Sinônimos
+                                </div>
+                                <div class="card-body">
+                                    <div class="mt-3 d-flex">
+                                        <input type="text" class="form-control ms-2" v-model="regionalism.wordSelected.search" placeholder="Pesquisar" @input="filterWordsSynonyms" style="flex-grow: 1;">
+                                    </div>
+                                    <form>
+                                        <div class="form-check" v-for="word in regionalism.wordSelected.filtered" :key="word.code">
+                                            <input class="form-check-input" type="checkbox" :id="'word' + word.code" :value="word" :checked="isSynonymSelected(word)" @change="toggleSynonym(word.code)" />
+                                            <label class="form-check-label" :for="'word' + word.code">
+                                                {{ word.content }}
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="modal-footer" v-if="regionalism.wordSelected.available">
+                        <button type="button" class="btn btn-secondary" @click="regionalism.wordSelected.available = false">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @click="saveWord()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="regionalismDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" ref="regionalismDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem certeza de que deseja excluir {{regionalism.delete.wordSelected.content}}?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="cancelDeleteWord()">Cancelar</button>
+                        <button type="button" class="btn btn-danger" @click="confirmDeleteWord()">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../library/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
+    <script src="../library/axios.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/intro.js/minified/intro.min.js"></script>
+</body>
+
+</html>

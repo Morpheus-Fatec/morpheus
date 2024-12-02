@@ -85,8 +85,8 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 | --  | KickOff   | 26/08   | 30/08 | Ok |
 |  1  | Sprint 1   | 09/09   | 29/09 | Ok |
 |  2  | Sprint 2   | 30/09   | 20/10 | Ok |
-|  3  | Sprint 3   | 21/10   | 10/11 |  |
-|  4  | Sprint 4   | 11/11   | 30/11 |  |
+|  3  | Sprint 3   | 21/10   | 10/11 | Ok |
+|  4  | Sprint 4   | 11/11   | 30/11 | Ok |
 |  5  | Feira de Soluções  | 12/12     |
 
 <br>
@@ -104,7 +104,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 | H             | Analista | Registrar dados provenientes de fontes de dados provenientes de APIs vinculadas à sua devida fonte e à sua data de registro                                                                           | 4      | Baixa      | H           | VIII e IV     |
 | I             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando tags tratadas para complementar regionalismos linguísticos, mediante a uma análise do conteúdo registrado | 4      | Baixa      | I           | VII e VI      |
 | J             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de uma fonte de dados (API)                                                   | 4      | Baixa      | I           | VII e VI      |
-|              | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
+| K             | Analista | Filtrar os dados de uma consulta de dados provenientes de fonte de dados (API), utilizando filtros referentes aos dados de um registro proveniente de uma fonte de dados (API)                       | 4      | Baixa      | I           | VII e VI      |
 
 <a href="/documentation/documentation.md" target="_blank">
     <button style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
@@ -117,7 +117,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 
 ## :chart_with_upwards_trend: <a id="grafico-burndown"> Gráfico Burndown </a>
 <div align="center">
-    <img src="./documentation/burndown/BurnDownChartSprint3.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
+    <img src="./documentation/burndown/BurnDownChartSprint4.png" alt="Gráfico Burndown" alt="Gráfico Burndown" width="75%">
 </div>
 
 <br>

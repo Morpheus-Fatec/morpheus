@@ -10,8 +10,8 @@ import fatec.morpheus.entity.News;
 import io.micrometer.common.lang.NonNull;
 
 @Repository
-public interface NewsRepository extends JpaRepository<News, Integer>, JpaSpecificationExecutor<News>{
+public interface NewsRepository extends JpaRepository<News, Integer>, JpaSpecificationExecutor<News> {
 
-    Page<News> findAll(@NonNull Pageable Pegeable);
+    Page<News> findAll(@NonNull Pageable pageable);
     boolean existsByNewAddress(String newAddress);
 }

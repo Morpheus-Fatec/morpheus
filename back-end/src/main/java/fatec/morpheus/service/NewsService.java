@@ -7,18 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fatec.morpheus.DTO.NewsResponse;
 import fatec.morpheus.DTO.NewsSearchRequest;
+import fatec.morpheus.DTO.PaginatedNewsResponse;
 import fatec.morpheus.entity.News;
-import fatec.morpheus.entity.NewsReponse;
-import fatec.morpheus.entity.PaginatedNewsResponse;
 import fatec.morpheus.repository.NewsRepository;
 import fatec.morpheus.repository.NewsSourceRepository;
 
@@ -28,15 +27,17 @@ public class NewsService {
     @Autowired
     private NewsRepository newsRepository;
     
-
     @Autowired
     private NewsSourceRepository newsSourceRepository;
 
-    public PaginatedNewsResponse getNewsWithDetails(int page, int itens) {
+    @Autowired
+    private AdaptedTagsService adaptedTagsService;
+
+    public PaginatedNewsResponse<NewsResponse> getNewsWithDetails(int page, int itens) {
         PageRequest pageable = PageRequest.of(page - 1, itens, Sort.by(Sort.Direction.ASC, "newsRegistryDate"));
         Page<News> newsPage = newsRepository.findAll(pageable);
         
-        List<NewsReponse> responseDTOs = new ArrayList<>();
+        List<NewsResponse> responseDTOs = new ArrayList<>();
         
         for (News news : newsPage) {
             String newsTitle = news.getNewsTitle();
@@ -47,11 +48,11 @@ public class NewsService {
             String srcAddress = news.getSourceNews().getAddress();
             String srcURL = news.getNewAddress();
             
-            NewsReponse dto = new NewsReponse(newsTitle, newsContent, newsRegistryDate, autName, srcName, srcAddress, srcURL);
+            NewsResponse dto = new NewsResponse(newsTitle, newsContent, newsRegistryDate, autName, srcName, srcAddress, srcURL);
             responseDTOs.add(dto);
         }
         
-        return new PaginatedNewsResponse(
+        return new PaginatedNewsResponse<>(
             responseDTOs,
             newsPage.getTotalPages(),
             newsPage.getTotalElements()
@@ -75,14 +76,39 @@ public class NewsService {
 
     public Map<String, Object> findNewsWithFilter(NewsSearchRequest request, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("newsRegistryDate").descending());
-        
+        System.out.println("------------------");
+        System.out.println("TitleSearch Antes de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTitleSearch());
+        System.out.println("------------------");
+        if (request.getTitleSearch() != null && !request.getTitleSearch().isEmpty()){
+            request.setTitleSearch(adaptedTagsService.findVariationByText(request.getTitleSearch()));
+        }
+
+        System.out.println("------------------");
+        System.out.println("TitleSearch depois de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTitleSearch());
+        System.out.println("------------------");
+
+        System.out.println("------------------");
+        System.out.println("TextSearch Antes de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTextSearch());
+        System.out.println("------------------");
+        if (request.getTextSearch() != null && !request.getTextSearch().isEmpty()){
+            request.setTextSearch(adaptedTagsService.findVariationByText(request.getTextSearch()));
+        }
+
+        System.out.println("------------------");
+        System.out.println("TextSearch Depois de aplicar regionalismo na procura de news(newsService)");
+        System.out.println(request.getTextSearch());
+        System.out.println("------------------");
+  
         Page<News> pageResult = newsRepository.findAll(NewsSpecification.withFilter(request), pageable);
         
-        List<NewsReponse> newsResponses = pageResult.stream().map(news -> {
+        List<NewsResponse> newsResponses = pageResult.stream().map(news -> {
             String srcName = news.getSourceNews().getSrcName();
             String srcAddress = news.getSourceNews().getAddress();
             
-            return new NewsReponse(
+            return new NewsResponse(
                 news.getNewsTitle(),
                 news.getNewsContent(),
                 news.getNewsRegistryDate(),

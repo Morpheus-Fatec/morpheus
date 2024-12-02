@@ -106,6 +106,7 @@ const app = Vue.createApp({
                     this.isLoading = false;
                 });
         },
+
         srcLoad() {
             axios.get('http://localhost:8080/morpheus/source')
                 .then(response => {
@@ -116,7 +117,7 @@ const app = Vue.createApp({
                     this.initChoices();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'portal:Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal.');
                 });
         },
 
@@ -130,7 +131,7 @@ const app = Vue.createApp({
                     this.initChoicesAuthors();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'autor');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados dos autores.');
                 });
         },
 
@@ -139,14 +140,15 @@ const app = Vue.createApp({
             axios.get('http://localhost:8080/morpheus/tag')
                 .then(response => {
                     this.tagFilters = response.data.map(tag => ({
-                        tagCod: tag.tagCod,
+
+                        tagCode: tag.tagCode,
                         tagName: tag.tagName
                     }));
                     this.choicesTagsText();
                     this.choicesTagsTitle();
                 })
                 .catch(error => {
-                    this.rootMontedAlert('danger', 'tag');
+                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados das tags');
                 })
         },
 
@@ -261,7 +263,7 @@ const app = Vue.createApp({
             });
             choicesTagsTitle.clearStore();
             this.tagFilters.forEach(item => {
-                choicesTagsTitle.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+                choicesTagsTitle.setChoices([{ value: item.tagCode, label: item.tagName }], 'value', 'label', false);
             });
 
             choicesTagsTitle.passedElement.element.addEventListener('change', (event) => {
@@ -280,7 +282,7 @@ const app = Vue.createApp({
             });
             choicesTagsText.clearStore();
             this.tagFilters.forEach(item => {
-                choicesTagsText.setChoices([{ value: item.tagCod, label: item.tagName }], 'value', 'label', false);
+                choicesTagsText.setChoices([{ value: item.tagCode, label: item.tagName }], 'value', 'label', false);
             });
 
             choicesTagsText.passedElement.element.addEventListener('change', (event) => {
@@ -396,6 +398,48 @@ const app = Vue.createApp({
                     offcanvasInstance.hide();
         }
     },
+
+    startUserGuide() {
+        let stepsGuide = [];
+        stepsGuide = [
+            {
+                element: '#titulo-pagina',
+                intro: 'Aqui você pode consultar todas as noticias salvas.',
+                position: 'bottom'
+            },
+            {
+                element: '#busca-viva',
+                intro: 'Aqui você pode realizar uma busca entre todas as noticias já listadas',
+                position: 'bottom'
+            },
+            {
+                element: '#filtros-busca',
+                intro: 'Aqui você pode adicionar filtros relacionados ao conteudos das notícias como também dos portais que as mesmas são provenientes',
+                position: 'bottom'
+            },
+            {
+                element: '#paginacao',
+                intro: 'Aqui você pode navegar entre as notícias, definindo a melhor forma de consultar os dados',
+                position: 'bottom'
+            },
+            {
+                element: '#tabela-ver-dados',
+                intro: 'Aqui você pode ver os dados da notícias e ao clicar em ver conteudo será possível ver a notícia completa',
+                position: 'bottom'
+            }
+        ]
+
+        introJs().setOptions({
+            steps: stepsGuide,
+            nextLabel: 'Próximo',
+            prevLabel: 'Anterior',
+            skipLabel: '<i class="fa fa-times"></i>',
+            doneLabel: 'Concluir'
+          })
+          .onchange(async function(element) {
+          })
+          .start();
+    }
     
 },
 
