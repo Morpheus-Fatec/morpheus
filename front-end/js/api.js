@@ -700,139 +700,46 @@ const app = Vue.createApp({
             this.regionalism.modal.show();
             this.regionalism.delete.modal.hide();
         },
-        startUserGuide(guide) {
-            const vm = this;
+        startUserGuide() {
             let stepsGuide = [];
-            if(guide == 'main'){
-                stepsGuide = [
+            stepsGuide = [
                 {
-                    element: '#titleSources',
-                    intro: 'Aqui você pode gerenciar todas as fontes de dados utilizadas para alimentar a base de notícias.',
+                    element: '#titulo-pagina',
+                    intro: 'Aqui você pode gerenciar todas as fontes de dados baseadas em APIs.',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#searchElements',
-                    intro: 'Aqui você pode pesquisar usando uma busca viva por um portal de notícia',
-                    position: 'bottom'
-                  },
-                  {
-                    element: '#optionsSearch',
-                    intro: 'Aqui é possível selecionar um campo a sua escolha para utilizar na filtragem de dados',
-                    position: 'top'
-                  },
-                  {
-                    element: '#allSources',
-                    intro: 'Aqui ficam exibidos todos as fontes de dados resultantes da pesquisa',
-                    position: 'right'
-                  },
-                  {
-                    element: '#editTagsSource',
-                    intro: 'Aqui é possível gerenciar as tags vinculadas a uma fonte de dados, sendo o numero exibido nesse botão o resultado total de tags vinculadas, caso não existam tags vínculadas o botão fica em vermelho, pois isso indica que a fonte de dados nunca terá dados salvos',
-                    position: 'bottom'
-                  },
-                  {
-                    element: '#removeTagsSource',
-                    intro: 'Aqui é possível excluir uma fonte de dados',
-                    position: 'top'
-                  },
-                  {
-                    element: '#btnCreateSource',
-                    intro: 'Aqui é possível realizar o cadastro de uma nova fonte de dados',
-                    position: 'right'
-                  },
-                  {
-                    element: '#btnManTags',
-                    intro: 'Aqui é possível realizar o gerenciamento das tags usadas no sistema',
-                    position: 'right'
-                  },
-                  {
-                    element: '#btnManRegionalism',
-                    intro: 'Aqui é possível realizar o gerenciamento dos termos usados no regionalismo',
-                    position: 'bottom'
-                  },
-                  {
-                    element: '#btnConfig',
-                    intro: 'Aqui é possível ajustar as configurações técnicas do sistema como ajuste do cron',
-                    position: 'top'
-                  }
-                ]
-            }
-
-            if(guide == 'sources'){
-                stepsGuide = [
+                },
                 {
-                    element: '#titleSourcesModal',
-                    intro: 'Aqui você pode editar ou cadastrar fontes de dados',
+                    element: '#botao-cadastrar',
+                    intro: 'Aqui você pode cadastrar uma nova fonte de dados baseada em API',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#nameSourcesModal',
-                    intro: 'o campo novo representa o nome pelo qual a fonte de dados será representada dentro do sistema, esse campo é livre porem deve ser único',
+                },
+                {
+                    element: '#botao-tags',
+                    intro: 'Aqui você pode gerenciar as tags do sistema',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#addresSourcesModal',
-                    intro: 'O campo endereço representa a URL dessa fonte de dados, deve-se cadastrar o endereço mais especifico possível, isso para otimizar todo o funcionamento do armazenamento de notícias, Importante destacar que somente notícias que tiverem dentro do seu endereço o próprio endereço da fonte de dados, que podem ser consideradas para analise de conteúdo',
-                    position: 'left'
-                  },
-                  {
-                    element: '#mapAutSourcerModal',
-                    intro: 'Aqui estão disponíveis para configuração o mapeamento, são dados referentes a como a fonte de dados organiza cada parte da notícia, de modo que o sistema consiga buscar os dados com mais precisão',
-                    position: 'top'
-                  },
-                  {
-                    element: '#btnMapAutSourcerModal',
-                    intro: 'Aqui é possível abrir a funcionalidade de mapeamento automático',
+                },
+                {
+                    element: '#botao-regionalismo',
+                    intro: 'Aqui você pode gerenciar os regionalismos linguisticos',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#titleMapAutModal',
-                    intro: 'Aqui é possível realizar a ação de mapear automaticamente um porta de notícias',
+                },
+                {
+                    element: '#botao-configurar',
+                    intro: 'Aqui você pode gerenciar as configurações do sistema',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#urlMapAutModal',
-                    intro: 'Primeiramente você deve colar aqui uma notícia utilizada no portal de notícias pertencente a fonte que você deseja cadastrar',
-                    position: 'right'
-                  },
-                  {
-                    element: '#frameMapAutModal',
-                    intro: 'uma miniatura da notícia ira carregar na sequência, permitindo com que você copie cada dado da notícia, importante destacar que a miniatura é apenas uma ferramenta facilitadora podendo você copiar as informações diretamente da página.',
-                    position: 'right'
-                  },
-                  {
-                    element: '#titleInputMapAutModal',
-                    intro: 'Insira aqui o título presente na notícia',
+                },
+                {
+                    element: '#busca-viva',
+                    intro: 'Aqui você pode realizar uma busca entre todas as fontes já cadastradas',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#bodyMapAutModal',
-                    intro: 'Insira parte do corpo da notícia, não é preciso inserir a notícia inteira',
+                },
+                {
+                    element: '#tabela-ver-dados',
+                    intro: 'Aqui você pode ver e editar todas as fontes de dados baseadas em APIs',
                     position: 'bottom'
-                  },
-                  {
-                    element: '#dateMapAutModal',
-                    intro: 'Insira aqui a data presente na notícia, utilizar no formato dd/mm/aaaa',
-                    position: 'bottom'
-                  },
-                  {
-                    element: '#authorMapAutModal',
-                    intro: 'Insira aqui os autores presentes na notícia',
-                    position: 'bottom'
-                  },
-                  {
-                    element: '#mapAutSourcerModal',
-                    intro: 'Os dados devem ser exibidos aqui de maneira automática, podendo também ser editado livremente.',
-                    position: 'top'
-                  },
-                ]
-            }
-
-            let modalElement = this.$refs.sourceNewsFormModal;
-            const createModal = new bootstrap.Modal(modalElement);
-
-            const mD = this.sourceApi.formData.modal;
-
+                }
+            ]
+    
             introJs().setOptions({
                 steps: stepsGuide,
                 nextLabel: 'Próximo',
@@ -841,16 +748,8 @@ const app = Vue.createApp({
                 doneLabel: 'Concluir'
               })
               .onchange(async function(element) {
-                
               })
               .start();
-
-              function showModal(modal) {
-                return new Promise((resolve) => {
-                    modal.show();
-                    modal._element.addEventListener('shown.bs.modal', resolve, { once: true });
-                });
-            }
         }
     },
     
