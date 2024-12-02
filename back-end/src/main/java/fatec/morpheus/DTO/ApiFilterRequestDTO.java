@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 public class ApiFilterRequestDTO {
     private List<Integer> code;
-    private List<String> address;
     private List<String> text;
     private List<String> tags;
     private LocalDate dateStart;
