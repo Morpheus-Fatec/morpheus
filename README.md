@@ -86,7 +86,7 @@ Criar um mecanismo para mapeamento de portais de notícias estratégicas, com ca
 |  1  | Sprint 1   | 09/09   | 29/09 | Ok |
 |  2  | Sprint 2   | 30/09   | 20/10 | Ok |
 |  3  | Sprint 3   | 21/10   | 10/11 | Ok |
-|  4  | Sprint 4   | 11/11   | 30/11 |  |
+|  4  | Sprint 4   | 11/11   | 30/11 | Ok |
 |  5  | Feira de Soluções  | 12/12     |
 
 <br>
