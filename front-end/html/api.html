@@ -64,7 +64,7 @@
             </div>
         </div>
         <div class="page-title d-flex justify-content-between align-items-center" :class="{ hidden: !isVisible }">
-            <div class="d-flex align-items-center">
+            <div id="titulo-pagina" class="d-flex align-items-center">
                 <i class="bi-cloud-arrow-down-fill" style="font-size: 30px; color: #004c8a;"></i>
                 <h1 class="ms-2 mb-0" id="titleSources">Fontes baseadas em API</h1>
             </div>
@@ -72,7 +72,7 @@
                 <button type="button" class="btn btn-primary btn-sm" @click="toggleVisibility">
                     <i :class="isVisible ? 'bi bi-arrows-fullscreen' : 'bi bi-fullscreen-exit'"></i>
                 </button>
-                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuide('main')">
+                <button type="button" class="btn btn-secondary btn-sm ms-2" @click="startUserGuide()">
                     <i class="bi bi-person-raised-hand"></i>
                 </button>
             </div>
@@ -88,29 +88,29 @@
 
         <div :class="{ hidden: !isVisible }">
             <div class="btn-group" role="group" aria-label="Basic example">
-                <button id="btnCreateSource" type="button" @click="apiStartCreated" class="btn btn-primary">
+                <button id="botao-cadastrar" type="button" @click="apiStartCreated" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Cadastrar
                 </button>
-                <button id="btnManTags" type="button" @click="tagsOpenMananger" class="btn btn-primary">
+                <button id="botao-tags" type="button" @click="tagsOpenMananger" class="btn btn-primary">
                     <i class="bi bi-tags"></i> Gerenciar Tags
                 </button>
-                <button id="btnManRegionalism" type="button"  @click="regionalismOpen" class="btn btn-primary">
+                <button id="botao-regionalismo" type="button"  @click="regionalismOpen" class="btn btn-primary">
                     <i class="bi bi-geo-alt"></i> Regionalismo
                 </button>
-                <button id="btnConfig" type="button" data-bs-toggle="offcanvas" data-bs-target="#configuracao-cron" role="button"
+                <button id="botao-configurar" type="button" data-bs-toggle="offcanvas" data-bs-target="#configuracao-cron" role="button"
                     aria-controls="offcanvasExample" class="btn btn-primary">
                     <i class="bi bi-tools"></i> Configurações
                 </button>
             </div>
 
             <div class="mt-3 d-flex" >
-                <input type="text" id="searchElements" class="form-control ms-2" v-model="this.sourceApi.search.query" @input="apiFilter"
+                <input type="text" id="busca-viva" class="form-control ms-2" v-model="this.sourceApi.search.query" @input="apiFilter"
                     placeholder="Pesquisar" style="flex-grow: 1;">
             </div>
         </div>
 
         <div class="table-container">
-            <table id="allSources" class="table table-bordered mt-2">
+            <table id="tabela-ver-dados" class="table table-bordered mt-2">
                 <thead>
                     <tr>
                         <th scope="col">
@@ -169,9 +169,6 @@
                         </h5>
                         
                         <div class="d-flex align-items-center">
-                            <button type="button" class="btn btn-secondary btn-sm me-2" @click="startUserGuide('sources')">
-                                <i class="bi bi-person-raised-hand"></i>
-                            </button>
                         
                             <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" aria-label="Close">
                                 <i class="bi bi-x-lg"></i>
