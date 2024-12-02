@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ApiFilterRequestDTO {
+    private List<Integer> code;
     private List<String> address;
     private List<String> text;
     private List<String> tags;

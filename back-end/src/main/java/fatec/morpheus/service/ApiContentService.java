@@ -123,7 +123,7 @@ public class ApiContentService {
         List<ApiEndpointDTO> result = new ArrayList<>();
 
         for (Api api : apis) {
-            if (filterRequest.getAddress() == null || filterRequest.getAddress().contains(api.getAddress())) {
+            if (filterRequest.getCode() == null || filterRequest.getCode().contains(api.getCode())) {
                 ApiContent data = apiContentRepository.findFirstByApiId(api);
 
                 if (data != null) {
