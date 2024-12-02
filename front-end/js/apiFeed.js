@@ -58,30 +58,31 @@ const app = Vue.createApp({
 
         apiLoad() {
             this.isLoading = true;
-            axios.get(`https://morpheus-api37.free.beeceptor.com/todos?page=${this.pagination.page}&itens=${this.pagination.items}`)
-                .then(response => {
-                    const data = response.data;
-                    this.apiList = [];
-                    data.forEach(element => {
-                        const itemAdd = {
-                            code: element.code,
-                            address: element.address,
-                            source: element.source,
-                            method: element.method
-                        };
-                        this.apiList.push(itemAdd);
-                    });
-                    this.apiFilter();
-                    this.pagination.totalPages = data.totalPages;
-                    this.pagination.totalElements = data.totalElements;
-                    this.initAddress();
-                })
-                .catch(error => {
-                    this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal')
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                });
+            this.filtersData();
+            // axios.post(`http://localhost:8080/morpheus/api-filter?page=${this.pagination.page}&itens=${this.pagination.items}`)
+            //     .then(response => {
+            //         const data = response.data;
+            //         this.apiList = [];
+            //         data.forEach(element => {
+            //             const itemAdd = {
+            //                 code: element.code,
+            //                 address: element.address,
+            //                 source: element.source,
+            //                 method: element.method
+            //             };
+            //             this.apiList.push(itemAdd);
+            //         });
+            //         this.apiFilter();
+            //         this.pagination.totalPages = data.totalPages;
+            //         this.pagination.totalElements = data.totalElements;
+            //         this.initAddress();
+            //     })
+            //     .catch(error => {
+            //         this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados do portal')
+            //     })
+            //     .finally(() => {
+            //         this.isLoading = false;
+            //     });
         },
 
         changePage(page) {
@@ -253,17 +254,18 @@ const app = Vue.createApp({
 
         filtersData() {
             const dataFilter = {
-                address: this.filters.address.selectItems.map(item => parseInt(item.value, 10)),
-                text: this.searchText,
-                tags: this.filters.tags.selectItems,
+                code: this.filters.address.selectItems.map(item => parseInt(item.value, 10)),
+                address: [],
+                text: this.searchText.concat(this.filters.tags.selectItems),
+                tags: [],
                 dateStart: this.filters.date.dateInit,
                 dateEnd: this.filters.date.dateFinal
             };
-            axios.post('https://morpheus-api37.free.beeceptor.com/todos', dataFilter)
+            axios.post(`http://localhost:8080/morpheus/api/filter?page=${this.pagination.page}&size=${this.pagination.items}`, dataFilter)
                 .then(response => {
                     const data = response.data;
                     this.apiList = [];
-                    data.forEach(element => {
+                    data.api.forEach(element => {
                         const itemAdd = {
                             code: element.code,
                             address: element.address,
@@ -278,7 +280,11 @@ const app = Vue.createApp({
                 })
                 .catch(error => {
                     this.rootMontedAlert('danger', 'Alguma indisponibilidade ocorreu no sistema. Tente novamente mais tarde', 'Não foi possível carregar os dados.')
+                
+                }).finally(() => {
+                    this.isLoading = false;
                 });
+
             const offcanvasElement = document.getElementById('offcanvasWithBothOptions');
             const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
 
