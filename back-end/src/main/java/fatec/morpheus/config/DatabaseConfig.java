@@ -22,8 +22,8 @@ public class DatabaseConfig {
     public void init() {
         transactionTemplate.execute(status -> {
 
-
-            List<String> foreignKeysSourceTag = entityManager.createNativeQuery(
+            @SuppressWarnings("unchecked")
+            List<String> foreignKeysSourceTag = (List<String>) entityManager.createNativeQuery(
                 "SELECT CONSTRAINT_NAME " +
                 "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE " +
                 "WHERE TABLE_NAME = 'source_tag' AND COLUMN_NAME = 'tag_cod' AND CONSTRAINT_SCHEMA = DATABASE()"
@@ -37,8 +37,8 @@ public class DatabaseConfig {
                 "ALTER TABLE source_tag ADD CONSTRAINT FK_tag_cod_source_tag FOREIGN KEY (tag_cod) REFERENCES tag(tag_cod) ON DELETE CASCADE"
             ).executeUpdate();
 
-
-            List<String> foreignKeysNews = entityManager.createNativeQuery(
+            @SuppressWarnings("unchecked")
+            List<String> foreignKeysNews = (List<String>) entityManager.createNativeQuery(
                 "SELECT CONSTRAINT_NAME " +
                 "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE " +
                 "WHERE TABLE_NAME = 'news' AND COLUMN_NAME = 'new_src_cod' AND CONSTRAINT_SCHEMA = DATABASE()"
@@ -49,7 +49,22 @@ public class DatabaseConfig {
             }
 
             entityManager.createNativeQuery(
-                "ALTER TABLE news ADD CONSTRAINT FK_new_src_cod_news FOREIGN KEY (new_src_cod) REFERENCES source(src_cod) ON DELETE CASCADE"
+                "ALTER TABLE news ADD CONSTRAINT FK_new_src_cod_news FOREIGN KEY (new_src_cod) REFERENCES source(src_cod) ON DELETE SET NULL"
+            ).executeUpdate();
+
+            @SuppressWarnings("unchecked")
+            List<String> foreignKeysDataCollectedApi = (List<String>) entityManager.createNativeQuery(
+                "SELECT CONSTRAINT_NAME " +
+                "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE " +
+                "WHERE TABLE_NAME = 'data_collected_api' AND COLUMN_NAME = 'api_cod' AND CONSTRAINT_SCHEMA = DATABASE()"
+            ).getResultList();
+
+            for (String foreignKey : foreignKeysDataCollectedApi) {
+                entityManager.createNativeQuery("ALTER TABLE data_collected_api DROP FOREIGN KEY " + foreignKey).executeUpdate();
+            }
+
+            entityManager.createNativeQuery(
+                "ALTER TABLE data_collected_api ADD CONSTRAINT FK_api_cod_data_collected_api FOREIGN KEY (api_cod) REFERENCES api(api_cod) ON DELETE CASCADE"
             ).executeUpdate();
 
             return null;
