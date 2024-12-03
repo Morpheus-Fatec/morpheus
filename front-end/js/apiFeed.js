@@ -11,7 +11,7 @@ const app = Vue.createApp({
                 },
             },
 
-            modalSource: '',
+            modalContent: '',
 
             filters: {
                 address: {
@@ -142,8 +142,8 @@ const app = Vue.createApp({
             }, 20000);
         },
 
-        openModal(source) {
-            this.modalSource = source.replace(/\\/g, "");
+        openModal(content) {
+            this.modalContent = content.replace(/\\/g, "");
             const modal = new bootstrap.Modal(document.getElementById('contentModal'));
             modal.show();
 
@@ -156,7 +156,7 @@ const app = Vue.createApp({
         },
 
         formatSource() {
-            this.modalSource = this.formatContent(this.modalSource); 
+            this.modalContent = this.formatContent(this.modalContent); 
         },
         
 
@@ -269,9 +269,10 @@ const app = Vue.createApp({
                         const itemAdd = {
                             code: element.code,
                             address: element.address,
-                            source: element.source,
+                            content: element.content,
                             method: element.method
                         };
+                        console.log("Adicionando item:", itemAdd);
                         this.apiList.push(itemAdd);
                     });
                     this.pagination.totalPages = data.totalPages;
