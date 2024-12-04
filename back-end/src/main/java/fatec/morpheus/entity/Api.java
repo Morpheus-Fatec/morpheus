@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "Api")
@@ -29,6 +30,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Api {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,20 +58,20 @@ public class Api {
 
     @Transient
     public List<Integer> getTagCodes() {
-        return tagCodes;
+        return tags;
     }
 
     @JsonIgnore
     @ElementCollection
-    @CollectionTable(name = "Api_tag", joinColumns = @JoinColumn(name = "src_cod"))
+    @CollectionTable(name = "TagRelFont", joinColumns = @JoinColumn(name = "api_cod"))
     @Column(name = "tag_cod")
-    private List<Integer> tagCodes;
+    private List<Integer> tags;
 
     public void setTagCodes(List<Integer> tagCodes) {
         if (tagCodes != null) {
-            this.tagCodes = new ArrayList<>(tagCodes);
+            this.tags = new ArrayList<>(tagCodes);
         } else {
-            this.tagCodes = new ArrayList<>();
+            this.tags = new ArrayList<>();
         }
     }
 }

@@ -272,7 +272,6 @@ const app = Vue.createApp({
                             content: element.content,
                             method: element.method
                         };
-                        console.log("Adicionando item:", itemAdd);
                         this.apiList.push(itemAdd);
                     });
                     this.pagination.totalPages = data.totalPages;
