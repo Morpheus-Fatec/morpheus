@@ -59,9 +59,6 @@ public class ApiController {
     @GetMapping
     public ResponseEntity<List<Api>> getAllApi() {
         List<Api> apis = apiService.findAllApi();
-        for (Api api : apis) {
-            System.out.println(api);
-        }
         return ResponseEntity.ok(apis);
     }
 
