@@ -148,16 +148,13 @@
                 <table id="tabela-ver-dados" class="table table-bordered mt-2">
                     <thead>
                         <tr>
-                            <th scope="col" style="width: 10%;">Método
-                            </th>
-                            <th scope="col" style="width: 5%;">Endereço
-                            </th>
-                            <th scope="col" style="width: 10%;">Conteúdo
-                            </th>
+                            <th scope="col" style="width: 10%;">Método</th>
+                            <th scope="col" style="width: 5%;">Endereço</th>
+                            <th scope="col" style="width: 10%;">Conteúdo</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="api in filteredApiList" :key="api.code">
+                        <tr v-for="api in apiList" :key="api.code">
                             <td class="text">
                                 <span :class="{
                                     'text-white bg-success px-2 rounded': api.method.toLowerCase() === 'get',
@@ -173,8 +170,7 @@
                             </td>
                             <td style="text-align: center;">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary btn-sm" title="source"
-                                        @click="openModal(api.source)">
+                                    <button class="btn btn-secondary btn-sm" title="source" @click="openModal(api.content)">
                                         Ver conteúdo
                                     </button>
                                 </div>
@@ -186,6 +182,7 @@
             <div v-else class="alert alert-primary" role="alert">
                 Nenhuma API encontrada
             </div>
+            
 
             <div class="modal fade" id="contentModal" tabindex="-1" role="dialog"
                 aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
@@ -195,7 +192,7 @@
                             <h5 class="modal-title" id="TituloModalLongoExemplo">Conteúdo</h5>
                         </div>
                         <div class="modal-body">
-                            <a> {{ modalSource }} </a>
+                            <a> {{ modalContent }} </a>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal">Fechar</button>
